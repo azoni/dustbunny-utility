@@ -1,6 +1,6 @@
 # Getting Started Dustbunny
 
-
+To remove "order hashes match" and "already approved enough currency for trading" from output do this.
 Inside node_modules/opensea-js/lib/seaport.js
 comment out line 1121 and 1677 with // anywhere in front
 
