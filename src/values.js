@@ -12,6 +12,8 @@ const values = {
 		],
 	favorites: {
 		'galacticapes': [9999],
+		'theshiboshis': [9999],
+		'kaiju-kingz': [3333],
 		'cyberkongz': [3621],
 		'cool-cats-nft': [9932],
 		'world-of-women-nft': [9999],
@@ -26,13 +28,14 @@ const values = {
 		'ape-gang': [9999],
 		'thehumanoids': [9999],
 		'spaceapes': [2000],
+		'capsulehouse': [9999],
 		///
 		'mutantcats': [9999],
 		'winterbears': [9999],
-		'theshiboshis': [9999],
+		
 		'robotos-official': [9999],
 		'creature-world-collection': [9999],
-		'kaiju-kingz': [3333],
+		
 
 		'peaceful-groupies': [9999],
 		'onchainmonkey': [9999],

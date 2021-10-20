@@ -10,7 +10,7 @@ const MnemonicWalletSubprovider = require("@0x/subproviders")
   .MnemonicWalletSubprovider;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
-const MNEMONIC = secret.default.MNEMONIC[0]
+const MNEMONIC = secret.default.MNEMONIC
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
 });
@@ -94,15 +94,12 @@ var increaseBid = document.getElementById('increaseBid')
 var increaseBid1 = document.getElementById('increaseBid1')
 var startToken = document.getElementById('startToken')
 var startToken1 = document.getElementById('startToken1')
-var startToken2 = document.getElementById('startToken2')
 
 var endToken = document.getElementById('endToken')
 var endToken1 = document.getElementById('endToken1')
-var endToken2 = document.getElementById('endToken2')
 
 var text = document.getElementById('text')
 var text1 = document.getElementById('text1')
-var text2 = document.getElementById('text2')
 
 const collectionButton = document.getElementById('collectionButton')
 const collectionInput = document.getElementById('collectionInput')
@@ -197,32 +194,30 @@ increaseBid1.addEventListener('click', function(){
   offerAmount = .001 + parseFloat(offerAmount)
   document.getElementById('offerAmount').value = offerAmount
 })
-var isTraits = 0
 async function main(){
-    text.style.fontSize = '40px'
+    text.style.fontSize = '80px'
     text.innerHTML = 'Starting.....'
     var offset = 0
     await new Promise(resolve => setTimeout(resolve, 1000));
     for(var i = startToken.value; i <= endToken.value; i++){
-
-        if(isTraits === 1){
+    var bidMade = 0
+        if(Object.keys(offersDict).length > 0){
           try{
               const asset = await seaport.api.getAsset({
               tokenAddress: NFT_CONTRACT_ADDRESS,
               tokenId: i,
               })
             for(var trait in asset['traits']){
-              if (asset['traits'][trait]['trait_type'].toLowerCase().includes('hat')){
-                if(asset['traits'][trait]['value'].toLowerCase().includes('party hat')){
-                  console.log(asset['traits'][trait]['value'])
+              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(Object.keys(offersDict)[0])){
+                if(asset['traits'][trait]['value'].toLowerCase().includes(offersDict[Object.keys(offersDict)[0]][0])){
                   try{
-                    console.log('bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)) + " on #" + i)
+                    console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[0]][1] + " on #" + i)
                     await seaport.createBuyOrder({
                     asset: {
                         tokenId: i,
                         tokenAddress: NFT_CONTRACT_ADDRESS
                     },
-                    startAmount: parseFloat(offset) + parseFloat(offerAmount) ,
+                    startAmount: offersDict[Object.keys(offersDict)[0]][1],
                     accountAddress: OWNER_ADDRESS,
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
@@ -236,16 +231,15 @@ async function main(){
                     if(ex.message.includes('Insufficient balance.')){
                       alert('Insufficient balance. Please wrap more ETH.')
                     }
-                    if (ex['code'] === -32603){
-                      INFURA_KEY = values.default.INFURA_KEY[1]
-                    }
                     console.log('**FAILED**! #' + i)
                     await new Promise(resolve => setTimeout(resolve, 3000))
                 }
                 offset = 0
                 progressBar.value += 1
-                offersMade.innerHTML = offers + '/' + progressBar.max 
+                offersMade.innerHTML = offers + '/' + progressBar.max
+                bidMade = 1
                 } else {
+                  await new Promise(resolve => setTimeout(resolve, 1000))
                   break
                 }
               }
@@ -255,7 +249,9 @@ async function main(){
             console.log('Error with asset.')
           }
           // allow user to decide to just bid on traits or all + traits
-          continue
+          if (bidMade === 1) {
+            continue
+          }
         }
 
         startToken.value = i
@@ -266,7 +262,7 @@ async function main(){
           if(maxOfferAmount !== 0){
           try{
             //const order = await seaport.api.getOrders({
-            const order = await seaport.api.get('/wyvern/v1/orders', {
+            const order = await seaport.api.getOrders({
               asset_contract_address: NFT_CONTRACT_ADDRESS,
               token_id: i,
               side: 0,
@@ -274,13 +270,12 @@ async function main(){
               order_direction: 'desc'
               //limit: '1'
             })
-          const topBid = order['orders'][0].base_price / 1000000000000000000
+          const topBid = order['orders'][0].basePrice / 1000000000000000000
 
           if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
             offset = .0001 + parseFloat(topBid - offerAmount)
-          }console.log('current bid: ' + topBid + ' on #' + i)
-          console.log(order)
-            }
+          }console.log('top bid: ' + topBid + ' #' + i)
+            }//order['orders'][0].makerAccount.user.username + 
             catch(ex){
               console.log('Get bids for ' + i + ' failed.')
             }
@@ -307,9 +302,6 @@ async function main(){
             if(ex.message.includes('Insufficient balance.')){
               alert('Insufficient balance. Please wrap more ETH.')
             }
-            if (ex['code'] === -32603){
-              INFURA_KEY = values.default.INFURA_KEY[1]
-            }
             console.log('**FAILED**! #' + i)
             await new Promise(resolve => setTimeout(resolve, 5000))
         }
@@ -331,15 +323,65 @@ async function main(){
     }
 
 }
- 
-// document.getElementById('pudgypenguins').onclick = function(){
-//   getCollection('pudgypenguins')
-// }
+
 async function main1(){
-    text1.style.fontSize = '40px'
+    text1.style.fontSize = '80px'
     text1.innerHTML = 'Starting.....'
     var offset1 = 0
     for(var i = startToken1.value; i <= endToken1.value; i++){
+          var bidMade = 0
+        if(Object.keys(offersDict).length > 0){
+          try{
+              const asset = await seaport.api.getAsset({
+              tokenAddress: NFT_CONTRACT_ADDRESS,
+              tokenId: i,
+              })
+            for(var trait in asset['traits']){
+              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(Object.keys(offersDict)[0])){
+                if(asset['traits'][trait]['value'].toLowerCase().includes(offersDict[Object.keys(offersDict)[0]][0])){
+                  try{
+                    console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[0]][1] + " on #" + i)
+                    await seaport.createBuyOrder({
+                    asset: {
+                        tokenId: i,
+                        tokenAddress: NFT_CONTRACT_ADDRESS
+                    },
+                    startAmount: offersDict[Object.keys(offersDict)[0]][1],
+                    accountAddress: OWNER_ADDRESS,
+                    expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
+                    })
+                    text1.style.color = 'green'
+                    text1.innerHTML = 'Running....'
+                    offers += 1
+                    //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
+                } catch(ex) {
+                    text1.style.color = 'red'
+                    text1.innerHTML = 'Error......'
+                    if(ex.message.includes('Insufficient balance.')){
+                      alert('Insufficient balance. Please wrap more ETH.')
+                    }
+                    console.log('**FAILED**! #' + i)
+                    await new Promise(resolve => setTimeout(resolve, 3000))
+                }
+                offset1 = 0
+                progressBar.value += 1
+                offersMade.innerHTML = offers + '/' + progressBar.max
+                bidMade = 1
+                } else {
+                  await new Promise(resolve => setTimeout(resolve, 1000))
+                  break
+                }
+              }
+            }
+          } catch(ex) {
+            console.log(ex)
+            console.log('Error with asset.')
+          }
+          // allow user to decide to just bid on traits or all + traits
+          if (bidMade === 1) {
+            continue
+          }
+        }
         startToken1.value = i
         if (stop1 === 1){
           stop1 = 0
@@ -347,18 +389,18 @@ async function main1(){
         }
         if(maxOfferAmount !== 0){
           try{
-            const order = await seaport.api.get('/wyvern/v1/orders', {
+            const order = await seaport.api.getOrders({
               asset_contract_address: NFT_CONTRACT_ADDRESS,
               token_id: i,
               side: 0,
               order_by: 'eth_price',
               order_direction: 'desc'
             })
-          const topBid1 = order['orders'][0].base_price / 1000000000000000000
+          const topBid1 = order['orders'][0].basePrice / 1000000000000000000
           if(parseFloat(topBid1) < parseFloat(maxOfferAmount) && parseFloat(topBid1) >= parseFloat(offerAmount)){
             offset1 = .0001 + parseFloat(topBid1 - offerAmount)
-          }console.log('current bid: ' + topBid1 + ' on #' + i)
-            }
+          }console.log('top bid: ' + topBid1 + ' #' + i)
+            }//order['orders'][0].makerAccount.user.username + 
             catch(ex){
               console.log('Get bids for ' + i + ' failed.')
             }
@@ -385,9 +427,6 @@ async function main1(){
             if(ex.message.includes('Insufficient balance.')){
               alert('Insufficient balance. Please wrap more ETH.')
             }
-            if (ex['code'] === -32603){
-              INFURA_KEY = values.default.INFURA_KEY[2]
-            }
             console.log('**FAILED**! #' + i)
             await new Promise(resolve => setTimeout(resolve, 3000))
             
@@ -399,8 +438,6 @@ async function main1(){
     text1.style.color = 'purple'
     if (startToken1.value === endToken1.value){
       text1.innerHTML = 'COMPLETE'
-    } else {
-      text2.innerHTML = ''
     }
     thread2done = 1
     if (thread1done + thread2done  === 2){
@@ -485,8 +522,7 @@ startButton.addEventListener('click', function(){
   increaseBid.disabled = false
   increaseBid1.disabled = false
   progressBar.hidden = false
-  progressBar.max = parseInt(endToken.value - startToken.value) + parseInt(endToken1.value - startToken1.value) +
-  parseInt(endToken2.value - startToken2.value)
+  progressBar.max = parseInt(endToken.value - startToken.value) + parseInt(endToken1.value - startToken1.value)
   quickButton.disabled = true
   startButton.disabled = true
   main()
@@ -515,17 +551,16 @@ var offersDict = {}
 confirmButton.addEventListener('click', function(){
   if (confirmCollection === 1) {
       var traitsDiv = document.getElementById('traitsDiv')
-
+      offersDict = {}
     for (const property in traitsDiv.children) {
       try {
         if(traitsDiv.children[property].id.includes('property')){
-            offersDict[traitsDiv.children[property].id] = [traitsDiv.children[property+1],traitsDiv.children[property+2]]
+          offersDict[traitsDiv.children[property].value] = [traitsDiv.children[parseInt(property+1)].value, traitsDiv.children[parseInt(property+2)].value]
+
         }
       } catch (ex) {
-        console.log(ex)
       }
     }
-    console.log(offersDict)
     offerAmount = document.getElementById('offerAmount').value
     if (document.getElementById('maxOfferAmount').value === ''){
       maxOfferAmount = 0
@@ -612,6 +647,7 @@ async function getCollectionDetails(collectionName){
     return collect
   } catch(ex){
       console.log("couldn't get collection")
+
   }
 }
 

@@ -50,7 +50,7 @@ document.getElementById('addTrait').addEventListener('click', function(){
 	trait.style.width = '100px'
 	property.id = 'property' + traits
 	property.style.width = '100px'
-	traitbid.id = 'trait' + traits + 'bid'
+	traitbid.id = 'bid' + traits
 	traitbid.style.width = '40px'
 
 	var br = document.createElement('br')
