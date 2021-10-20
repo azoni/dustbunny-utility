@@ -14,7 +14,7 @@ const values = {
 		'galacticapes': [9999],
 		'theshiboshis': [9999],
 		'kaiju-kingz': [3333],
-		'cyberkongz': [3621],
+		'cyberkongz': [4052],
 		'cool-cats-nft': [9932],
 		'world-of-women-nft': [9999],
 		'cryptoadz-by-gremplin': [6969],

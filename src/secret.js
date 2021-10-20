@@ -1,5 +1,5 @@
 const secret = {
-	MNEMONIC: ['']
+	MNEMONIC: 'energy analyst before cover decide swallow dwarf layer match frequent copper damage'
 }
 export default secret
 
