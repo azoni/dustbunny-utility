@@ -19,16 +19,8 @@ update values.js
 inufra keys to into a list ['key1', 'key2, 'key3', 'key4'] must have 4
 
 Follow format for OWNER_ADDRESS 
-	OWNER_ADDRESS: [
-		{
-			username: 'DustBunny',
-			address: '0x13b451d77b87361d376ae211f640ed1a4491181d'
-		}, 
-		{
-			username: 'BalloonAnimal',
-			address: '0x4beac303c8fdf1f3cd34509b344067e86dcbc506'
-		},
-		],
+![image](https://user-images.githubusercontent.com/16966251/138020506-dee6e6b3-8b02-42e5-a036-53de876b9981.png)
+
 
 remove image url from list in favorites. 
 favorites: {
