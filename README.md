@@ -29,7 +29,7 @@ favorites: {
     
 For future updates you simply enter from inside the directory
 
-git pull
+git pull origin main
     
    
 (ignore this)    
