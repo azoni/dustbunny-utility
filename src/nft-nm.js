@@ -556,7 +556,6 @@ confirmButton.addEventListener('click', function(){
       try {
         if(traitsDiv.children[property].id.includes('property')){
           offersDict[traitsDiv.children[property].value] = [traitsDiv.children[parseInt(property+1)].value, traitsDiv.children[parseInt(property+2)].value]
-
         }
       } catch (ex) {
       }
