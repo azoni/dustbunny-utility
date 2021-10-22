@@ -328,7 +328,7 @@ async function main1(){
     text1.style.fontSize = '80px'
     text1.innerHTML = 'Starting.....'
     var offset1 = 0
-    for(var i = startToken1.value; i <= endToken1.value; i++){
+    for(var i = endToken1.value; i >= startToken1.value; i--){
           var bidMade = 0
         if(Object.keys(offersDict).length > 0){
           try{
@@ -382,7 +382,7 @@ async function main1(){
             continue
           }
         }
-        startToken1.value = i
+        endToken1.value = i
         if (stop1 === 1){
           stop1 = 0
           break
