@@ -1,6 +1,7 @@
 const values = require('./values.js')
 const secret = require('./secret.js')
 require('./traits.js')
+require('./run-collection.js')
 const opensea = require("opensea-js");
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
