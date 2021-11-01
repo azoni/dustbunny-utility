@@ -6,15 +6,84 @@ const opensea = require("opensea-js");
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 
-// Provider
 const MnemonicWalletSubprovider = require("@0x/subproviders")
   .MnemonicWalletSubprovider;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
-const MNEMONIC = secret.default.MNEMONIC
-const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
-  mnemonic: MNEMONIC,
-});
+
+var myAccount = document.getElementById('myAccount')
+var account1 = document.getElementById('account1')
+var account2 = document.getElementById('account2')
+
+// Set initial Owner Address.
+var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
+var MNEMONIC = secret.default.MNEMONIC[0]
+
+account1.addEventListener('click', function(){
+  MNEMONIC = secret.default.MNEMONIC[0]
+  OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
+  myAccount.innerHTML = values.default.OWNER_ADDRESS[0].username
+  myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[0].username
+  const currentHour = new Date().getHours()
+  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+
+  const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
+    mnemonic: MNEMONIC,
+  });
+  const infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  const providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+
+  // Create seaport object using provider created. 
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main
+    },
+    (arg) => console.log(arg)
+  );
+
+})
+account2.addEventListener('click', function(){
+  MNEMONIC = secret.default.MNEMONIC[1]
+  OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
+  myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
+  myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[1].username
+  const currentHour = new Date().getHours()
+  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+
+  const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
+    mnemonic: MNEMONIC,
+  });
+  const infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  const providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+
+  // Create seaport object using provider created. 
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main
+    },
+    (arg) => console.log(arg)
+  );
+})
+myAccount.innerHTML = values.default.OWNER_ADDRESS[0].username
+account1.innerHTML = values.default.OWNER_ADDRESS[0].username
+account2.innerHTML = values.default.OWNER_ADDRESS[1].username
+
+// Provider
+
+
+
 console.log('App loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
@@ -22,6 +91,9 @@ console.log('App loaded.')
 const currentHour = new Date().getHours()
 var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
 
+const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
+  mnemonic: MNEMONIC,
+});
 const infuraRpcSubprovider = new RPCSubprovider({
   rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
 });
@@ -31,16 +103,13 @@ providerEngine.addProvider(infuraRpcSubprovider);
 providerEngine.start();
 
 // Create seaport object using provider created. 
-const seaport = new OpenSeaPort(
+var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main
   },
   (arg) => console.log(arg)
 );
-
-// Set initial Owner Address.
-var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 
 //Don't have one :(
 //const API_KEY = process.env.API_KEY || ""; // API key is optional but useful if you're doing a high volume of requests.
@@ -53,27 +122,6 @@ var offerAmount = 0
 var maxOfferAmount = 0
 var expirationHours = 1
 var COLLECTION_NAME = ''
-
-//
-// Handling multiple accounts on one application instance.
-//
-var myAccount = document.getElementById('myAccount')
-var account1 = document.getElementById('account1')
-var account2 = document.getElementById('account2')
-
-account1.addEventListener('click', function(){
-  OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
-  myAccount.innerHTML = values.default.OWNER_ADDRESS[0].username
-  myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[0].username
-})
-account2.addEventListener('click', function(){
-  OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
-  myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
-  myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[1].username
-})
-myAccount.innerHTML = values.default.OWNER_ADDRESS[0].username
-account1.innerHTML = values.default.OWNER_ADDRESS[0].username
-account2.innerHTML = values.default.OWNER_ADDRESS[1].username
 
 //
 // Flags for threads, total offers attempted.
@@ -199,10 +247,11 @@ async function main(){
     text.style.fontSize = '80px'
     text.innerHTML = 'Starting.....'
     var offset = 0
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
     for(var i = startToken.value; i <= endToken.value; i++){
+    await new Promise(resolve => setTimeout(resolve, 1000))
     var bidMade = 0
-        if(Object.keys(offersDict).length > 0){
+    if(Object.keys(offersDict).length > 0){
           try{
               const asset = await seaport.api.getAsset({
               tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -260,7 +309,7 @@ async function main(){
           stop = 0
           break
         }
-          if(maxOfferAmount !== 0){
+        if(maxOfferAmount !== 0){
           try{
             //const order = await seaport.api.getOrders({
             const order = await seaport.api.getOrders({
@@ -271,17 +320,29 @@ async function main(){
               order_direction: 'desc'
               //limit: '1'
             })
-          const topBid = order['orders'][0].basePrice / 1000000000000000000
+            const topBid = order['orders'][0].basePrice / 1000000000000000000
 
-          if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
-            offset = .0001 + parseFloat(topBid - offerAmount)
-          }console.log('top bid: ' + topBid + ' #' + i)
-            }//order['orders'][0].makerAccount.user.username + 
-            catch(ex){
-              console.log('Get bids for ' + i + ' failed.')
+            if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
+              offset = .001 + parseFloat(topBid - offerAmount)
             }
+            // if(order['orders'][0].makerAccount.user.username === myAccount.innerHTML || parseFloat(topBid) > parseFloat(maxOfferAmount)){
+            //   offset = 0
+            //   progressBar.value += 1
+            //   offersMade.innerHTML = offers + '/' + progressBar.max 
+            //   console.log('skipping ' + i)
 
+            //   await new Promise(resolve => setTimeout(resolve, 600))
+            //   offers += 1
+            //   continue
+            // }
+            // console.log(order)
+            console.log('top bid: ' + topBid + ' #' + i)
           }
+          catch(ex){
+            await new Promise(resolve => setTimeout(resolve, 5000))
+            console.log('Get bids for ' + i + ' failed.')
+          }
+        }
         try{
             console.log('bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)) + " on #" + i)
             await seaport.createBuyOrder({
@@ -304,7 +365,7 @@ async function main(){
               alert('Insufficient balance. Please wrap more ETH.')
             }
             console.log('**FAILED**! #' + i)
-            await new Promise(resolve => setTimeout(resolve, 5000))
+            await new Promise(resolve => setTimeout(resolve, 15000))
         }
         offset = 0
         progressBar.value += 1
@@ -330,6 +391,7 @@ async function main1(){
     text1.innerHTML = 'Starting.....'
     var offset1 = 0
     for(var i = endToken1.value; i >= startToken1.value; i--){
+        await new Promise(resolve => setTimeout(resolve, 1000))
           var bidMade = 0
         if(Object.keys(offersDict).length > 0){
           try{
@@ -399,8 +461,20 @@ async function main1(){
             })
           const topBid1 = order['orders'][0].basePrice / 1000000000000000000
           if(parseFloat(topBid1) < parseFloat(maxOfferAmount) && parseFloat(topBid1) >= parseFloat(offerAmount)){
-            offset1 = .0001 + parseFloat(topBid1 - offerAmount)
-          }console.log('top bid: ' + topBid1 + ' #' + i)
+            offset1 = .001 + parseFloat(topBid1 - offerAmount)
+          }
+          // if(order['orders'][0].makerAccount.user.username === myAccount.innerHTML || parseFloat(topBid1) > parseFloat(maxOfferAmount)){
+          //   offset1 = 0
+          //   progressBar.value += 1
+          //   offersMade.innerHTML = offers + '/' + progressBar.max 
+          //   console.log('skipping ' + i)
+
+          //   await new Promise(resolve => setTimeout(resolve, 600))
+          //   offers += 1
+          //   continue
+          // }
+          // console.log(order)
+          console.log('top bid: ' + topBid1 + ' #' + i)
             }//order['orders'][0].makerAccount.user.username + 
             catch(ex){
               console.log('Get bids for ' + i + ' failed.')
@@ -429,7 +503,7 @@ async function main1(){
               alert('Insufficient balance. Please wrap more ETH.')
             }
             console.log('**FAILED**! #' + i)
-            await new Promise(resolve => setTimeout(resolve, 3000))
+            await new Promise(resolve => setTimeout(resolve, 10000))
             
         }
         offset1 = 0
@@ -519,6 +593,7 @@ startButton.addEventListener('click', function(){
   document.getElementById('body').style.background = '#90EE90'
   thread1done = 0
   thread2done = 0
+  progressBar.value = 0
   start()
   increaseBid.disabled = false
   increaseBid1.disabled = false
