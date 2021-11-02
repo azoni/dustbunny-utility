@@ -17,64 +17,17 @@ var account2 = document.getElementById('account2')
 
 // Set initial Owner Address.
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
-var MNEMONIC = secret.default.MNEMONIC[0]
+var MNEMONIC = secret.default.MNEMONIC
 
 account1.addEventListener('click', function(){
-  MNEMONIC = secret.default.MNEMONIC[0]
   OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
   myAccount.innerHTML = values.default.OWNER_ADDRESS[0].username
   myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[0].username
-  const currentHour = new Date().getHours()
-  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-
-  const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
-    mnemonic: MNEMONIC,
-  });
-  const infuraRpcSubprovider = new RPCSubprovider({
-    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-  });
-  const providerEngine = new Web3ProviderEngine();
-  providerEngine.addProvider(mnemonicWalletSubprovider);
-  providerEngine.addProvider(infuraRpcSubprovider);
-  providerEngine.start();
-
-  // Create seaport object using provider created. 
-  seaport = new OpenSeaPort(
-    providerEngine,
-    {
-      networkName: Network.Main
-    },
-    (arg) => console.log(arg)
-  );
-
 })
 account2.addEventListener('click', function(){
-  MNEMONIC = secret.default.MNEMONIC[1]
   OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
   myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
   myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[1].username
-  const currentHour = new Date().getHours()
-  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-
-  const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
-    mnemonic: MNEMONIC,
-  });
-  const infuraRpcSubprovider = new RPCSubprovider({
-    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-  });
-  const providerEngine = new Web3ProviderEngine();
-  providerEngine.addProvider(mnemonicWalletSubprovider);
-  providerEngine.addProvider(infuraRpcSubprovider);
-  providerEngine.start();
-
-  // Create seaport object using provider created. 
-  seaport = new OpenSeaPort(
-    providerEngine,
-    {
-      networkName: Network.Main
-    },
-    (arg) => console.log(arg)
-  );
 })
 myAccount.innerHTML = values.default.OWNER_ADDRESS[0].username
 account1.innerHTML = values.default.OWNER_ADDRESS[0].username
@@ -82,14 +35,12 @@ account2.innerHTML = values.default.OWNER_ADDRESS[1].username
 
 // Provider
 
-
-
 console.log('App loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
 const currentHour = new Date().getHours()
-var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+const INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
 
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
@@ -103,7 +54,7 @@ providerEngine.addProvider(infuraRpcSubprovider);
 providerEngine.start();
 
 // Create seaport object using provider created. 
-var seaport = new OpenSeaPort(
+const seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main
