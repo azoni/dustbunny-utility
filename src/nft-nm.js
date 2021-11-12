@@ -20,7 +20,7 @@ console.log('App loaded.')
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
 const currentHour = new Date().getHours()
-var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/8)]
 
 const infuraRpcSubprovider = new RPCSubprovider({
   rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
@@ -199,8 +199,9 @@ async function main(){
     text.style.fontSize = '80px'
     text.innerHTML = 'Starting.....'
     var offset = 0
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
     for(var i = startToken.value; i <= endToken.value; i++){
+      await new Promise(resolve => setTimeout(resolve, 500));
     var bidMade = 0
         if(Object.keys(offersDict).length > 0){
           try{
@@ -304,7 +305,7 @@ async function main(){
               alert('Insufficient balance. Please wrap more ETH.')
             }
             console.log('**FAILED**! #' + i)
-            await new Promise(resolve => setTimeout(resolve, 5000))
+            await new Promise(resolve => setTimeout(resolve, 30000))
         }
         offset = 0
         progressBar.value += 1
@@ -330,6 +331,7 @@ async function main1(){
     text1.innerHTML = 'Starting.....'
     var offset1 = 0
     for(var i = endToken1.value; i >= startToken1.value; i--){
+      await new Promise(resolve => setTimeout(resolve, 500));
           var bidMade = 0
         if(Object.keys(offersDict).length > 0){
           try{
@@ -382,6 +384,7 @@ async function main1(){
           if (bidMade === 1) {
             continue
           }
+          //continue
         }
         endToken1.value = i
         if (stop1 === 1){
@@ -429,7 +432,7 @@ async function main1(){
               alert('Insufficient balance. Please wrap more ETH.')
             }
             console.log('**FAILED**! #' + i)
-            await new Promise(resolve => setTimeout(resolve, 3000))
+            await new Promise(resolve => setTimeout(resolve, 30000))
             
         }
         offset1 = 0
