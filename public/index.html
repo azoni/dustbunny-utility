@@ -12,34 +12,28 @@
       content="Web site created using create-react-app"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>1kEthPlz</title>
   </head>
   <body id='body' style="text-align: center; background: #E6FBFF">
     <div>
       <br>
       <div style="text-align: left; padding-left: 5%;">
-        <button id='account1'></button><button id='account2'></button><button id='test'>TEST</button>
+        <input style="width:40px" id='delay'></input>
+        <button id='minusDelay'>-</button>
+        <button id='addDelay'>+</button>
+
+        <button id='upbid_bot'>Events</button>
+      
       <br>
       </div>
+
       <div style="width: 100%;">
-        <a href='https://opensea.io/account' target="_blank" style='font-size: 22px' id='myAccount'>My Account</a>
+        <a href='https://opensea.io/account' target="_blank" style='font-size: 22px' id='myAccount'></a>
         <h3 id='collectionName'>Hi</h3>
 
-        <div style="float: left; margin-left: 15%; margin-right: 50px">
+        <div style="float: left; margin-left: 10%; margin-right: 50px">
           <a href="https://opensea.io/" target="_blank">
             <img id='collectionImage' style="display: inline; width: 200px;height: 200px" src='https://cdn-images-1.medium.com/max/1200/1*U0m-Cl7qvflUX4QmdIdzoQ.png'>
           </a>   
@@ -50,7 +44,7 @@
 
         </div>
         <br>
-        <div style="text-align: left; padding-left: 15%">
+        <div style="text-align: left; padding-left: 5%">
           <input style="width:175px" id='collectionInput' placeholder='Collection Name'></input>
           <button id='collectionButton'>Submit</button>
           <button id='collectionButtonClear'>Clear</button>
@@ -78,17 +72,14 @@
           #Assets
           <input id='startAt' style="width:50px" placeholder='Total' value=1></input>-
           <input id='assetCount' style="width:50px" placeholder='Total'></input>
-          <button id='apply'>Apply</button>
-          <button id='resetButton'>Reset</button>
-          <br>
-          <br>
-          <button id='confirmButton' style="width: 75px; height: 35px">Confirm</button>
+<!--           <button id='apply' style="width: 75px; height: 35px">Apply</button>
+ --><!--           <button id='resetButton'>Reset</button>
+ -->          <button id='confirmButton' style="width: 75px; height: 35px">Confirm</button>
           <button id='startButton' style="width: 75px; height: 35px">Start</button>
-          <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
-          <button id='quickStart' style="width: 75px; height: 35px">Go</button>
-          <br>
-          <br>
-          <div id='threads'  style="float: left">
+<!--           <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
+ -->          <button id='quickStart' style="width: 75px; height: 35px">Go</button>
+              <button id='reset' style="width: 75px; height: 35px">Reset</button>
+          <br><br>
             Thread 1
             <input id='startToken' style="width:50px" placeholder='#start'></input>
             <input id='endToken' style="width:50px" placeholder='#end'></input>
@@ -99,15 +90,71 @@
             <input id='endToken1' style="width:50px" placeholder='#end'></input>
             <p id='text1' style="display:inline;"></p>
             <br>
-          </div>
+        </div>
+        <progress id='progressBar' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
+        <p id='offersMade' style="display: inline;"></p>
+      
+      <span class="time" id="display">00:00:00:00</span>
+    
+
+    <div>
+      <br>
+        <a href='https://opensea.io/account' target="_blank" style='font-size: 22px' id='myAccount2'></a>
+         <h3 id='collectionName-2'>Hi</h3>
+
+        <div style="float: left; margin-left: 10%; margin-right: 50px">
+          <a href="https://opensea.io/" target="_blank">
+            <img id='collectionImage-2' style="display: inline; width: 200px;height: 200px" src='https://cdn-images-1.medium.com/max/1200/1*U0m-Cl7qvflUX4QmdIdzoQ.png'>
+          </a>   
+          <br>   
+          <a id='collectionHome-2' style='font-size: 24px'></a>&nbsp&nbsp&nbsp
+          <a id='bidsActivity-2' style='font-size: 24px'></a>&nbsp&nbsp&nbsp
+          <a id='assetFloor-2' style='font-size: 24px'></a>
+
         </div>
         <br>
-        <progress id='progressBar' style='height: 60px; width: 75%' value ="0" max ="100" hidden></progress><br>
-        <p id='offersMade'></p>
-      </div>
+        <div style="text-align: left; padding-left: 5%">
+          <input style="width:175px" id='collectionInput-2' placeholder='Collection Name'></input>
+          <button id='collectionButton-2'>Submit</button>
+          <button id='collectionButtonClear-2'>Clear</button>
+          <br>
+          <button id='addTrait-2'>Add Trait</button>
+          <button id='clearTrait-2'>Clear</button>
+          <div id='traitsDiv-2'>
+          </div>
+          <a id='collectionHome-2'></a>
+          <a id='bidsActivity-2'></a>
+          <a id='assetFloor-2'></a>
+          Min:
+          <input id='offerAmount-2' placeholder='.251' style="width:40px">
+          Max:
+          <input id='maxOfferAmount-2' placeholder='.32' style="width:40px">
+          <button id='increaseBid-2'>+.01</button><button id='increaseBid1-2'>+.001</button>
+          Exp:
+          <input id='expireInput-2' style="width:25px" placeholder='1'></input>
+          <br><br>
+<!--           <input id='offerAmount2' placeholder='.28' style="width:40px">
+          <input id='expireInput2' style="width:25px" placeholder='4'></input>
+          <input id='offerAmount3' placeholder='.24' style="width:40px">
+          <input id='expireInput3' style="width:25px" placeholder='8'></input>
+          <br><br> -->
+<!--           <button id='apply' style="width: 75px; height: 35px">Apply</button>
+ --><!--           <button id='resetButton'>Reset</button>
+ -->          <button id='confirmButton-2' style="width: 75px; height: 35px">Confirm</button>
+          <button id='startButton-2' style="width: 75px; height: 35px">Start</button>
+<!--           <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
+ -->          <button id='quickStart-2' style="width: 75px; height: 35px">Go</button>
+              <button id='reset-2' style="width: 75px; height: 35px">Reset</button>
+          <br><br>
+            <p id='text-2' style="display:inline;"></p>
+        <br>
+        </div>
 
-      <span class="time" id="display">00:00:00</span>
-    </div>
+        <progress id='progressBar-2' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
+        <p id='offersMade-2' style="display: inline;"></p>
+      
+      <span class="time" id="display-2">00:00:00:00</span>
+</div><br><br>
       <div id='favorites' style="padding-left: 5%">
       </div>
 
