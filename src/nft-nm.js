@@ -106,7 +106,7 @@ function event_bid(){
         eventBidAmount = parseFloat(res[COLLECTION_NAME]['tokens'][token]['bid_amount'] + .001)
         //placeBid(token, eventBidAmount)
         eventDict[token] = eventBidAmount
-        console.log('curr: ' + res[COLLECTION_NAME]['tokens'][token]['bid_amount'].toFixed(4) + ':' + res[COLLECTION_NAME]['tokens'][token]['from']['user']['username'] + '- bidding ' + eventBidAmount.toFixed(4) + ' on ' + token)
+        console.log('curr: ' + res[COLLECTION_NAME]['tokens'][token]['bid_amount'].toFixed(4) + ':' + username + '- bidding ' + eventBidAmount.toFixed(4) + ' on ' + token)
       }
     })
     placeBid()
@@ -114,13 +114,15 @@ function event_bid(){
   .catch(err => console.log(err))
   //console.log(eventDict)
 }
-
+//BLACK_LIST: ['DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703'],
 document.getElementById('upbid_bot').addEventListener('click', function(){
   event_bid()
+  console.log('event button')
 })
 async function placeBid(){
   console.log(Object.keys(eventDict).length)
   for(key in Object.keys(eventDict)){
+     await new Promise(resolve => setTimeout(resolve, delay.value))
     var asset = {
       tokenId: Object.keys(eventDict)[key],
       tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -140,6 +142,7 @@ async function placeBid(){
   }
   console.log('complete')
   event_bid()
+  update_floor()
 
 }
 
@@ -175,14 +178,18 @@ async function getBalance(walletAddress) {
 }
 //['collection']['stats']['floor_price']
 document.getElementById('update_floor').addEventListener('click', function(){
+  update_floor()
+})
+function update_floor(){
   if(COLLECTION_NAME !== ''){
-  getFloorPrice().then(function (collect){
-    document.getElementById('collectionName').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
+    getFloorPrice().then(function (collect){
+      document.getElementById('collectionName').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
     })
   } else {
     console.log('No Collection selected.')
   }
-})
+}
+
 
 getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
     console.log(result/1000000000000000000);
