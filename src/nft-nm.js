@@ -88,7 +88,7 @@ function event_bid(){
   
   var events = utils.get_current_offers_v2(COLLECTION_NAME)
   var eventBidAmount = 0
-
+  var username = ''
   events
   .then(res => {
     Object.keys(res[COLLECTION_NAME]['tokens']).forEach( token => {
@@ -96,7 +96,12 @@ function event_bid(){
       // console.log(res['cool-cats-nft']['tokens'][token]['bid_amount'])
       // console.log(res['cool-cats-nft']['tokens'][token]['from']['user'])
       // console.log(res['cool-cats-nft']['tokens'][token]['address'])
-      if(res[COLLECTION_NAME]['tokens'][token]['bid_amount'] < maxOfferAmount && res[COLLECTION_NAME]['tokens'][token]['bid_amount'] > offerAmount && blacklist.includes(res[COLLECTION_NAME]['tokens'][token]['from']['user']['username']) === false){
+      try{
+        username = res[COLLECTION_NAME]['tokens'][token]['from']['user']['username']
+      } catch(ex){
+        username = 'Null'
+      }
+      if(res[COLLECTION_NAME]['tokens'][token]['bid_amount'] < maxOfferAmount && res[COLLECTION_NAME]['tokens'][token]['bid_amount'] > offerAmount && blacklist.includes(username) === false){
         //console.log(res['cool-cats-nft']['tokens'][token]['from']['user'])
         eventBidAmount = parseFloat(res[COLLECTION_NAME]['tokens'][token]['bid_amount'] + .001)
         //placeBid(token, eventBidAmount)
@@ -134,9 +139,8 @@ async function placeBid(){
     }
   }
   console.log('complete')
-  if(eventDict[Object.keys(eventDict)[key]] < maxOfferAmount){
-    event_bid()
-  }
+  event_bid()
+
 }
 
 var Web3 = require('web3');
