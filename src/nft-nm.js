@@ -14,7 +14,7 @@ const Web3ProviderEngine = require("web3-provider-engine");
 
 var myAccount = document.getElementById('myAccount')
 var myAccount2 = document.getElementById('myAccount2')
-
+var myAccount3 = document.getElementById('myAccount3')
 // Set initial Owner Address.
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 var MNEMONIC = secret.default.MNEMONIC
@@ -33,6 +33,7 @@ var MNEMONIC = secret.default.MNEMONIC
 // })
 myAccount.innerHTML = values.default.OWNER_ADDRESS[0].username
 myAccount2.innerHTML = values.default.OWNER_ADDRESS[1].username
+myAccount3.innerHTML = values.default.OWNER_ADDRESS[2].username
 // account1.innerHTML = values.default.OWNER_ADDRESS[0].username
 // account2.innerHTML = values.default.OWNER_ADDRESS[1].username
 
@@ -134,10 +135,11 @@ async function placeBid(){
       accountAddress: values.default.OWNER_ADDRESS[2].address,
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
-      console.log('Bid: ' + eventDict[Object.keys(eventDict)[key]] + ' on ' + Object.keys(eventDict)[key])
+      console.log('Bid: ' + eventDict[Object.keys(eventDict)[key]].toFixed(4) + ' on ' + Object.keys(eventDict)[key])
+      document.getElementById('eventText').innerHTML = 'Bid: ' + eventDict[Object.keys(eventDict)[key]] + ' on ' + Object.keys(eventDict)[key]
     } catch(ex){
       console.log(ex)
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise(resolve => setTimeout(resolve, 60000))
     }
   }
   console.log('complete')
@@ -199,56 +201,10 @@ getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
     console.log(result/1000000000000000000);
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
 });
-// eth.getBalance("0x41899a097dac875318bf731e5f4a972544ad002d")
-// .then(console.log);
-
-////////UPBIDBOT
-// document.getElementById('upbid_bot').addEventListener('click', function(){
-//   var events = get_current_offers()
-//   events.then(function(events){
-//     Object.entries(events['winterbears']['tokens']).forEach(([key, value]) => {
-//       console.log(key, value);
-//     });
-//   })
-// })
-
-
-// async function getEvents(){
-//   let search_time = Math.floor(+new Date() / 1000) - 900
-//   search_time = new Date(search_time).toISOString();
-//   var slug = 'cool-cats-nft'
-//   try{
-//     const events = await seaport.api.get("/api/v1/events?collection_slug=" + slug + "&only_opensea=false&offset=0&limit=20&occurred_after=" + search_time)
-//     console.log(events)
-//   } catch(ex){
-//     console.log(ex)
-//   }
-// }
-
-// function recreate_seaport(){
-//   currentHour = new Date().getHours()
-//   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-
-//   infuraRpcSubprovider = new RPCSubprovider({
-//     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-//   });
-//   providerEngine = new Web3ProviderEngine();
-//   providerEngine.addProvider(mnemonicWalletSubprovider);
-//   providerEngine.addProvider(infuraRpcSubprovider);
-//   providerEngine.start();
-
-//   seaport = new OpenSeaPort(
-//     providerEngine,
-//     {
-//       networkName: Network.Main
-//     },
-//     (arg) => console.log(arg)
-//   )
-// }
-//Don't have one :(
-//const API_KEY = process.env.API_KEY || ""; // API key is optional but useful if you're doing a high volume of requests.
-
-
+getBalance(values.default.OWNER_ADDRESS[2].address).then(function (result) {
+    console.log(result/1000000000000000000);
+    document.getElementById('balance3').innerHTML = (result/1000000000000000000).toFixed(4)
+});
 
 //
 // Flags for threads, total offers attempted.
@@ -257,10 +213,6 @@ getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
 var thread1done = 0
 var thread2done = 0
 var offers = 0
-
-// let callTraits = traits.default
-// var result = callTraits(seaport, COLLECTION_NAME)
-// console.log(result)
 
 // 
 // Input boxes, text, buttons from frontend. 
