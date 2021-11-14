@@ -25,12 +25,16 @@
         <button id='addDelay'>+</button>
 
         <button id='upbid_bot'>Events</button>
+        <button id='update_floor'>Floor</button>
+        
       
       <br>
       </div>
 
       <div style="width: 100%;">
-        <a href='https://opensea.io/account' target="_blank" style='font-size: 22px' id='myAccount'></a>
+        <a href='https://opensea.io/account' target="_blank" style='font-size: 22px' id='myAccount'></a><p style="display: inline;" id='balance'></p>/
+        <a href='https://opensea.io/account' target="_blank" style='font-size: 22px; display: inline;' id='myAccount2'></a>
+        <p style="display: inline;" id='balance2'></p>
         <h3 id='collectionName'>Hi</h3>
 
         <div style="float: left; margin-left: 10%; margin-right: 50px">
@@ -90,16 +94,17 @@
             <input id='endToken1' style="width:50px" placeholder='#end'></input>
             <p id='text1' style="display:inline;"></p>
             <br>
-        </div>
-        <progress id='progressBar' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
+                    <progress id='progressBar' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
         <p id='offersMade' style="display: inline;"></p>
-      
       <span class="time" id="display">00:00:00:00</span>
+
+        </div>
+      
     
 
     <div>
       <br>
-        <a href='https://opensea.io/account' target="_blank" style='font-size: 22px' id='myAccount2'></a>
+        
          <h3 id='collectionName-2'>Hi</h3>
 
         <div style="float: left; margin-left: 10%; margin-right: 50px">
@@ -147,14 +152,17 @@
               <button id='reset-2' style="width: 75px; height: 35px">Reset</button>
           <br><br>
             <p id='text-2' style="display:inline;"></p>
+            <p id='text1-2' style="display:inline;"></p>
         <br>
+                <progress id='progressBar-2' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
+<p id='offersMade-2' style="display: inline;"></p>
+      <span class="time" id="display-2">00:00:00:00</span>
+
         </div>
 
-        <progress id='progressBar-2' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
-        <p id='offersMade-2' style="display: inline;"></p>
+        
       
-      <span class="time" id="display-2">00:00:00:00</span>
-</div><br><br>
+</div><br><br><br>
       <div id='favorites' style="padding-left: 5%">
       </div>
 

@@ -1,9 +1,8 @@
 const values = require('./values.js')
 const secret = require('./secret.js')
 require('./traits.js')
-const request = require("request");
 
-// require('./utils.js')
+var utils = require('./utils.js')
 require('./run-collection.js')
 const opensea = require("opensea-js");
 const OpenSeaPort = opensea.OpenSeaPort;
@@ -57,6 +56,15 @@ providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
 providerEngine.start();
 
+//
+// Creating variables needed to make offers.
+//
+var NFT_CONTRACT_ADDRESS = ''
+var offerAmount = 0
+var maxOfferAmount = 0
+var expirationHours = 1
+var COLLECTION_NAME = ''
+
 // Create seaport object using provider created. 
 var seaport = new OpenSeaPort(
   providerEngine,
@@ -65,88 +73,135 @@ var seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
+var eventDict = {}
+var blacklist = values.default.BLACK_LIST
+////////UPBIDBOT
 
+function event_bid(){
+  eventDict = {}
+  // var events = get_current_offers()
+  // events.then(function(events){
+  //   Object.entries(events['winterbears']['tokens']).forEach(([key, value]) => {
+  //     console.log(key, value);
+  //   });
+  // })
+  
+  var events = utils.get_current_offers_v2(COLLECTION_NAME)
+  var eventBidAmount = 0
+
+  events
+  .then(res => {
+    Object.keys(res[COLLECTION_NAME]['tokens']).forEach( token => {
+      // console.log(res['cool-cats-nft']['tokens'][token])
+      // console.log(res['cool-cats-nft']['tokens'][token]['bid_amount'])
+      // console.log(res['cool-cats-nft']['tokens'][token]['from']['user'])
+      // console.log(res['cool-cats-nft']['tokens'][token]['address'])
+      if(res[COLLECTION_NAME]['tokens'][token]['bid_amount'] < maxOfferAmount && res[COLLECTION_NAME]['tokens'][token]['bid_amount'] > offerAmount && blacklist.includes(res[COLLECTION_NAME]['tokens'][token]['from']['user']['username']) === false){
+        //console.log(res['cool-cats-nft']['tokens'][token]['from']['user'])
+        eventBidAmount = parseFloat(res[COLLECTION_NAME]['tokens'][token]['bid_amount'] + .001)
+        //placeBid(token, eventBidAmount)
+        eventDict[token] = eventBidAmount
+        console.log('curr: ' + res[COLLECTION_NAME]['tokens'][token]['bid_amount'].toFixed(4) + ':' + res[COLLECTION_NAME]['tokens'][token]['from']['user']['username'] + '- bidding ' + eventBidAmount.toFixed(4) + ' on ' + token)
+      }
+    })
+    placeBid()
+  })
+  .catch(err => console.log(err))
+  //console.log(eventDict)
+}
+
+document.getElementById('upbid_bot').addEventListener('click', function(){
+  event_bid()
+})
+async function placeBid(){
+  console.log(Object.keys(eventDict).length)
+  for(key in Object.keys(eventDict)){
+    var asset = {
+      tokenId: Object.keys(eventDict)[key],
+      tokenAddress: NFT_CONTRACT_ADDRESS,
+    }
+  try{
+      await seaport.createBuyOrder({
+      asset,
+      startAmount: eventDict[Object.keys(eventDict)[key]],
+      accountAddress: values.default.OWNER_ADDRESS[2].address,
+      expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
+      })
+      console.log('Bid: ' + eventDict[Object.keys(eventDict)[key]] + ' on ' + Object.keys(eventDict)[key])
+    } catch(ex){
+      console.log(ex)
+      await new Promise(resolve => setTimeout(resolve, 2000))
+    }
+  }
+  console.log('complete')
+  if(eventDict[Object.keys(eventDict)[key]] < maxOfferAmount){
+    event_bid()
+  }
+}
+
+var Web3 = require('web3');
+var Eth = require('web3-eth');
+const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/55b37dd4e48b49cb8c5f9e90445088a1')
+var eth = new Eth(provider)
+
+let tokenAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+let minABI = [
+  // balanceOf
+  {
+    "constant":true,
+    "inputs":[{"name":"_owner","type":"address"}],
+    "name":"balanceOf",
+    "outputs":[{"name":"balance","type":"uint256"}],
+    "type":"function"
+  },
+  // decimals
+  {
+    "constant":true,
+    "inputs":[],
+    "name":"decimals",
+    "outputs":[{"name":"","type":"uint8"}],
+    "type":"function"
+  }
+];
+
+let contract = new eth.Contract(minABI,tokenAddress);
+async function getBalance(walletAddress) {
+  var balance = await contract.methods.balanceOf(walletAddress).call();
+  return balance;
+}
+//['collection']['stats']['floor_price']
+document.getElementById('update_floor').addEventListener('click', function(){
+  if(COLLECTION_NAME !== ''){
+  getFloorPrice().then(function (collect){
+    document.getElementById('collectionName').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
+    })
+  } else {
+    console.log('No Collection selected.')
+  }
+})
+
+getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
+    console.log(result/1000000000000000000);
+    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
+});
+getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
+    console.log(result/1000000000000000000);
+    document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
+});
+// eth.getBalance("0x41899a097dac875318bf731e5f4a972544ad002d")
+// .then(console.log);
 
 ////////UPBIDBOT
-document.getElementById('upbid_bot').addEventListener('click', function(){
-  var events = get_current_offers()
-  events.then(function(events){
-    Object.entries(events['winterbears']['tokens']).forEach(([key, value]) => {
-      console.log(key, value);
-    });
-  })
+// document.getElementById('upbid_bot').addEventListener('click', function(){
+//   var events = get_current_offers()
+//   events.then(function(events){
+//     Object.entries(events['winterbears']['tokens']).forEach(([key, value]) => {
+//       console.log(key, value);
+//     });
+//   })
+// })
 
-})
-async function get_current_offers() {
-    var slugs = ['winterbears']
-    var assets = {}
 
-    var promises = []
-    var delay = 0
-    slugs.forEach((element) => {
-        let slug = element
-        assets[slug] = {}
-        let url = "https://api.opensea.io/api/v1/collection/" + slug
-        promises.push(
-            sleep(delay)
-            .then(() => {
-                return get_request(url)
-            })
-            .then(body => {
-                assets[slug]["floor"] = JSON.parse(body)["collection"]["stats"]["floor_price"]
-            })
-            .then(() => {
-                assets[slug]["slug"] = slug
-                assets[slug]["tokens"] = {}
-
-                let search_time = Math.floor(+new Date() / 1000) - 300
-                search_time = new Date(search_time).toISOString();
-                let event_url = "https://api.opensea.io/api/v1/events?collection_slug=" + slug + "&only_opensea=false&offset=0&occurred_after=" + search_time
-                return get_request(event_url)
-            })
-            .then(body => {
-                // console.log(body)
-                let res = JSON.parse(body)
-                res["asset_events"].forEach((event) => {
-                    if (event["event_type"] === "bid_entered" || event["event_type"] === "offer_entered") {
-                        var token = event["asset"]["token_id"]
-                        if (!Object.keys(assets).includes(token) || event["bid_amount"] / 1000000000000000000 > assets[slug]["tokens"][token]["bid_amount"]) {
-                            assets[slug]["tokens"][token] = {}
-                            assets[slug]["tokens"][token]["bid_amount"] = event["bid_amount"] / 1000000000000000000
-                            assets[slug]["tokens"][token]["from"] = event["from_account"]
-                            assets[slug]["tokens"][token]["address"] = event["contract_address"]
-                            assets[slug]["tokens"][token]["schema_name"] = event["asset"]["asset_contract"]["schema_name"]
-                        }                
-                    }
-                })
-            })
-            // .then(() => {console.log(assets)})
-            .catch(err => { console.log(err) })
-        )
-        delay += 500
-    })
-
-    return Promise.all(promises)
-        .then(res => {return assets})
-        // .catch(err => { console.log(err) })
-}
-
-async function get_request(url) {
-    return new Promise((resolve, reject) => {
-        request(url, (error, response, body) => {
-            if (error) reject(error);
-            if (response.statusCode !== 200) {
-                reject("Invalid status code <" + response.statusCode + ">");
-            }
-            resolve(body);
-        });
-    });
-}
-
-async function sleep(delay) {
-    // console.log(delay)
-    await new Promise(resolve => setTimeout(resolve, delay));
-}
 // async function getEvents(){
 //   let search_time = Math.floor(+new Date() / 1000) - 900
 //   search_time = new Date(search_time).toISOString();
@@ -182,14 +237,7 @@ async function sleep(delay) {
 //Don't have one :(
 //const API_KEY = process.env.API_KEY || ""; // API key is optional but useful if you're doing a high volume of requests.
 
-//
-// Creating variables needed to make offers.
-//
-var NFT_CONTRACT_ADDRESS = ''
-var offerAmount = 0
-var maxOfferAmount = 0
-var expirationHours = 1
-var COLLECTION_NAME = ''
+
 
 //
 // Flags for threads, total offers attempted.
@@ -353,7 +401,7 @@ async function main(){
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
                     text.style.color = 'black'
-                    text.innerHTML = 'Running....'
+                    text.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[0]][1] + " on #" + i
                     offers += 1
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
@@ -423,7 +471,7 @@ async function main(){
           }
         }
         try{
-            console.log('bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)) + " on #" + i)
+            console.log('bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(5) + " on #" + i)
             await seaport.createBuyOrder({
             asset: {
                 tokenId: i,
@@ -434,7 +482,7 @@ async function main(){
             expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
             })
             text.style.color = 'black'
-            text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)) + " on #" + i
+            text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(5) + " on #" + i
             offers += 1
             //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
         } catch(ex) {
@@ -472,6 +520,7 @@ async function main1(){
     text1.style.fontSize = '20px'
     text1.innerHTML = 'Starting.....'
     var offset1 = 0
+
     for(var i = endToken1.value; i >= startToken1.value; i--){
         await new Promise(resolve => setTimeout(resolve, delay.value))
           var bidMade = 0
@@ -496,8 +545,9 @@ async function main1(){
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
                     text1.style.color = 'black'
-                    text1.innerHTML = 'Running....'
+                    text1.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[0]][1] + " on #" + i
                     offers += 1
+                    //.toFixed(5)
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
                     text1.style.color = 'red'
@@ -505,15 +555,20 @@ async function main1(){
                     if(ex.message.includes('Insufficient balance.')){
                       text1.innerHTML = 'Insufficient balance. Please wrap more ETH.'
                       //alert('Insufficient balance. Please wrap more ETH.')
+                      await new Promise(resolve => setTimeout(resolve, 60000))
                     }
-                    if(ex.message.includes('This order does not have a valid bid price for the auction')){
+                    else if(ex.message.includes('This order does not have a valid bid price for the auction')){
                       text1.innerHTML = 'Auction'
-                      //alert('Insufficient balance. Please wrap more ETH.')
-                    } else {
-
+                    }
+                    else if(ex.message.includes('API Error 404: Not found.')){
+                      text1.innerHTML = 'Asset not found.'
+                    } else if(ex.message.includes('Trading is not enabled for')){
+                      text1.innerHTML = 'Trading no enalbed on asset.'
+                    } 
+                    else {
+                      await new Promise(resolve => setTimeout(resolve, 60000))
                     }                    
                     console.log('**FAILED**! #' + i)
-                    await new Promise(resolve => setTimeout(resolve, 3000))
                 }
                 offset1 = 0
                 progressBar.value += 1
@@ -568,7 +623,7 @@ async function main1(){
             }
           }
         try{
-            console.log('bidding: ' + (parseFloat(offset1) + parseFloat(offerAmount)) + " on #" + i)
+            console.log('bidding: ' + (parseFloat(offset1) + parseFloat(offerAmount)).toFixed(5) + " on #" + i)
             await seaport.createBuyOrder({
             asset: {
                 tokenId: i,
@@ -579,7 +634,7 @@ async function main1(){
             expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
             })
             text1.style.color = 'black'
-            text1.innerHTML = 'bidding: ' + (parseFloat(offset1) + parseFloat(offerAmount)) + " on #" + i
+            text1.innerHTML = 'bidding: ' + (parseFloat(offset1) + parseFloat(offerAmount)).toFixed(5) + " on #" + i
             offers += 1
             
             //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
@@ -590,8 +645,15 @@ async function main1(){
               text1.innerHTML = 'Insufficient balance. Please wrap more ETH.'
               //alert('Insufficient balance. Please wrap more ETH.')
             }
+            if(ex.message.includes('API Error 404: Not found.')){
+              text1.innerHTML = 'Asset not found.'
+              //alert('Insufficient balance. Please wrap more ETH.')
+            } else {
+              await new Promise(resolve => setTimeout(resolve, 60000))
+            }
+            console.log(ex.message)
             console.log('**FAILED**! #' + i)
-            await new Promise(resolve => setTimeout(resolve, 60000))
+            
             
         }
         offset1 = 0
@@ -613,7 +675,7 @@ async function main1(){
 ////////////////////////////////////////////////
 const startButton = document.getElementById('startButton')
 // const stopButton = document.getElementById('stopButton')
-// const resetButton = document.getElementById('resetButton')
+const resetButton = document.getElementById('reset')
 const confirmButton = document.getElementById('confirmButton')
 const quickButton = document.getElementById('quickStart')
 // const apply = document.getElementById('apply')
@@ -654,6 +716,8 @@ increaseBid1.disabled = true
 // })
 
 quickButton.addEventListener('click', function(){
+  const startAt = document.getElementById('startAt').value
+  var assetCount = document.getElementById('assetCount').value
   document.getElementById('body').style.background = '#90EE90'
   thread1done = 0
   thread2done = 0
@@ -665,14 +729,18 @@ quickButton.addEventListener('click', function(){
   progressBar.hidden = false
   increaseBid.disabled = false
   increaseBid1.disabled = false
-  const startAt = document.getElementById('startAt').value
-  const assetCount = document.getElementById('assetCount').value
 
+  if(assetCount === '10000'){
+    assetCount -= 1
+    console.log('busted')
+  }
+  console.log(assetCount)
   const section = Math.floor((assetCount-startAt) / 2)
   startToken.value = startAt
   const end = section + parseInt(startAt)
   endToken.value = end 
   startToken1.value = end + 1
+
   endToken1.value = assetCount
   progressBar.max = assetCount - startAt
   main()
@@ -699,15 +767,21 @@ startButton.addEventListener('click', function(){
   }
 })
 
-// stopButton.addEventListener('click', function(){ 
-//   pause()
-//   stop = 1
-//   stop1 = 1
-//   text.innerHTML = 'Paused'
-//   text1.innerHTML = 'Paused'
-//   increaseBid.disabled = true
-//   increaseBid1.disabled = true
-// })
+resetButton.addEventListener('click', function(){ 
+  reset()
+  progressBar.value = 0
+  maxOfferAmount = 0
+  offerAmount = 0
+  expirationHours = 0
+  text.innerHTML = ''
+  text1.innerHTML = ''
+  increaseBid.disabled = true
+  increaseBid1.disabled = true
+  quickButton.disabled = true
+  startButton.disabled = true
+  progressBar.hidden = true
+
+})
 
 var offersDict = {}
 var traitsList = []
@@ -837,14 +911,14 @@ async function getCollectionDetails(collectionName){
 //   document.getElementById('updateFloor').innerHTML = getFloorPrice(COLLECTION_NAME)
 // })
 
-// async function getFloorPrice(collectionName){
-//     try{
-//     const collect = await seaport.api.get('/api/v1/collection/' + collectionName)
-//     return collect['collection']['stats']['floor_price']
-//   } catch (ex) {
-//     console.log("couldn't get floor")
-//   } 
-// }
+async function getFloorPrice(){
+    try{
+    const collect = await seaport.api.get('/api/v1/collection/' + COLLECTION_NAME)
+    return collect
+  } catch (ex) {
+    console.log("couldn't get floor")
+  } 
+}
 // Convert time to a format of hours, minutes, seconds, and milliseconds
 
 function timeToString(time) {
@@ -894,8 +968,8 @@ function pause() {
   clearInterval(timerInterval);
 }
 
-// function reset() {
-//   clearInterval(timerInterval);
-//   print("00:00:00");
-//   elapsedTime = 0;
-// }
+function reset() {
+  clearInterval(timerInterval);
+  print("00:00:00:00");
+  elapsedTime = 0;
+}

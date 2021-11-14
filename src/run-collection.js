@@ -56,6 +56,7 @@ var increaseBid1 = document.getElementById('increaseBid1-2')
 
 
 var text = document.getElementById('text-2')
+var text1 = document.getElementById('text1-2')
 
 const collectionButton = document.getElementById('collectionButton-2')
 const collectionInput = document.getElementById('collectionInput-2')
@@ -77,6 +78,9 @@ async function getCollection(collectionName){
   collect.then(function(collect){
   try { 
       COLLECTION_NAME = collectionName
+      if(COLLECTION_NAME === 'guttercatgang'){
+        NFT_CONTRACT_ADDRESS = '0xedb61f74b0d09b2558f1eeb79b247c1f363ae452'
+      }
       if(COLLECTION_NAME === 'bears-deluxe'){
         NFT_CONTRACT_ADDRESS = '0x495f947276749ce646f68ac8c248420045cb7b5e'
       } else {
@@ -232,13 +236,20 @@ async function getCollectionDetails(collectionName){
 function run(){
   text.style.fontSize = '20px'
   text.innerHTML = 'Starting.....'
+  text1.style.fontSize = '20px'
+  text1.innerHTML = 'Starting.....'
   for(var offset = 0; offset < assetCount; offset+=50){
     var collection = getCollectionAssets(COLLECTION_NAME, offset)
     collection.then(function(collection){
+      console.log(collection)
+      try{
       for(var asset in collection['assets']){
         tokenId_array.push(collection['assets'][asset]['tokenId'])
         name_array.push(collection['assets'][asset]['name'])
       }
+    } catch (ex){
+      console.log(ex)
+    }
     })
   }
   //console.log(tokenId_array)
@@ -268,12 +279,34 @@ async function placeBid(){
   await new Promise(resolve => setTimeout(resolve, 3000))
   for(var i = 0; i <= Math.floor(assetCount/2); i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
+    var offset = 0
+      if(maxOfferAmount !== 0){
+        try{
+          const order = await seaport.api.getOrders({
+            asset_contract_address: NFT_CONTRACT_ADDRESS,
+            token_id: i,
+            side: 0,
+            order_by: 'eth_price',
+            order_direction: 'desc'
+          })
+          const topBid = order['orders'][0].basePrice / 1000000000000000000
+
+          if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
+            offset = .001 + parseFloat(topBid - offerAmount)
+          }
+
+          console.log('top bid: ' + topBid + ' #' + i)
+        }
+        catch(ex){
+          console.log('Get bids for ' + i + ' failed.')
+        }
+      }
     var asset = {
         tokenId: tokenId_array[i],
         tokenAddress: NFT_CONTRACT_ADDRESS,
         //schemaName: WyvernSchemaName.ERC1155
       }
-    if (COLLECTION_NAME === 'bears-deluxe'){
+    if (COLLECTION_NAME === 'bears-deluxe' || COLLECTION_NAME === 'guttercatgang'){
       asset = {
         tokenId: tokenId_array[i],
         tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -283,7 +316,7 @@ async function placeBid(){
     try{
         await seaport.createBuyOrder({
       asset,
-      startAmount: offerAmount,
+      startAmount: parseFloat(offset) + parseFloat(offerAmount),
       accountAddress: OWNER_ADDRESS,
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
@@ -310,7 +343,7 @@ async function placeBid2(){
         tokenAddress: NFT_CONTRACT_ADDRESS,
         //schemaName: WyvernSchemaName.ERC1155
       }
-    if (COLLECTION_NAME === 'bears-deluxe'){
+    if (COLLECTION_NAME === 'bears-deluxe' || COLLECTION_NAME === 'guttercatgang'){
       asset = {
         tokenId: tokenId_array[i],
         tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -325,7 +358,7 @@ async function placeBid2(){
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
       console.log('Success #' + name_array[i])
-      text.innerHTML = 'bidding: ' + offerAmount + " on " + name_array[i]
+      text1.innerHTML = 'bidding: ' + offerAmount + " on " + name_array[i]
     } catch(ex){
       console.log(ex)
       console.log('**FAILED**! #' + name_array[i])
