@@ -108,7 +108,7 @@ function event_bid(){
         //placeBid(token, eventBidAmount)
         eventDict[token] = eventBidAmount
         console.log('curr: ' + res[COLLECTION_NAME]['tokens'][token]['bid_amount'].toFixed(4) + ':' + username + '- bidding ' + eventBidAmount.toFixed(4) + ' on ' + token)
-      }
+      } 
     })
     placeBid()
   })
@@ -118,12 +118,37 @@ function event_bid(){
 //BLACK_LIST: ['DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703'],
 document.getElementById('upbid_bot').addEventListener('click', function(){
   event_bid()
-  console.log('event button')
+  console.log('events started')
 })
-async function placeBid(){
-  console.log(Object.keys(eventDict).length)
+async function placeBid(){ 
+  console.log('Number to upbid: ' + Object.keys(eventDict).length)
+  progressBar.value = 0
+  progressBar.max = Object.keys(eventDict).length
+  offersMade.style.fontSize = '20px'
+  offersMade.innerHTML = offers + '/' + progressBar.max 
+
   for(key in Object.keys(eventDict)){
-     await new Promise(resolve => setTimeout(resolve, delay.value))
+    await new Promise(resolve => setTimeout(resolve, delay.value))
+    if(Object.keys(eventDict).length < 50) {
+      console.log('Short run')
+      try{
+        const order = await seaport.api.getOrders({
+          asset_contract_address: NFT_CONTRACT_ADDRESS,
+          token_id: Object.keys(eventDict)[key],
+          side: 0,
+          order_by: 'eth_price',
+          order_direction: 'desc'
+        })
+        if(order['orders'][0].makerAccount.user.username === values.default.OWNER_ADDRESS[2].username){
+          console.log('Skipping ' + Object.keys(eventDict)[key])
+          document.getElementById('eventText').innerHTML = 'Skipping ' + Object.keys(eventDict)[key]
+          continue
+        }
+      }
+      catch(ex){
+        console.log(ex.message)
+      }
+    }
     var asset = {
       tokenId: Object.keys(eventDict)[key],
       tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -136,12 +161,15 @@ async function placeBid(){
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
       console.log('Bid: ' + eventDict[Object.keys(eventDict)[key]].toFixed(4) + ' on ' + Object.keys(eventDict)[key])
-      document.getElementById('eventText').innerHTML = 'Bid: ' + eventDict[Object.keys(eventDict)[key]] + ' on ' + Object.keys(eventDict)[key]
+      document.getElementById('eventText').innerHTML = key + '/' + Object.keys(eventDict).length + 'Bid: ' + eventDict[Object.keys(eventDict)[key]].toFixed(4) + ' on ' + Object.keys(eventDict)[key]
+      progressBar.value += 1
     } catch(ex){
       console.log(ex)
       await new Promise(resolve => setTimeout(resolve, 60000))
     }
   }
+
+  await new Promise(resolve => setTimeout(resolve, 2000))
   console.log('complete')
   event_bid()
   update_floor()
@@ -150,7 +178,7 @@ async function placeBid(){
 
 var Web3 = require('web3');
 var Eth = require('web3-eth');
-const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/55b37dd4e48b49cb8c5f9e90445088a1')
+const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY)
 var eth = new Eth(provider)
 
 let tokenAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
@@ -186,12 +214,24 @@ function update_floor(){
   if(COLLECTION_NAME !== ''){
     getFloorPrice().then(function (collect){
       document.getElementById('collectionName').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
+      console.log('Floor updated: ' + collect['collection']['stats']['floor_price'])
     })
+    getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
+    console.log(result/1000000000000000000);
+    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
+    });
+    getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
+        console.log(result/1000000000000000000);
+        document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
+    });
+    getBalance(values.default.OWNER_ADDRESS[2].address).then(function (result) {
+        console.log(result/1000000000000000000);
+        document.getElementById('balance3').innerHTML = (result/1000000000000000000).toFixed(4)
+    });
   } else {
     console.log('No Collection selected.')
   }
 }
-
 
 getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
     console.log(result/1000000000000000000);
@@ -432,6 +472,7 @@ async function main(){
             await new Promise(resolve => setTimeout(resolve, 5000))
             console.log('Get bids for ' + i + ' failed.')
           }
+          await new Promise(resolve => setTimeout(resolve, delay.value))
         }
         try{
             console.log('bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(5) + " on #" + i)
@@ -463,7 +504,9 @@ async function main(){
 
         offersMade.style.fontSize = '20px'
         offersMade.innerHTML = offers + '/' + progressBar.max 
-
+        if(offers / 100 === 0){
+          update_floor()
+        }
     }
     text.style.color = 'purple'
     if (startToken.value === endToken.value){
@@ -584,6 +627,7 @@ async function main1(){
               await new Promise(resolve => setTimeout(resolve, 5000))
               console.log('Get bids for ' + i + ' failed.')
             }
+            await new Promise(resolve => setTimeout(resolve, delay.value))
           }
         try{
             console.log('bidding: ' + (parseFloat(offset1) + parseFloat(offerAmount)).toFixed(5) + " on #" + i)
@@ -732,6 +776,7 @@ startButton.addEventListener('click', function(){
 
 resetButton.addEventListener('click', function(){ 
   reset()
+  offers = 0
   progressBar.value = 0
   maxOfferAmount = 0
   offerAmount = 0

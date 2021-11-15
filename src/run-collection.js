@@ -280,27 +280,28 @@ async function placeBid(){
   for(var i = 0; i <= Math.floor(assetCount/2); i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
-      if(maxOfferAmount !== 0){
-        try{
-          const order = await seaport.api.getOrders({
-            asset_contract_address: NFT_CONTRACT_ADDRESS,
-            token_id: i,
-            side: 0,
-            order_by: 'eth_price',
-            order_direction: 'desc'
-          })
-          const topBid = order['orders'][0].basePrice / 1000000000000000000
+    if(maxOfferAmount !== 0){
+      try{
+        const order = await seaport.api.getOrders({
+          asset_contract_address: NFT_CONTRACT_ADDRESS,
+          token_id: tokenId_array[i],
+          side: 0,
+          order_by: 'eth_price',
+          order_direction: 'desc'
+        })
+        const topBid = order['orders'][0].basePrice / 1000000000000000000
 
-          if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
-            offset = .001 + parseFloat(topBid - offerAmount)
-          }
+        if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
+          offset = .001 + parseFloat(topBid - offerAmount)
+        }
 
-          console.log('top bid: ' + topBid + ' #' + i)
-        }
-        catch(ex){
-          console.log('Get bids for ' + i + ' failed.')
-        }
+        console.log('top bid: ' + topBid + ' #' + name_array[i])
       }
+      catch(ex){
+        console.log(ex.message)
+        console.log('Get bids for ' + name_array[i] + ' failed.')
+      }
+    }
     var asset = {
         tokenId: tokenId_array[i],
         tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -321,7 +322,7 @@ async function placeBid(){
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
       console.log('Success #' + name_array[i])
-      text.innerHTML = 'bidding: ' + offerAmount + " on " + name_array[i]
+      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
     } catch(ex){
       console.log(ex)
       console.log('**FAILED**! #' + name_array[i])
@@ -338,6 +339,29 @@ async function placeBid2(){
   await new Promise(resolve => setTimeout(resolve, 1000))
   for(var i = Math.floor(assetCount/2); i <= assetCount; i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
+    var offset = 0
+    if(maxOfferAmount !== 0){
+      try{
+        const order = await seaport.api.getOrders({
+          asset_contract_address: NFT_CONTRACT_ADDRESS,
+          token_id: tokenId_array[i],
+          side: 0,
+          order_by: 'eth_price',
+          order_direction: 'desc'
+        })
+        const topBid = order['orders'][0].basePrice / 1000000000000000000
+
+        if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
+          offset = .001 + parseFloat(topBid - offerAmount)
+        }
+
+        console.log('top bid: ' + topBid + ' #' + name_array[i])
+      }
+      catch(ex){
+        console.log(ex.message)
+        console.log('Get bids for ' + name_array[i] + ' failed.')
+      }
+    }
     var asset = {
         tokenId: tokenId_array[i],
         tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -353,12 +377,12 @@ async function placeBid2(){
     try{
         await seaport.createBuyOrder({
       asset,
-      startAmount: offerAmount,
+      startAmount: parseFloat(offset) + parseFloat(offerAmount),
       accountAddress: OWNER_ADDRESS,
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
       console.log('Success #' + name_array[i])
-      text1.innerHTML = 'bidding: ' + offerAmount + " on " + name_array[i]
+      text1.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
     } catch(ex){
       console.log(ex)
       console.log('**FAILED**! #' + name_array[i])
