@@ -14,7 +14,6 @@ const Web3ProviderEngine = require("web3-provider-engine");
 
 var myAccount = document.getElementById('myAccount')
 var myAccount2 = document.getElementById('myAccount2')
-var myAccount3 = document.getElementById('myAccount3')
 // Set initial Owner Address.
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 var MNEMONIC = secret.default.MNEMONIC
@@ -33,7 +32,6 @@ var MNEMONIC = secret.default.MNEMONIC
 // })
 myAccount.innerHTML = values.default.OWNER_ADDRESS[0].username
 myAccount2.innerHTML = values.default.OWNER_ADDRESS[1].username
-myAccount3.innerHTML = values.default.OWNER_ADDRESS[2].username
 // account1.innerHTML = values.default.OWNER_ADDRESS[0].username
 // account2.innerHTML = values.default.OWNER_ADDRESS[1].username
 
@@ -124,30 +122,40 @@ async function placeBid(){
   console.log('Number to upbid: ' + Object.keys(eventDict).length)
   progressBar.value = 0
   progressBar.max = Object.keys(eventDict).length
-  offersMade.style.fontSize = '20px'
-  offersMade.innerHTML = offers + '/' + progressBar.max 
-
+  progressBar.hidden = false
   for(key in Object.keys(eventDict)){
     await new Promise(resolve => setTimeout(resolve, delay.value))
-    if(Object.keys(eventDict).length < 50) {
+    if(Object.keys(eventDict).length < 20) {
       console.log('Short run')
-      try{
-        const order = await seaport.api.getOrders({
-          asset_contract_address: NFT_CONTRACT_ADDRESS,
-          token_id: Object.keys(eventDict)[key],
-          side: 0,
-          order_by: 'eth_price',
-          order_direction: 'desc'
-        })
-        if(order['orders'][0].makerAccount.user.username === values.default.OWNER_ADDRESS[2].username){
-          console.log('Skipping ' + Object.keys(eventDict)[key])
-          document.getElementById('eventText').innerHTML = 'Skipping ' + Object.keys(eventDict)[key]
-          continue
-        }
-      }
-      catch(ex){
-        console.log(ex.message)
-      }
+      await new Promise(resolve => setTimeout(resolve, 120000))
+      // try{
+
+      //   const order = await seaport.api.getOrders({
+      //     asset_contract_address: NFT_CONTRACT_ADDRESS,
+      //     token_id: Object.keys(eventDict)[key],
+      //     side: 0,
+      //     order_by: 'eth_price',
+      //     order_direction: 'desc'
+      //   })
+      //   await new Promise(resolve => setTimeout(resolve, delay.value))
+      //   try {
+      //     var event_username = order['orders'][0].makerAccount.user.username
+      //   } catch(ex){
+      //     var event_username = 'Null'
+      //   }
+      //   console.log(order)
+      //   if(event_username === values.default.OWNER_ADDRESS[0].username){
+      //     console.log('Skipping ' + Object.keys(eventDict)[key])
+      //     document.getElementById('eventText').innerHTML = 'Skipping ' + Object.keys(eventDict)[key]
+      //     continue
+      //   }
+      // }
+      // catch(ex){
+      //   console.log(ex.message)
+      // }
+    }
+    if(Object.keys(eventDict).length > 20 && Object.keys(eventDict).length < 40) {
+      await new Promise(resolve => setTimeout(resolve, 60000))
     }
     var asset = {
       tokenId: Object.keys(eventDict)[key],
@@ -157,11 +165,11 @@ async function placeBid(){
       await seaport.createBuyOrder({
       asset,
       startAmount: eventDict[Object.keys(eventDict)[key]],
-      accountAddress: values.default.OWNER_ADDRESS[2].address,
+      accountAddress: values.default.OWNER_ADDRESS[0].address,
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
       console.log('Bid: ' + eventDict[Object.keys(eventDict)[key]].toFixed(4) + ' on ' + Object.keys(eventDict)[key])
-      document.getElementById('eventText').innerHTML = key + '/' + Object.keys(eventDict).length + 'Bid: ' + eventDict[Object.keys(eventDict)[key]].toFixed(4) + ' on ' + Object.keys(eventDict)[key]
+      document.getElementById('eventText').innerHTML = key + '/' + Object.keys(eventDict).length + ' Bid: ' + eventDict[Object.keys(eventDict)[key]].toFixed(4) + ' on ' + Object.keys(eventDict)[key]
       progressBar.value += 1
     } catch(ex){
       console.log(ex)
@@ -213,38 +221,33 @@ document.getElementById('update_floor').addEventListener('click', function(){
 function update_floor(){
   if(COLLECTION_NAME !== ''){
     getFloorPrice().then(function (collect){
+      try{
       document.getElementById('collectionName').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
       console.log('Floor updated: ' + collect['collection']['stats']['floor_price'])
+    } catch(ex){
+      console.log(ex.message)
+    }
     })
-    getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
-    console.log(result/1000000000000000000);
-    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
-    });
-    getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-        console.log(result/1000000000000000000);
-        document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
-    });
-    getBalance(values.default.OWNER_ADDRESS[2].address).then(function (result) {
-        console.log(result/1000000000000000000);
-        document.getElementById('balance3').innerHTML = (result/1000000000000000000).toFixed(4)
-    });
+
   } else {
     console.log('No Collection selected.')
   }
+  getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
+  document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
+  });
+  getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
+      document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
+  });
+
 }
 
 getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
-    console.log(result/1000000000000000000);
     document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
 });
 getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-    console.log(result/1000000000000000000);
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
 });
-getBalance(values.default.OWNER_ADDRESS[2].address).then(function (result) {
-    console.log(result/1000000000000000000);
-    document.getElementById('balance3').innerHTML = (result/1000000000000000000).toFixed(4)
-});
+
 
 //
 // Flags for threads, total offers attempted.
@@ -521,6 +524,21 @@ async function main(){
       document.getElementById('body').style.background = '#D9B3FF'
     }
 }
+function check_errors(msg){
+  if(msg.includes('Insufficient balance.')){
+    return 'Insufficient balance. Please wrap more ETH.'
+    //alert('Insufficient balance. Please wrap more ETH.')
+  }
+  else if(msg.includes('This order does not have a valid bid price for the auction')){
+    return 'Auction'
+  }
+  else if(msg.includes('API Error 404: Not found.')){
+    return 'Asset not found.'
+  } else if(msg.includes('Trading is not enabled for')){
+    return 'Trading not enalbed on asset.'
+  } 
+  return 0
+}
 
 async function main1(){
     text1.style.fontSize = '20px'
@@ -556,24 +574,36 @@ async function main1(){
                     //.toFixed(5)
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
+                    var error_message = check_errors(ex.message)
                     text1.style.color = 'red'
                     text1.innerHTML = 'Error......'
-                    if(ex.message.includes('Insufficient balance.')){
-                      text1.innerHTML = 'Insufficient balance. Please wrap more ETH.'
-                      //alert('Insufficient balance. Please wrap more ETH.')
+                    text1.innerHTML = error_message
+                    // if(ex.message.includes('Insufficient balance.')){
+                    //   text1.innerHTML = 'Insufficient balance. Please wrap more ETH.'
+                    //   //alert('Insufficient balance. Please wrap more ETH.')
+                    //   await new Promise(resolve => setTimeout(resolve, 60000))
+                    // }
+                    // else if(ex.message.includes('This order does not have a valid bid price for the auction')){
+                    //   text1.innerHTML = 'Auction'
+                    // }
+                    // else if(ex.message.includes('API Error 404: Not found.')){
+                    //   text1.innerHTML = 'Asset not found.'
+                    // } else if(ex.message.includes('Trading is not enabled for')){
+                    //   text1.innerHTML = 'Trading no enalbed on asset.'
+                    // } 
+                    // else {
+                    //   await new Promise(resolve => setTimeout(resolve, 60000))
+                    // }     
+                    if(error_message === 0){
                       await new Promise(resolve => setTimeout(resolve, 60000))
                     }
-                    else if(ex.message.includes('This order does not have a valid bid price for the auction')){
-                      text1.innerHTML = 'Auction'
+                    else if(error_message === 'Insufficient balance. Please wrap more ETH.')
+                    {
+                      await new Promise(resolve => setTimeout(resolve, 300000))
                     }
-                    else if(ex.message.includes('API Error 404: Not found.')){
-                      text1.innerHTML = 'Asset not found.'
-                    } else if(ex.message.includes('Trading is not enabled for')){
-                      text1.innerHTML = 'Trading no enalbed on asset.'
-                    } 
-                    else {
-                      await new Promise(resolve => setTimeout(resolve, 60000))
-                    }                    
+                     else {
+                      text1.innerHTML = error_message
+                    }               
                     console.log('**FAILED**! #' + i)
                 }
                 offset1 = 0
