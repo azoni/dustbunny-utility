@@ -123,40 +123,10 @@ async function placeBid(){
   progressBar.value = 0
   progressBar.max = Object.keys(eventDict).length
   progressBar.hidden = false
+
   for(key in Object.keys(eventDict)){
     await new Promise(resolve => setTimeout(resolve, delay.value))
-    if(Object.keys(eventDict).length < 20) {
-      console.log('Short run')
-      await new Promise(resolve => setTimeout(resolve, 120000))
-      // try{
 
-      //   const order = await seaport.api.getOrders({
-      //     asset_contract_address: NFT_CONTRACT_ADDRESS,
-      //     token_id: Object.keys(eventDict)[key],
-      //     side: 0,
-      //     order_by: 'eth_price',
-      //     order_direction: 'desc'
-      //   })
-      //   await new Promise(resolve => setTimeout(resolve, delay.value))
-      //   try {
-      //     var event_username = order['orders'][0].makerAccount.user.username
-      //   } catch(ex){
-      //     var event_username = 'Null'
-      //   }
-      //   console.log(order)
-      //   if(event_username === values.default.OWNER_ADDRESS[0].username){
-      //     console.log('Skipping ' + Object.keys(eventDict)[key])
-      //     document.getElementById('eventText').innerHTML = 'Skipping ' + Object.keys(eventDict)[key]
-      //     continue
-      //   }
-      // }
-      // catch(ex){
-      //   console.log(ex.message)
-      // }
-    }
-    if(Object.keys(eventDict).length > 20 && Object.keys(eventDict).length < 40) {
-      await new Promise(resolve => setTimeout(resolve, 60000))
-    }
     var asset = {
       tokenId: Object.keys(eventDict)[key],
       tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -176,7 +146,38 @@ async function placeBid(){
       await new Promise(resolve => setTimeout(resolve, 60000))
     }
   }
+  if(Object.keys(eventDict).length < 20) {
+  console.log('Short run')
+  await new Promise(resolve => setTimeout(resolve, 120000))
+  // try{
 
+  //   const order = await seaport.api.getOrders({
+  //     asset_contract_address: NFT_CONTRACT_ADDRESS,
+  //     token_id: Object.keys(eventDict)[key],
+  //     side: 0,
+  //     order_by: 'eth_price',
+  //     order_direction: 'desc'
+  //   })
+  //   await new Promise(resolve => setTimeout(resolve, delay.value))
+  //   try {
+  //     var event_username = order['orders'][0].makerAccount.user.username
+  //   } catch(ex){
+  //     var event_username = 'Null'
+  //   }
+  //   console.log(order)
+  //   if(event_username === values.default.OWNER_ADDRESS[0].username){
+  //     console.log('Skipping ' + Object.keys(eventDict)[key])
+  //     document.getElementById('eventText').innerHTML = 'Skipping ' + Object.keys(eventDict)[key]
+  //     continue
+  //   }
+  // }
+  // catch(ex){
+  //   console.log(ex.message)
+  // }
+  }
+  if(Object.keys(eventDict).length > 20 && Object.keys(eventDict).length < 40) {
+    await new Promise(resolve => setTimeout(resolve, 60000))
+  }
   await new Promise(resolve => setTimeout(resolve, 2000))
   console.log('complete')
   event_bid()
