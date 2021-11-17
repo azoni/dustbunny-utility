@@ -190,7 +190,7 @@ async function placeBid(){
   }
   update_floor()
 }
-
+try{
 var Web3 = require('web3');
 var Eth = require('web3-eth');
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY)
@@ -255,7 +255,9 @@ getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
 });
 
-
+}catch(ex){
+  console.log('cannot display weth balance')
+}
 //
 // Flags for threads, total offers attempted.
 //
