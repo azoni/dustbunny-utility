@@ -77,8 +77,6 @@ var blacklist = values.default.BLACK_LIST
 ////////UPBIDBOT
 
 function event_bid(){
-  reset()
-  start()
   eventDict = {}
   // var events = get_current_offers()
   // events.then(function(events){
@@ -101,8 +99,7 @@ function event_bid(){
         username = res[COLLECTION_NAME]['tokens'][token]['from']['user']['username']
       } catch(ex){
         username = 'Null'
-      }//flash-prpatel05
-
+      }
       if(res[COLLECTION_NAME]['tokens'][token]['bid_amount'] < maxOfferAmount && res[COLLECTION_NAME]['tokens'][token]['bid_amount'] > offerAmount && blacklist.includes(username) === false){
         //console.log(res['cool-cats-nft']['tokens'][token]['from']['user'])
         eventBidAmount = parseFloat(res[COLLECTION_NAME]['tokens'][token]['bid_amount'] + .001)
@@ -118,7 +115,6 @@ function event_bid(){
 }
 //BLACK_LIST: ['DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703'],
 document.getElementById('upbid_bot').addEventListener('click', function(){
-
   event_bid()
   console.log('events started')
 })
@@ -129,7 +125,7 @@ async function placeBid(){
   progressBar.hidden = false
 
   for(key in Object.keys(eventDict)){
-    //await new Promise(resolve => setTimeout(resolve, delay.value))
+    await new Promise(resolve => setTimeout(resolve, delay.value))
 
     var asset = {
       tokenId: Object.keys(eventDict)[key],
@@ -180,17 +176,15 @@ async function placeBid(){
   // }
   }
   if(Object.keys(eventDict).length > 20 && Object.keys(eventDict).length < 40) {
-    console.log('Short run')
     await new Promise(resolve => setTimeout(resolve, 60000))
   }
   await new Promise(resolve => setTimeout(resolve, 2000))
   console.log('complete')
-  if(maxOfferAmount !== 0){
-    event_bid()
-  }
+  event_bid()
   update_floor()
+
 }
-try{
+
 var Web3 = require('web3');
 var Eth = require('web3-eth');
 const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY)
@@ -255,9 +249,7 @@ getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
 });
 
-}catch(ex){
-  console.log('cannot display weth balance')
-}
+
 //
 // Flags for threads, total offers attempted.
 //
@@ -827,7 +819,6 @@ resetButton.addEventListener('click', function(){
   quickButton.disabled = true
   startButton.disabled = true
   progressBar.hidden = true
-
 
 })
 
