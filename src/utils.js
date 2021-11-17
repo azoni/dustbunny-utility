@@ -110,7 +110,7 @@ async function get_request(url) {
         request(url, (error, response, body) => {
             if (error) reject(error);
             if (response.statusCode !== 200) {
-                reject("Invalid status code <" + response.statusCode + ">");
+                //reject("Invalid status code <" + response.statusCode + ">");
             }
             resolve(body);
         });
