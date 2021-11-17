@@ -113,7 +113,8 @@ function event_bid(){
   .catch(err => console.log(err))
   //console.log(eventDict)
 }
-//BLACK_LIST: ['DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703'],
+//  BLACK_LIST: ['nftd00d', 'DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703', 'forbayc'],
+
 document.getElementById('upbid_bot').addEventListener('click', function(){
   event_bid()
   console.log('events started')
@@ -125,7 +126,7 @@ async function placeBid(){
   progressBar.hidden = false
 
   for(key in Object.keys(eventDict)){
-    await new Promise(resolve => setTimeout(resolve, delay.value))
+    //await new Promise(resolve => setTimeout(resolve, delay.value))
 
     var asset = {
       tokenId: Object.keys(eventDict)[key],
@@ -217,6 +218,7 @@ async function getBalance(walletAddress) {
 }
 //['collection']['stats']['floor_price']
 document.getElementById('update_floor').addEventListener('click', function(){
+  console.log((total_weth/1000000000000000000).toFixed(4))
   update_floor()
 })
 function update_floor(){
@@ -244,16 +246,53 @@ function update_floor(){
 
 getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
     document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
+
 });
 getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
 });
-
-
+var total_weth = 0
+if(values.default.OWNER_ADDRESS[0].username==='Nftd00d'){
+getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(function (result) {
+    console.log('DustBunny: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x4beac303c8fdf1f3cd34509b344067e86dcbc506').then(function (result) {
+    console.log('balloonanimal: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65').then(function (result) {
+    console.log('cakebatter: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x60bf609e0e8b724dc61ffee24737af15a6f6d905').then(function (result) {
+    console.log('doughnuthole: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x774a4a3c3130e4850a84dc8c80945dee4de2e017').then(function (result) {
+    console.log('DE2E017: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x1484d9ae6d590d6b0981e802f555a8dd74b93017').then(function (result) {
+    console.log('T74b93017: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(function (result) {
+    console.log('Sad002d: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(function (result) {
+    console.log('Ti801703: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0xd76654102c5f3c27886d5b3ec47b3111e18d8126').then(function (result) {
+    console.log('nftd00d: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
 //
 // Flags for threads, total offers attempted.
 //
-
+}
 var thread1done = 0
 var thread2done = 0
 var offers = 0
