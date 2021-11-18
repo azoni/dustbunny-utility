@@ -1,7 +1,7 @@
 const values = require('./values.js')
 const secret = require('./secret.js')
 require('./traits.js')
-
+const cool_cat_traits = require('./coolcats.js')
 var utils = require('./utils.js')
 require('./run-collection.js')
 const opensea = require("opensea-js");
@@ -36,7 +36,8 @@ myAccount2.innerHTML = values.default.OWNER_ADDRESS[1].username
 // account2.innerHTML = values.default.OWNER_ADDRESS[1].username
 
 // Provider
-
+var stop = 0
+var stop2 = 0
 console.log('App loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
@@ -68,7 +69,8 @@ var COLLECTION_NAME = ''
 var seaport = new OpenSeaPort(
   providerEngine,
   {
-    networkName: Network.Main
+    networkName: Network.Main,
+    apiKey: '2f6f419a083c46de9d83ce3dbe7db601'
   },
   (arg) => console.log(arg)
 );
@@ -77,6 +79,8 @@ var blacklist = values.default.BLACK_LIST
 ////////UPBIDBOT
 
 function event_bid(){
+  reset()
+  start()
   eventDict = {}
   // var events = get_current_offers()
   // events.then(function(events){
@@ -241,7 +245,10 @@ function update_floor(){
   getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
       document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
   });
-
+  eth.getBalance(values.default.OWNER_ADDRESS[0].address)
+  .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+  eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+  .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 }
 
 getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
@@ -251,8 +258,15 @@ getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
 getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
 });
+
+eth.getBalance(values.default.OWNER_ADDRESS[0].address)
+.then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+.then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+
 var total_weth = 0
-if(values.default.OWNER_ADDRESS[0].username==='Nftd00d'){
+
+if(values.default.OWNER_ADDRESS[0].username==='Sad002d'){
 getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(function (result) {
     console.log('DustBunny: ' + (result/1000000000000000000).toFixed(4))
     total_weth += parseInt(result)
@@ -330,15 +344,52 @@ document.getElementById('minusDelay').addEventListener('click', function(){
   delay.value -= 100
   //document.getElementById('delay').value = offerAmount
 })
+var traits_count = 0
 //
 // Grab collection to submit offers on. 
 //
+document.getElementById('clearTrait').addEventListener('click', function(){
+  removeChilds(document.getElementById('traitsDiv'))
+  traits_count = 0
+  console.log('Cleared traits')
+})
+
+const removeChilds = (parent) => {
+    while (parent.lastChild) {
+        parent.removeChild(parent.lastChild);
+    }
+};
 async function getCollection(collectionName){
   offers = 0
   progressBar.value = 0
   collectionName = collectionName.trim()
   console.log(collectionName)
   var collect = getCollectionDetails(collectionName)
+          if(collectionName === 'cool-cats-nfts'){
+      
+      for(var i in cool_cat_traits.default.traits){
+        console.log(cool_cat_traits.default.traits[i])
+        var traitDiv = document.getElementById('traitsDiv')
+        var property = document.createElement('input')
+        var trait = document.createElement('input')
+        var traitbid = document.createElement('input')
+        property.value = cool_cat_traits.default.traits[i][0]
+        trait.value = cool_cat_traits.default.traits[i][1]
+        trait.id = 'trait' + traits_count
+        trait.style.width = '100px'
+        property.id = 'property' + traits_count
+        property.style.width = '100px'
+        traitbid.id = 'bid' + traits_count
+        traitbid.style.width = '40px'
+
+        var br = document.createElement('br')
+        traitDiv.appendChild(property)
+        traitDiv.appendChild(trait)
+        traitDiv.appendChild(traitbid)
+        traitDiv.appendChild(br)
+        traits_count += 1
+      }
+    }
   collect.then(function(collect){
   try { 
       COLLECTION_NAME = collectionName
@@ -424,6 +475,9 @@ async function main(){
     var offset = 0
     await new Promise(resolve => setTimeout(resolve, 3000));
     for(var i = startToken.value; i <= endToken.value; i++){
+    if(stop === 1){
+      break
+    }
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var bidMade = 0
     if(Object.keys(offersDict).length > 0){
@@ -433,32 +487,42 @@ async function main(){
               tokenId: i,
               })
             for(var trait in asset['traits']){
-              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(Object.keys(offersDict)[0])){
-                if(asset['traits'][trait]['value'].toLowerCase().includes(offersDict[Object.keys(offersDict)[0]][0])){
+              console.log(offersDict[Object.keys(offersDict)[trait]])
+              if (asset['traits'][trait]['trait_type'].toLowerCase().includes('1111')){
+                if(asset['traits'][trait]['value'].toLowerCase().includes('2222')){
                   try{
-                    console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[0]][1] + " on #" + i)
+                    //console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i)
                     await seaport.createBuyOrder({
                     asset: {
                         tokenId: i,
                         tokenAddress: NFT_CONTRACT_ADDRESS
                     },
-                    startAmount: offersDict[Object.keys(offersDict)[0]][1],
+                    startAmount: offersDict[Object.keys(offersDict)[trait]][2],
                     accountAddress: OWNER_ADDRESS,
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
                     text.style.color = 'black'
-                    text.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[0]][1] + " on #" + i
+                    text.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i
                     offers += 1
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
+                    var error_message = check_errors(ex.message)
                     text.style.color = 'red'
                     text.innerHTML = 'Error......'
-                    if(ex.message.includes('Insufficient balance.')){
-                      text.innerHTML = 'Insufficient balance. Please wrap more ETH.'
-                      //alert('Insufficient balance. Please wrap more ETH.')
+                    text.innerHTML = error_message
+
+                    if(error_message === 0){
+                      beep();
+                      await new Promise(resolve => setTimeout(resolve, 60000))
                     }
+                    else if(error_message === 'Insufficient balance. Please wrap more ETH.')
+                    {
+                      await new Promise(resolve => setTimeout(resolve, 300000))
+                    }
+                     else {
+                      text.innerHTML = error_message
+                    }               
                     console.log('**FAILED**! #' + i)
-                    await new Promise(resolve => setTimeout(resolve, 3000))
                 }
                 offset = 0
                 progressBar.value += 1
@@ -559,6 +623,7 @@ async function main(){
     }
     thread1done = 1
     if (thread1done + thread2done  === 2){
+      beep();
       console.log('thread1 done')
       pause()
       document.getElementById('body').style.background = '#D9B3FF'
@@ -586,6 +651,9 @@ async function main1(){
     var offset1 = 0
 
     for(var i = endToken1.value; i >= startToken1.value; i--){
+        if(stop2 === 1){
+          break
+        }
         await new Promise(resolve => setTimeout(resolve, delay.value))
           var bidMade = 0
         if(Object.keys(offersDict).length > 0){
@@ -595,23 +663,24 @@ async function main1(){
               tokenId: i,
               })
             for(var trait in asset['traits']){
-              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(Object.keys(offersDict)[0])){
-                if(asset['traits'][trait]['value'].toLowerCase().includes(offersDict[Object.keys(offersDict)[0]][0])){
+              console.log(offersDict[Object.keys(offersDict)[trait]])
+              console.log(offersDict[Object.keys(offersDict)[trait]][0])
+              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(offersDict[Object.keys(offersDict)[trait]][0])){
+                if(asset['traits'][trait]['value'].toLowerCase().includes(offersDict[Object.keys(offersDict)[trait]][1])){
                   try{
-                    console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[0]][1] + " on #" + i)
+                    console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i)
                     await seaport.createBuyOrder({
                     asset: {
                         tokenId: i,
                         tokenAddress: NFT_CONTRACT_ADDRESS
                     },
-                    startAmount: offersDict[Object.keys(offersDict)[0]][1],
+                    startAmount: offersDict[Object.keys(offersDict)][trait][2],
                     accountAddress: OWNER_ADDRESS,
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
                     text1.style.color = 'black'
-                    text1.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[0]][1] + " on #" + i
+                    text1.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i
                     offers += 1
-                    //.toFixed(5)
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
                     var error_message = check_errors(ex.message)
@@ -635,6 +704,7 @@ async function main1(){
                     //   await new Promise(resolve => setTimeout(resolve, 60000))
                     // }     
                     if(error_message === 0){
+                      beep();
                       await new Promise(resolve => setTimeout(resolve, 60000))
                     }
                     else if(error_message === 'Insufficient balance. Please wrap more ETH.')
@@ -743,6 +813,7 @@ async function main1(){
     }
     thread2done = 1
     if (thread1done + thread2done  === 2){
+      beep();
       console.log('thread2 done')
       pause()
       document.getElementById('body').style.background = '#D9B3FF'
@@ -846,6 +917,8 @@ startButton.addEventListener('click', function(){
 
 resetButton.addEventListener('click', function(){ 
   reset()
+  stop = 1
+  stop2 = 1
   offers = 0
   progressBar.value = 0
   maxOfferAmount = 0
@@ -858,29 +931,25 @@ resetButton.addEventListener('click', function(){
   quickButton.disabled = true
   startButton.disabled = true
   progressBar.hidden = true
+  offersMade.innerHTML = ''
 
 })
 
 var offersDict = {}
-var traitsList = []
 //OFFER AMOUNT SHOULD ONLY CHANGE HERE EVER
 //OFFER AMOUNT SHOULD ONLY CHANGE HERE EVER
 //OFFER AMOUNT SHOULD ONLY CHANGE HERE EVER
 //OFFER AMOUNT SHOULD ONLY CHANGE HERE EVER
+console.log(cool_cat_traits.default.traits)
 confirmButton.addEventListener('click', function(){
   if (confirmCollection === 1) {
       var traitsDiv = document.getElementById('traitsDiv')
       offersDict = {}
-      traitsList = []
     for (const property in traitsDiv.children) {
       try {
         //console.log(traitsDiv.children[property])
         if(traitsDiv.children[property].id.includes('property')){
-          console.log(traitsDiv.children[property].value)
-          traitsList.push(traitsDiv.children[property].value)
-          console.log(property)
-          traitsList.push(traitsDiv.children[parseInt(property+1)].value)
-          traitsList.push(traitsDiv.children[parseInt(property+2)].value)
+          offersDict[traitsDiv.children[property].id] = [traitsDiv.children[parseInt(property)].value, traitsDiv.children[parseInt(property)+1].value,traitsDiv.children[parseInt(property)+2].value]
           // traitsList.push({
           //   'property': traitsDiv.children[property].value,
           //   'trait': traitsDiv.children[parseInt(property+1)].value, 
@@ -891,7 +960,8 @@ confirmButton.addEventListener('click', function(){
       } catch (ex) {
       }
     }
-    
+    stop = 0 
+    stop2 = 0
     offerAmount = document.getElementById('offerAmount').value
     if (document.getElementById('maxOfferAmount').value === ''){
       maxOfferAmount = 0
@@ -914,8 +984,12 @@ confirmButton.addEventListener('click', function(){
   } else {
     alert('Get valid collection first.')
   }
-  console.log(traitsList)
+  console.log(offersDict)
 })
+function beep() {
+    var snd = new Audio("data:audio/wav;base64,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qJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=");  
+    snd.play();
+}
 
 ///////////////////////////////////////////////
 var favorites = document.getElementById('favorites')

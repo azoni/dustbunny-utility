@@ -1,6 +1,6 @@
 const values = require('./values.js')
 const secret = require('./secret.js')
-const opensea = require("opensea-js");
+const opensea = require("opensea-js")
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
@@ -33,7 +33,8 @@ providerEngine.start();
 const seaport = new OpenSeaPort(
   providerEngine,
   {
-    networkName: Network.Main
+    networkName: Network.Main,
+    apiKey: '2f6f419a083c46de9d83ce3dbe7db601'
   },
   (arg) => console.log(arg)
 );
@@ -243,22 +244,46 @@ function run(){
     collection.then(function(collection){
       console.log(collection)
       try{
+
       for(var asset in collection['assets']){
-        tokenId_array.push(collection['assets'][asset]['tokenId'])
-        name_array.push(collection['assets'][asset]['name'])
+        if(document.getElementById('addProperty-2').value !== ''){
+          for(var trait in collection['assets'][asset]['traits']){
+            if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
+              if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
+                if(document.getElementById('sellOrder-2').value !== ''){
+                    if(collection['assets'][asset]['sellOrders'] !== null){
+                      tokenId_array.push(collection['assets'][asset]['tokenId'])
+                      name_array.push(collection['assets'][asset]['name'])
+                    }
+                } else{
+                    tokenId_array.push(collection['assets'][asset]['tokenId'])
+                    name_array.push(collection['assets'][asset]['name'])
+                }
+                
+              }
+            }
+          }
+        } 
+        else {
+          tokenId_array.push(collection['assets'][asset]['tokenId'])
+          name_array.push(collection['assets'][asset]['name'])
+        }
+
+      }
+      if(document.getElementById('addProperty-2').value !== ''){
+        assetCount = tokenId_array.length
+        progressBar.max = assetCount
       }
     } catch (ex){
       console.log(ex)
     }
     })
   }
-  //console.log(tokenId_array)
   pause()
+  reset()
   start()
   placeBid()
   placeBid2()
-
-
 
 }
 async function getCollectionAssets(collectionName, offset){
@@ -440,4 +465,9 @@ function start() {
 
 function pause() {
   clearInterval(timerInterval);
+}
+function reset() {
+  clearInterval(timerInterval);
+  print("00:00:00:00");
+  elapsedTime = 0;
 }
