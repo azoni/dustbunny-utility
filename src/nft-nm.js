@@ -70,7 +70,7 @@ var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: '2f6f419a083c46de9d83ce3dbe7db601'
+    apiKey: '04903a94a949443f96061e0046b034c7'
   },
   (arg) => console.log(arg)
 );
