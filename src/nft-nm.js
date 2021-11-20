@@ -64,13 +64,13 @@ var offerAmount = 0
 var maxOfferAmount = 0
 var expirationHours = 1
 var COLLECTION_NAME = ''
-
+//dustpan 7146f835781e4638b8e8cebf21d8a396
 // Create seaport object using provider created. 
 var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: '04903a94a949443f96061e0046b034c7'
+    apiKey: '1a0882610c8d48bd8751b67cc7991f21'
   },
   (arg) => console.log(arg)
 );
@@ -129,7 +129,7 @@ async function placeBid(){
   progressBar.max = Object.keys(eventDict).length
   progressBar.hidden = false
 
-  for(key in Object.keys(eventDict)){
+  for(var key in Object.keys(eventDict)){
     //await new Promise(resolve => setTimeout(resolve, delay.value))
 
     var asset = {
@@ -435,6 +435,9 @@ async function getCollection(collectionName){
 }
 
 collectionButtonClear.addEventListener('click', function(){
+  clear_collection()
+})
+function clear_collection(){
     COLLECTION_NAME = ''
     confirmCollection = 0
     startButton.disabled = true
@@ -454,8 +457,7 @@ collectionButtonClear.addEventListener('click', function(){
     document.getElementById('assetFloor').innerHTML = ""
     document.getElementById('assetFloor').target = "_blank"
     document.getElementById('assetFloor').href = 'https://opensea.io/collection/' + COLLECTION_NAME + '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
-})
-
+}
 collectionButton.addEventListener('click', function(){
   getCollection(collectionInput.value)
 })
@@ -473,6 +475,9 @@ async function main(){
     text.style.fontSize = '20px'
     text.innerHTML = 'Starting.....'
     var offset = 0
+    var prop1 = ''
+    var trait1 = ''
+    var bid1 = 0
     await new Promise(resolve => setTimeout(resolve, 3000));
     for(var i = startToken.value; i <= endToken.value; i++){
     if(stop === 1){
@@ -487,9 +492,8 @@ async function main(){
               tokenId: i,
               })
             for(var trait in asset['traits']){
-              console.log(offersDict[Object.keys(offersDict)[trait]])
-              if (asset['traits'][trait]['trait_type'].toLowerCase().includes('1111')){
-                if(asset['traits'][trait]['value'].toLowerCase().includes('2222')){
+              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(prop1)){
+                if(asset['traits'][trait]['value'].toLowerCase().includes(trait1)){
                   try{
                     //console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i)
                     await seaport.createBuyOrder({
@@ -497,12 +501,12 @@ async function main(){
                         tokenId: i,
                         tokenAddress: NFT_CONTRACT_ADDRESS
                     },
-                    startAmount: offersDict[Object.keys(offersDict)[trait]][2],
+                    startAmount: bid1,
                     accountAddress: OWNER_ADDRESS,
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
                     text.style.color = 'black'
-                    text.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i
+                    text.innerHTML = asset['traits'][trait]['value'] + ': ' + 2 + " on #" + i
                     offers += 1
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
@@ -611,7 +615,7 @@ async function main(){
 
         offersMade.style.fontSize = '20px'
         offersMade.innerHTML = offers + '/' + progressBar.max 
-        if(offers / 100 === 0){
+        if(offers % 100 === 0){
           update_floor()
         }
     }
@@ -649,13 +653,15 @@ async function main1(){
     text1.style.fontSize = '20px'
     text1.innerHTML = 'Starting.....'
     var offset1 = 0
-
+    var prop1 = ''
+    var trait1 = ''
+    var bid1 = 0
     for(var i = endToken1.value; i >= startToken1.value; i--){
         if(stop2 === 1){
           break
         }
         await new Promise(resolve => setTimeout(resolve, delay.value))
-          var bidMade = 0
+        var bidMade = 0
         if(Object.keys(offersDict).length > 0){
           try{
               const asset = await seaport.api.getAsset({
@@ -663,23 +669,21 @@ async function main1(){
               tokenId: i,
               })
             for(var trait in asset['traits']){
-              console.log(offersDict[Object.keys(offersDict)[trait]])
-              console.log(offersDict[Object.keys(offersDict)[trait]][0])
-              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(offersDict[Object.keys(offersDict)[trait]][0])){
-                if(asset['traits'][trait]['value'].toLowerCase().includes(offersDict[Object.keys(offersDict)[trait]][1])){
+              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(prop1)){
+                if(asset['traits'][trait]['value'].toLowerCase().includes(trait1)){
                   try{
-                    console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i)
+                    //console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i)
                     await seaport.createBuyOrder({
                     asset: {
                         tokenId: i,
                         tokenAddress: NFT_CONTRACT_ADDRESS
                     },
-                    startAmount: offersDict[Object.keys(offersDict)][trait][2],
+                    startAmount: bid1,
                     accountAddress: OWNER_ADDRESS,
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
                     text1.style.color = 'black'
-                    text1.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i
+                    text1.innerHTML = asset['traits'][trait]['value'] + ': ' + 2 + " on #" + i
                     offers += 1
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
@@ -687,22 +691,7 @@ async function main1(){
                     text1.style.color = 'red'
                     text1.innerHTML = 'Error......'
                     text1.innerHTML = error_message
-                    // if(ex.message.includes('Insufficient balance.')){
-                    //   text1.innerHTML = 'Insufficient balance. Please wrap more ETH.'
-                    //   //alert('Insufficient balance. Please wrap more ETH.')
-                    //   await new Promise(resolve => setTimeout(resolve, 60000))
-                    // }
-                    // else if(ex.message.includes('This order does not have a valid bid price for the auction')){
-                    //   text1.innerHTML = 'Auction'
-                    // }
-                    // else if(ex.message.includes('API Error 404: Not found.')){
-                    //   text1.innerHTML = 'Asset not found.'
-                    // } else if(ex.message.includes('Trading is not enabled for')){
-                    //   text1.innerHTML = 'Trading no enalbed on asset.'
-                    // } 
-                    // else {
-                    //   await new Promise(resolve => setTimeout(resolve, 60000))
-                    // }     
+
                     if(error_message === 0){
                       beep();
                       await new Promise(resolve => setTimeout(resolve, 60000))
@@ -917,6 +906,7 @@ startButton.addEventListener('click', function(){
 
 resetButton.addEventListener('click', function(){ 
   reset()
+  document.getElementById('assetCount').value = ''
   stop = 1
   stop2 = 1
   offers = 0
@@ -932,6 +922,7 @@ resetButton.addEventListener('click', function(){
   startButton.disabled = true
   progressBar.hidden = true
   offersMade.innerHTML = ''
+  clear_collection()
 
 })
 
@@ -994,11 +985,21 @@ function beep() {
 ///////////////////////////////////////////////
 var favorites = document.getElementById('favorites')
 var favorite_dict = values.default.favorites
-for(var key in favorite_dict){
-  const fav = key
-  const collect = getCollectionDetails(fav)
 
-  collect.then(function(collect){
+getCollectionDetails_fav()
+async function getCollectionDetails(collectionName){
+  try{
+    const collect = await seaport.api.get('/api/v1/collection/' + collectionName)
+    return collect
+  } catch (ex) {
+    console.log("couldn't get collection")
+  }  
+}
+async function getCollectionDetails_fav(){
+  for(var key in favorite_dict){
+  const fav = key
+    try{  
+    const collect = await seaport.api.get('/api/v1/collection/' + fav)
     //var totalAssets = favorite_dict[fav][0]
     var nodep = document.createElement('p')
     nodep.style = 'text-align: center; font-size: 14px'
@@ -1047,16 +1048,14 @@ for(var key in favorite_dict){
     nodep.style.float = 'left'
     nodep.appendChild(nodea)
     favorites.appendChild(nodep)
-  })
-}
 
-async function getCollectionDetails(collectionName){
-  try{  
-    const collect = await seaport.api.get('/api/v1/collection/' + collectionName)
-    return collect
   } catch (ex) {
     console.log("couldn't get collections")
   }  
+
+  
+  }
+
 }
 
 // document.getElementById('updateFloor').addEventListener('click', function(COLLECTION_NAME){
