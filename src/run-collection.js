@@ -67,6 +67,7 @@ var offersMade = document.getElementById('offersMade-2')
 var confirmCollection = 0
 var progressBar = document.getElementById('progressBar-2')
 
+var current_floor = 0
 var assetCount = 0
 //
 // Grab collection to submit offers on. 
@@ -92,6 +93,7 @@ async function getCollection(collectionName){
       //window.open('https://opensea.io/collection/' + COLLECTION_NAME,'name','width=this.width,height=this.height')
       document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
       // collection.innerHTML = NFT_CONTRACT_ADDRESS
+      current_floor = collect['collection']['stats']['floor_price']
       document.getElementById('collectionImage-2').src = collect['collection'].image_url
       document.getElementById('collectionImage-2').style.height = "200px"
       document.getElementById('collectionImage-2').style.width = "200px"
@@ -223,6 +225,7 @@ function update_floor(){
     getCollectionDetails().then(function (collect){
       try{
       document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
+      current_floor = collect['collection']['stats']['floor_price']
       console.log('Floor updated: ' + collect['collection']['stats']['floor_price'])
     } catch(ex){
       console.log(ex.message)

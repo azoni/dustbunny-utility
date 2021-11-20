@@ -79,6 +79,7 @@ var seaport = new OpenSeaPort(
 var eventDict = {}
 var blacklist = values.default.BLACK_LIST
 ////////UPBIDBOT
+//  INFURA_KEY: ['55b37dd4e48b49cb8c5f9e90445088a1', '9e30b32ca14a408c99ae890ac2c8e8dc', '1bac20c89d97488491bad84f22d7a15b', '231011f146004bd1927eaf77c8b69aac'],
 
 function event_bid(){
   reset()
@@ -808,6 +809,8 @@ async function main1(){
         offset1 = 0
         progressBar.value +=1
         //offersMade.innerHTML = offers + '/' + progressBar.max 
+        offersMade.innerHTML = offers + '/' + progressBar.max 
+
     }
     text1.style.color = 'purple'
     if (startToken1.value === endToken1.value){
