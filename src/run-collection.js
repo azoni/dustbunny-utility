@@ -34,7 +34,7 @@ const seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: '1a0882610c8d48bd8751b67cc7991f21'
+    apiKey: values.default.API_KEY
   },
   (arg) => console.log(arg)
 );

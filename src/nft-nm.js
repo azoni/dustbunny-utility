@@ -65,12 +65,14 @@ var maxOfferAmount = 0
 var expirationHours = 1
 var COLLECTION_NAME = ''
 //dustpan 7146f835781e4638b8e8cebf21d8a396
+//dustbunny 1a0882610c8d48bd8751b67cc7991f21
+//04903a94a949443f96061e0046b034c7 event ping janesmitheliz@gmail.com
 // Create seaport object using provider created. 
 var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: '1a0882610c8d48bd8751b67cc7991f21'
+    apiKey: values.default.API_KEY
   },
   (arg) => console.log(arg)
 );
@@ -512,7 +514,7 @@ async function main(){
                     })
                     await new Promise(resolve => setTimeout(resolve, delay.value))
                     text.style.color = 'black'
-                    text.innerHTML = asset['traits'][trait]['value'] + ': ' + 2 + " on #" + i
+                    text.innerHTML = asset['traits'][trait]['value'] + ': ' + bid1 + " on #" + i
                     offers += 1
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
@@ -694,7 +696,7 @@ async function main1(){
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
                     text1.style.color = 'black'
-                    text1.innerHTML = asset['traits'][trait]['value'] + ': ' + 2 + " on #" + i
+                    text1.innerHTML = asset['traits'][trait]['value'] + ': ' + bid1 + " on #" + i
                     offers += 1
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
