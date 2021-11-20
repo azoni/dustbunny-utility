@@ -222,7 +222,7 @@ function update_floor(){
   if(COLLECTION_NAME !== ''){
     getCollectionDetails().then(function (collect){
       try{
-      document.getElementById('collectionName').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
+      document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
       console.log('Floor updated: ' + collect['collection']['stats']['floor_price'])
     } catch(ex){
       console.log(ex.message)
