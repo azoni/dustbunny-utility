@@ -478,6 +478,11 @@ async function main(){
     var prop1 = ''
     var trait1 = ''
     var bid1 = 0
+    if(Object.keys(offersDict).length > 0){
+      prop1 = offersDict[Object.keys(offersDict)[0]][0]
+      trait1 = offersDict[Object.keys(offersDict)[0]][1]
+      bid1 = offersDict[Object.keys(offersDict)[0]][2]
+    }
     await new Promise(resolve => setTimeout(resolve, 3000));
     for(var i = startToken.value; i <= endToken.value; i++){
     if(stop === 1){
@@ -505,6 +510,7 @@ async function main(){
                     accountAddress: OWNER_ADDRESS,
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
+                    await new Promise(resolve => setTimeout(resolve, delay.value))
                     text.style.color = 'black'
                     text.innerHTML = asset['traits'][trait]['value'] + ': ' + 2 + " on #" + i
                     offers += 1
@@ -533,7 +539,7 @@ async function main(){
                 offersMade.innerHTML = offers + '/' + progressBar.max
                 bidMade = 1
                 } else {
-                  await new Promise(resolve => setTimeout(resolve, 1000))
+                  
                   break
                 }
               }
@@ -656,6 +662,11 @@ async function main1(){
     var prop1 = ''
     var trait1 = ''
     var bid1 = 0
+    if(Object.keys(offersDict).length > 0){
+      prop1 = offersDict[Object.keys(offersDict)[0]][0]
+      trait1 = offersDict[Object.keys(offersDict)[0]][1]
+      bid1 = offersDict[Object.keys(offersDict)[0]][2]
+    }
     for(var i = endToken1.value; i >= startToken1.value; i--){
         if(stop2 === 1){
           break
