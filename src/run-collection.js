@@ -68,6 +68,7 @@ var confirmCollection = 0
 var progressBar = document.getElementById('progressBar-2')
 
 var current_floor = 0
+var service_fee = 0
 var assetCount = 0
 //
 // Grab collection to submit offers on. 
@@ -94,6 +95,7 @@ async function getCollection(collectionName){
       document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
       // collection.innerHTML = NFT_CONTRACT_ADDRESS
       current_floor = collect['collection']['stats']['floor_price']
+      service_fee = collect['collection']['dev_seller_fee_basis_points']
       document.getElementById('collectionImage-2').src = collect['collection'].image_url
       document.getElementById('collectionImage-2').style.height = "200px"
       document.getElementById('collectionImage-2').style.width = "200px"
@@ -200,11 +202,19 @@ confirmButton.addEventListener('click', function(){
     if(expirationHours === '') {
      expirationHours = 1
    }
+   if(document.getElementById('autoBid').checked){
+    console.log(current_floor)
+    console.log(current_floor*.8)
+    console.log(current_floor*(.8 - service_fee/10000))
+    offerAmount = current_floor*(.8 - service_fee/10000)
+    document.getElementById('offerAmount-2').value = offerAmount
+  }
    if (offerAmount === ''){
     alert('No bid entered.')
     return
   }
   quickButton.disabled = false
+
   alert(offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration.")
 
   } else {
@@ -222,10 +232,18 @@ async function getCollectionDetails(collectionName){
 }
 function update_floor(){
   if(COLLECTION_NAME !== ''){
-    getCollectionDetails().then(function (collect){
+    getCollectionDetails(COLLECTION_NAME).then(function (collect){
       try{
       document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
       current_floor = collect['collection']['stats']['floor_price']
+      service_fee = collect['collection']['dev_seller_fee_basis_points']
+       if(document.getElementById('autoBid').checked){
+        console.log(current_floor)
+        console.log(current_floor*.8)
+        console.log(current_floor*(.8 - service_fee/10000))
+        offerAmount = current_floor*(.8 - service_fee/10000)
+        document.getElementById('offerAmount-2').value = offerAmount
+      }
       console.log('Floor updated: ' + collect['collection']['stats']['floor_price'])
     } catch(ex){
       console.log(ex.message)
@@ -373,8 +391,13 @@ async function placeBid(){
       console.log(ex)
       var error_message = check_errors(ex.message)
       text.style.color = 'red'
-      console.log('**FAILED**! #' + name_array[i])
-      await new Promise(resolve => setTimeout(resolve, 60000))
+      text.innerHTML = error_message
+      if(error_message === 0 ){
+        text.innerHTML = 'Error.. retrying'
+        console.log('**FAILED**! #' + name_array[i])
+        await new Promise(resolve => setTimeout(resolve, 60000))
+      }
+      
     }
     offers+=1
     progressBar.value += 1
@@ -382,6 +405,8 @@ async function placeBid(){
     offersMade.innerHTML = offers + '/' + progressBar.max 
     if(offers % 100 === 0) {
       update_floor()
+
+      
     }
   }
   pause()
