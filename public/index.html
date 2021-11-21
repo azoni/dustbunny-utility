@@ -23,8 +23,7 @@
         <input style="width:40px" id='delay'></input>
         <button id='minusDelay'>-</button>
         <button id='addDelay'>+</button>
-        <input id='hasApiKey' type='checkbox'>Api</input>
-        <input id='autoBid' type='checkbox'>Auto</input>
+        <!-- <input id='autoBid' type='checkbox'>Auto</input> -->
         <button id='upbid_bot'>Events</button>
         <button id='update_floor'>Floor</button>
         <p id='eventText' style="display: inline;"></p>
@@ -125,9 +124,12 @@
           <button id='collectionButton-2'>Submit</button>
           <button id='collectionButtonClear-2'>Clear</button>
           <br>
-          <input id='addProperty-2' style="width: 75px;"></input>
-          <input id='addTrait-2' style="width: 75px;"></input>
-          <input id='sellOrder-2' style="width: 25px;"></input>
+          <input id='addProperty-2' placeholder="property" style="width: 75px;"></input>
+          <input id='addTrait-2' placeholder="trait" style="width: 75px;"></input>
+          Listed<input id='sellOrder-2' type='checkbox' style="width: 25px;"></input>
+          <input id='aboveFloor-2' placeholder="1.2" style="width: 25px;"></input>
+          Auto<input id='bidMultiplier-2' placeholder=".8" style="width: 25px;"></input>
+          <input id='maxbidMultiplier-2' placeholder=".85" style="width: 25px;"></input>
           <div id='traitsDiv-2'>
           </div>
           <a id='collectionHome-2'></a>
@@ -149,8 +151,8 @@
 <!--           <button id='apply' style="width: 75px; height: 35px">Apply</button>
  --><!--           <button id='resetButton'>Reset</button>
  -->          <button id='confirmButton-2' style="width: 75px; height: 35px">Confirm</button>
-          <button id='startButton-2' style="width: 75px; height: 35px">Start</button>
-<!--           <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
+<!--           <button id='startButton-2' style="width: 75px; height: 35px">Start</button>
+ --><!--           <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
  -->          <button id='quickStart-2' style="width: 75px; height: 35px">Go</button>
               <button id='reset-2' style="width: 75px; height: 35px">Reset</button>
           <br><br>

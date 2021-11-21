@@ -5,6 +5,7 @@ const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
+var OWNER_ADDRESS2 = values.default.OWNER_ADDRESS[0].address
 // Provider
 const MnemonicWalletSubprovider = require("@0x/subproviders")
 .MnemonicWalletSubprovider;
@@ -38,16 +39,28 @@ const seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
-
+// const seaport2 = new OpenSeaPort(
+//   providerEngine,
+//   {
+//     networkName: Network.Main,
+//     apiKey: '1a0882610c8d48bd8751b67cc7991f21'
+//   },
+//   (arg) => console.log(arg)
+// );
 var tokenId_array = []
 var name_array = []
 
 var NFT_CONTRACT_ADDRESS = ''
 var offerAmount = 0
 var maxOfferAmount = 0
+var bidMultiplier = 0
+var maxbidMultiplier = 0
 var expirationHours = 1
 var COLLECTION_NAME = ''
 var offers = 0
+
+var stop = 0
+var stop2 = 0
 
 var delay = document.getElementById('delay')
 // 
@@ -202,12 +215,23 @@ confirmButton.addEventListener('click', function(){
     if(expirationHours === '') {
      expirationHours = 1
    }
-   if(document.getElementById('autoBid').checked){
+   if(document.getElementById('bidMultiplier-2').value !== ''){
+    bidMultiplier = document.getElementById('bidMultiplier-2').value
+    
     console.log(current_floor)
-    console.log(current_floor*.8)
-    console.log(current_floor*(.8 - service_fee/10000))
-    offerAmount = current_floor*(.8 - service_fee/10000)
+    console.log(current_floor*bidMultiplier)
+    console.log(current_floor*(bidMultiplier - service_fee/10000))
+  
+    offerAmount = current_floor*(bidMultiplier - service_fee/10000)
+    
     document.getElementById('offerAmount-2').value = offerAmount
+  }
+  if(document.getElementById('maxbidMultiplier-2').value !== ''){
+    console.log(current_floor*maxbidMultiplier)
+    console.log(current_floor*(maxbidMultiplier - service_fee/10000))  
+    maxbidMultiplier = document.getElementById('maxbidMultiplier-2').value
+    maxOfferAmount = current_floor*(maxbidMultiplier - service_fee/10000)
+    document.getElementById('maxOfferAmount-2').value = maxOfferAmount
   }
    if (offerAmount === ''){
     alert('No bid entered.')
@@ -237,7 +261,7 @@ function update_floor(){
       document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
       current_floor = collect['collection']['stats']['floor_price']
       service_fee = collect['collection']['dev_seller_fee_basis_points']
-       if(document.getElementById('autoBid').checked){
+       if(document.getElementById('bidMultiplier-2').value !== ''){
         console.log(current_floor)
         console.log(current_floor*.8)
         console.log(current_floor*(.8 - service_fee/10000))
@@ -270,18 +294,30 @@ async function run(){
       })
       console.log(collection)
       for(var asset in collection['assets']){
-        if(document.getElementById('sellOrder-2').value !== '' && document.getElementById('addProperty-2').value === ''){
+        if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
           if(collection['assets'][asset]['sellOrders'] !== null){
-            tokenId_array.push(collection['assets'][asset]['tokenId'])
-            name_array.push(collection['assets'][asset]['name'])
+            
+            if(document.getElementById('aboveFloor-2') !== ''){
+              if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
+                tokenId_array.push(collection['assets'][asset]['tokenId'])
+                name_array.push(collection['assets'][asset]['name'])    
+                console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
+              }
+            } else {
+              console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)
+              tokenId_array.push(collection['assets'][asset]['tokenId'])
+              name_array.push(collection['assets'][asset]['name'])
+            }
+            
           }
         } else {
           if(document.getElementById('addProperty-2').value !== ''){
             for(var trait in collection['assets'][asset]['traits']){
               if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
                 if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
-                  if(document.getElementById('sellOrder-2').value !== ''){
+                  if(document.getElementById('sellOrder-2').checked){
                     if(collection['assets'][asset]['sellOrders'] !== null){
+                      
                       tokenId_array.push(collection['assets'][asset]['tokenId'])
                       name_array.push(collection['assets'][asset]['name'])
                     }
@@ -304,7 +340,7 @@ async function run(){
       console.log(ex)
     }
     console.log(tokenId_array.length)
-    text.innerHTML = tokenId_array.length + '(' + offset + ')' + ' of ' + assetCount + ' collected'
+    text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
   }
   assetCount = tokenId_array.length - 1
   progressBar.max = assetCount
@@ -312,6 +348,7 @@ async function run(){
   reset()
   start()
   placeBid()
+  placeBid2()
 }
 
 function check_errors(msg){
@@ -335,10 +372,10 @@ function check_errors(msg){
 
 async function placeBid(){
   await new Promise(resolve => setTimeout(resolve, 3000))
-  if(maxOfferAmount !== 0){
+  if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
     delay.value = 250
   }
-  for(var i = 0; i < Math.floor(assetCount); i++){
+  for(var i = 0; i < Math.floor(assetCount)/2; i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
     if(maxOfferAmount !== 0){
@@ -397,7 +434,6 @@ async function placeBid(){
         console.log('**FAILED**! #' + name_array[i])
         await new Promise(resolve => setTimeout(resolve, 60000))
       }
-      
     }
     offers+=1
     progressBar.value += 1
@@ -405,13 +441,92 @@ async function placeBid(){
     offersMade.innerHTML = offers + '/' + progressBar.max 
     if(offers % 100 === 0) {
       update_floor()
-
-      
     }
   }
-  pause()
+  stop = 1
+  if(stop === 1 && stop2 === 1){
+    pause()
+  }
 }
+async function placeBid2(){
+  await new Promise(resolve => setTimeout(resolve, 3000))
+  if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
+    delay.value = 250
+  }
+  for(var i = Math.floor(assetCount)/2; i < Math.floor(assetCount); i++){
+    await new Promise(resolve => setTimeout(resolve, delay.value))
+    var offset = 0
+    if(maxOfferAmount !== 0){
+      
+      try{
+        const order = await seaport.api.getOrders({
+          asset_contract_address: NFT_CONTRACT_ADDRESS,
+          token_id: tokenId_array[i],
+          side: 0,
+          order_by: 'eth_price',
+          order_direction: 'desc'
+        })
+        const topBid = order['orders'][0].basePrice / 1000000000000000000
 
+        if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
+          offset = .001 + parseFloat(topBid - offerAmount)
+        }
+
+        console.log('top bid: ' + topBid + ' #' + name_array[i])
+      }
+      catch(ex){
+        console.log(ex.message)
+        console.log('Get bids for ' + name_array[i] + ' failed.')
+      }
+      await new Promise(resolve => setTimeout(resolve, delay.value))
+    }
+    var asset = {
+      tokenId: tokenId_array[i],
+      tokenAddress: NFT_CONTRACT_ADDRESS,
+      //schemaName: WyvernSchemaName.ERC1155
+    }
+    if (COLLECTION_NAME === 'bears-deluxe' || COLLECTION_NAME === 'guttercatgang'){
+      asset = {
+        tokenId: tokenId_array[i],
+        tokenAddress: NFT_CONTRACT_ADDRESS,
+        schemaName: WyvernSchemaName.ERC1155
+      }      
+    }
+    try{
+      await seaport.createBuyOrder({
+        asset,
+        startAmount: parseFloat(offset) + parseFloat(offerAmount),
+        accountAddress: OWNER_ADDRESS,
+        expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
+      })
+      console.log('Success #' + name_array[i])
+      text.style.color = 'black'
+      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
+    } catch(ex){
+      console.log(ex)
+      var error_message = check_errors(ex.message)
+      text.style.color = 'red'
+      text.innerHTML = error_message
+      if(error_message === 0 ){
+        text.innerHTML = 'Error.. retrying'
+        console.log('**FAILED**! #' + name_array[i])
+        await new Promise(resolve => setTimeout(resolve, 60000))
+      }
+    }
+    offers+=1
+    progressBar.value += 1
+    offersMade.style.fontSize = '20px'
+    offersMade.innerHTML = offers + '/' + progressBar.max 
+    if(offers % 100 === 0) {
+      update_floor()
+    }
+  }
+  stop2 = 1
+  if(stop === 1 && stop2 === 1){
+    pause()
+  }
+  
+}
 // Convert time to a format of hours, minutes, seconds, and milliseconds
 
 function timeToString(time) {

@@ -226,6 +226,7 @@ async function getBalance(walletAddress) {
 //['collection']['stats']['floor_price']
 document.getElementById('update_floor').addEventListener('click', function(){
   console.log((total_weth/1000000000000000000).toFixed(4))
+  console.log((total_eth/1000000000000000000).toFixed(4))
   update_floor()
 })
 function update_floor(){
@@ -268,42 +269,51 @@ eth.getBalance(values.default.OWNER_ADDRESS[1].address)
 .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 
 var total_weth = 0
-
+var total_eth = 0
 if(values.default.OWNER_ADDRESS[0].username==='Sad002d'){
 getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(function (result) {
     console.log('DustBunny: ' + (result/1000000000000000000).toFixed(4))
+    eth.getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x4beac303c8fdf1f3cd34509b344067e86dcbc506').then(function (result) {
     console.log('balloonanimal: ' + (result/1000000000000000000).toFixed(4))
+    eth.getBalance('0x4beac303c8fdf1f3cd34509b344067e86dcbc506').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65').then(function (result) {
     console.log('cakebatter: ' + (result/1000000000000000000).toFixed(4))
+    eth.getBalance('0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x60bf609e0e8b724dc61ffee24737af15a6f6d905').then(function (result) {
     console.log('doughnuthole: ' + (result/1000000000000000000).toFixed(4))
+    eth.getBalance('0x60bf609e0e8b724dc61ffee24737af15a6f6d905').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x774a4a3c3130e4850a84dc8c80945dee4de2e017').then(function (result) {
     console.log('DE2E017: ' + (result/1000000000000000000).toFixed(4))
+    eth.getBalance('0x774a4a3c3130e4850a84dc8c80945dee4de2e017').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x1484d9ae6d590d6b0981e802f555a8dd74b93017').then(function (result) {
     console.log('T74b93017: ' + (result/1000000000000000000).toFixed(4))
+    eth.getBalance('0x1484d9ae6d590d6b0981e802f555a8dd74b93017').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(function (result) {
     console.log('Sad002d: ' + (result/1000000000000000000).toFixed(4))
+    eth.getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(function (result) {
     console.log('Ti801703: ' + (result/1000000000000000000).toFixed(4))
+    eth.getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xd76654102c5f3c27886d5b3ec47b3111e18d8126').then(function (result) {
     console.log('nftd00d: ' + (result/1000000000000000000).toFixed(4))
+    eth.getBalance('0xd76654102c5f3c27886d5b3ec47b3111e18d8126').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 //
@@ -338,7 +348,9 @@ var progressBar = document.getElementById('progressBar')
 
 var delay = document.getElementById('delay')
 delay.value = 500
-
+if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
+  delay.value = 3000
+}
 document.getElementById('addDelay').addEventListener('click', function(){
   delay.value = parseInt(delay.value) + 100
   //document.getElementById('delay').value = offerAmount
@@ -491,6 +503,9 @@ async function main(){
     if(stop === 1){
       break
     }
+    if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
+      delay.value = 250
+    }
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var bidMade = 0
     if(Object.keys(offersDict).length > 0){
@@ -589,7 +604,6 @@ async function main(){
             console.log('top bid: ' + topBid + ' #' + i)
           }
           catch(ex){
-            await new Promise(resolve => setTimeout(resolve, 5000))
             console.log('Get bids for ' + i + ' failed.')
           }
           await new Promise(resolve => setTimeout(resolve, delay.value))
@@ -669,6 +683,9 @@ async function main1(){
       prop1 = offersDict[Object.keys(offersDict)[0]][0]
       trait1 = offersDict[Object.keys(offersDict)[0]][1]
       bid1 = offersDict[Object.keys(offersDict)[0]][2]
+    }
+    if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
+      delay.value = 250
     }
     for(var i = endToken1.value; i >= startToken1.value; i--){
         if(stop2 === 1){
@@ -767,7 +784,6 @@ async function main1(){
           console.log('top bid: ' + topBid1 + ' #' + i)
             }//order['orders'][0].makerAccount.user.username + 
             catch(ex){
-              await new Promise(resolve => setTimeout(resolve, 5000))
               console.log('Get bids for ' + i + ' failed.')
             }
             await new Promise(resolve => setTimeout(resolve, delay.value))
