@@ -69,7 +69,7 @@ var delay = document.getElementById('delay')
 var increaseBid = document.getElementById('increaseBid-2')
 var increaseBid1 = document.getElementById('increaseBid1-2')
 
-
+var blacklist = values.default.BLACK_LIST
 var text = document.getElementById('text-2')
 
 const collectionButton = document.getElementById('collectionButton-2')
@@ -350,7 +350,10 @@ async function run(){
   stop = 0
   stop2 = 0
   placeBid()
-  placeBid2()
+  if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601'){
+    placeBid2()
+  }
+  
 }
 
 function check_errors(msg){
@@ -373,6 +376,9 @@ function check_errors(msg){
 }
 
 async function placeBid(){
+  if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
+    assetCount *= 2
+  }
   await new Promise(resolve => setTimeout(resolve, 2000))
   if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
     delay.value = 250
@@ -381,7 +387,7 @@ async function placeBid(){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
     if(maxOfferAmount !== 0){
-      
+      var username = ''
       try{
         const order = await seaport.api.getOrders({
           asset_contract_address: NFT_CONTRACT_ADDRESS,
@@ -390,6 +396,7 @@ async function placeBid(){
           order_by: 'eth_price',
           order_direction: 'desc'
         })
+
         const topBid = order['orders'][0].basePrice / 1000000000000000000
 
         if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
@@ -397,6 +404,14 @@ async function placeBid(){
         }
 
         console.log('top bid: ' + topBid + ' #' + name_array[i])
+        try{
+        username = order['orders'][0].makerAccount.user.username
+      } catch(ex){
+        username = 'Null'
+      }
+        if(blacklist.includes(username) === true){
+          offset = 0
+        }
       }
       catch(ex){
         console.log(ex.message)
@@ -451,6 +466,9 @@ async function placeBid(){
     document.getElementById('body').style.background = '#D9B3FF'
     beep()
     if(document.getElementById('repeat-2').checked){
+      offers = 0
+      progressBar.value = 0
+      reset()
       placeBid()
       placeBid2()
     }
@@ -465,7 +483,7 @@ async function placeBid2(){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
     if(maxOfferAmount !== 0){
-      
+      var username = ''
       try{
         const order = await seaport.api.getOrders({
           asset_contract_address: NFT_CONTRACT_ADDRESS,
@@ -481,6 +499,14 @@ async function placeBid2(){
         }
 
         console.log('top bid: ' + topBid + ' #' + name_array[i])
+        try{
+        username = order['orders'][0].makerAccount.user.username
+      } catch(ex){
+        username = 'Null'
+      }
+        if(blacklist.includes(username) === true){
+          offset = 0
+        }
       }
       catch(ex){
         console.log(ex.message)
@@ -535,6 +561,9 @@ async function placeBid2(){
     document.getElementById('body').style.background = '#D9B3FF'
     beep()
     if(document.getElementById('repeat-2').checked){
+      offers = 0
+      progressBar.value = 0
+      reset()
       placeBid()
       placeBid2()
     }
