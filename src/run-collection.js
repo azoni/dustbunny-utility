@@ -450,6 +450,10 @@ async function placeBid(){
     pause()
     document.getElementById('body').style.background = '#D9B3FF'
     beep()
+    if(document.getElementById('repeat-2').checked){
+      placeBid()
+      placeBid2()
+    }
   }
 }
 async function placeBid2(){
@@ -530,6 +534,10 @@ async function placeBid2(){
     pause()
     document.getElementById('body').style.background = '#D9B3FF'
     beep()
+    if(document.getElementById('repeat-2').checked){
+      placeBid()
+      placeBid2()
+    }
   }
   
 }
