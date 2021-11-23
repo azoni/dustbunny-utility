@@ -124,10 +124,11 @@ function event_bid(){
   //console.log(eventDict)
 }
 //  BLACK_LIST: ['nftd00d', 'DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703', 'forbayc'],
-
+document.getElementById('upbid_bot').innerHTML = values.default.API_KEY.substring(0, 5)
 document.getElementById('upbid_bot').addEventListener('click', function(){
-  event_bid()
+  //event_bid()
   console.log('events started')
+
 })
 async function placeBid(){ 
   console.log('Number to upbid: ' + Object.keys(eventDict).length)
@@ -501,14 +502,15 @@ async function main(){
       trait1 = offersDict[Object.keys(offersDict)[0]][1]
       bid1 = offersDict[Object.keys(offersDict)[0]][2]
     }
+    if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
+      delay.value = 250
+    }
     await new Promise(resolve => setTimeout(resolve, 3000));
     for(var i = startToken.value; i <= endToken.value; i++){
     if(stop === 1){
       break
     }
-    if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
-      delay.value = 250
-    }
+
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var bidMade = 0
     if(Object.keys(offersDict).length > 0){

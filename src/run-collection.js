@@ -438,7 +438,7 @@ async function placeBid(){
         accountAddress: OWNER_ADDRESS,
         expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
-      console.log('Success #' + name_array[i])
+      console.log('Success #' + name_array[i] + ': ' + parseFloat(offset) + parseFloat(offerAmount))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
     } catch(ex){
@@ -467,6 +467,7 @@ async function placeBid(){
     beep()
     if(document.getElementById('repeat-2').checked){
       stop = 0
+      stop = 1
       offers = 0
       progressBar.value = 0
       reset()
@@ -535,7 +536,7 @@ async function placeBid2(){
         accountAddress: OWNER_ADDRESS,
         expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
-      console.log('Success #' + name_array[i])
+      console.log('Success #' + name_array[i] + ': ' + parseFloat(offset) + parseFloat(offerAmount))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
     } catch(ex){
@@ -564,6 +565,7 @@ async function placeBid2(){
     beep()
     if(document.getElementById('repeat-2').checked){
       stop2 = 0
+      stop = 0
       offers = 0
       progressBar.value = 0
       reset()
