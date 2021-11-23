@@ -1047,6 +1047,7 @@ async function getCollectionDetails_fav(){
       if (progressBar.value === 0){
         getCollection(fav)
         collectionInput.value = fav
+        document.getElementById('collectionInput-2').value = fav
       }
       window.scrollTo(0, 0);
     })

@@ -376,7 +376,9 @@ function check_errors(msg){
     return 'Asset not found.'
   } else if(msg.includes('Trading is not enabled for')){
     return 'Trading not enalbed on asset.'
-  } 
+  } else if(msg.includes('Internal server error')){
+    return 'Internal server error.'
+  }
   return 0
 }
 
@@ -404,6 +406,8 @@ async function placeBid(){
 
         const topBid = order['orders'][0].basePrice / 1000000000000000000
 
+
+
         if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
           offset = .001 + parseFloat(topBid - offerAmount)
         }
@@ -412,6 +416,11 @@ async function placeBid(){
         try{
         username = order['orders'][0].makerAccount.user.username
         console.log(username)
+        // if(username === 'DrBurry'){
+        //   while(){
+
+        //   }
+        // }
       } catch(ex){
         username = 'Null'
       }
@@ -444,7 +453,7 @@ async function placeBid(){
         accountAddress: OWNER_ADDRESS,
         expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
-      console.log('Success #' + name_array[i] + ': ' + parseFloat(offset) + parseFloat(offerAmount))
+      console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
     } catch(ex){
@@ -469,11 +478,12 @@ async function placeBid(){
   stop = 1
   if(stop === 1 && stop2 === 1){
     pause()
-    document.getElementById('body').style.background = '#D9B3FF'
+    document.getElementById('body').style.background = "#E6FBFF"
     beep()
     if(document.getElementById('repeat-2').checked){
+      document.getElementById('body').style.background = '#90EE90'
       stop = 0
-      stop = 1
+      stop2 = 0
       offers = 0
       progressBar.value = 0
       reset()
@@ -542,7 +552,7 @@ async function placeBid2(){
         accountAddress: OWNER_ADDRESS,
         expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
-      console.log('Success #' + name_array[i] + ': ' + parseFloat(offset) + parseFloat(offerAmount))
+      console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
     } catch(ex){
@@ -567,9 +577,10 @@ async function placeBid2(){
   stop2 = 1
   if(stop === 1 && stop2 === 1){
     pause()
-    document.getElementById('body').style.background = '#D9B3FF'
+    document.getElementById('body').style.background = "#E6FBFF"
     beep()
     if(document.getElementById('repeat-2').checked){
+      document.getElementById('body').style.background = '#90EE90'
       stop2 = 0
       stop = 0
       offers = 0
