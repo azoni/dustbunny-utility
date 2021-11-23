@@ -262,11 +262,16 @@ function update_floor(){
       current_floor = collect['collection']['stats']['floor_price']
       service_fee = collect['collection']['dev_seller_fee_basis_points']
        if(document.getElementById('bidMultiplier-2').value !== ''){
-        console.log(current_floor)
-        console.log(current_floor*.8)
-        console.log(current_floor*(.8 - service_fee/10000))
-        offerAmount = current_floor*(.8 - service_fee/10000)
+        console.log(current_floor*bidMultiplier)
+        console.log(current_floor*(bidMultiplier - service_fee/10000))
+        offerAmount = current_floor*(bidMultiplier - service_fee/10000)
         document.getElementById('offerAmount-2').value = offerAmount
+      }
+       if(document.getElementById('maxbidMultiplier-2').value !== ''){
+        console.log(current_floor*maxbidMultiplier)
+        console.log(current_floor*(maxbidMultiplier - service_fee/10000))
+        maxOfferAmount = current_floor*(maxbidMultiplier - service_fee/10000)
+        document.getElementById('maxOfferAmount-2').value = maxOfferAmount
       }
       console.log('Floor updated: ' + collect['collection']['stats']['floor_price'])
     } catch(ex){
@@ -406,6 +411,7 @@ async function placeBid(){
         console.log('top bid: ' + topBid + ' #' + name_array[i])
         try{
         username = order['orders'][0].makerAccount.user.username
+        console.log(username)
       } catch(ex){
         username = 'Null'
       }
