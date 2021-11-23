@@ -466,9 +466,11 @@ async function placeBid(){
     document.getElementById('body').style.background = '#D9B3FF'
     beep()
     if(document.getElementById('repeat-2').checked){
+      stop = 0
       offers = 0
       progressBar.value = 0
       reset()
+      start()
       placeBid()
       placeBid2()
     }
@@ -561,9 +563,11 @@ async function placeBid2(){
     document.getElementById('body').style.background = '#D9B3FF'
     beep()
     if(document.getElementById('repeat-2').checked){
+      stop2 = 0
       offers = 0
       progressBar.value = 0
       reset()
+      start()
       placeBid()
       placeBid2()
     }
