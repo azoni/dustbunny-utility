@@ -128,8 +128,27 @@ document.getElementById('upbid_bot').innerHTML = values.default.API_KEY.substrin
 document.getElementById('upbid_bot').addEventListener('click', function(){
   //event_bid()
   console.log('events started')
-
+  buy_order()
 })
+async function buy_order(){
+  try{
+    const order = await seaport.api.getOrders({
+      side: 0,
+      order_by: 'created_date',
+      maker: '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
+      //limit: 50
+    })
+    console.log(order)
+    for(var o in order['orders']){
+      console.log(order['orders'][o]['asset']['collection']['name'] + ' ' + order['orders'][o]['asset']['tokenId'] + ' ' + order['orders'][o].basePrice/1000000000000000000)
+      console.log("upbidding flash-prpatel05")
+    }
+  } catch(ex) {
+    console.log('error with buy orders')
+  }
+  
+}
+
 async function placeBid(){ 
   console.log('Number to upbid: ' + Object.keys(eventDict).length)
   progressBar.value = 0
