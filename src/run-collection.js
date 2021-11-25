@@ -19,19 +19,20 @@ console.log('Collection loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
-const currentHour = new Date().getHours()
+var currentHour = new Date().getHours()
 var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
 
-const infuraRpcSubprovider = new RPCSubprovider({
+var infuraRpcSubprovider = new RPCSubprovider({
   rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
 });
-const providerEngine = new Web3ProviderEngine();
+var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
 providerEngine.start();
 
 // Create seaport object using provider created. 
-const seaport = new OpenSeaPort(
+var seaport = new OpenSeaPort(
+
   providerEngine,
   {
     networkName: Network.Main,
@@ -39,6 +40,26 @@ const seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
+function create_seaport(){
+currentHour = new Date().getHours()
+INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+
+infuraRpcSubprovider = new RPCSubprovider({
+  rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+});
+providerEngine = new Web3ProviderEngine();
+providerEngine.addProvider(mnemonicWalletSubprovider);
+providerEngine.addProvider(infuraRpcSubprovider);
+providerEngine.start();
+seaport = new OpenSeaPort(
+  providerEngine,
+  {
+    networkName: Network.Main,
+    apiKey: values.default.API_KEY
+  },
+  (arg) => console.log(arg)
+);
+}
 // const seaport2 = new OpenSeaPort(
 //   providerEngine,
 //   {
@@ -188,7 +209,13 @@ quickButton.addEventListener('click', function(){
   increaseBid.disabled = false
   increaseBid1.disabled = false
   progressBar.max = assetCount
-  run()
+  
+  if(tokenId_array.length !== 0){
+    placeBid()
+    placeBid2()
+  } else {
+    run()
+  }
 })
 
 var offersDict = {}
@@ -283,9 +310,9 @@ function update_floor(){
     console.log('No Collection selected.')
   }
 }
-
+text.style.fontSize = '20px'
 async function run(){
-  text.style.fontSize = '20px'
+  
   text.innerHTML = 'Starting.....'
   var collectionName = COLLECTION_NAME.trim()
   console.log(assetCount)
@@ -363,6 +390,8 @@ async function run(){
 
 function check_errors(msg){
   if(msg.includes('Insufficient balance.')){
+    beep()
+    beep()
     return 'Insufficient balance. Please wrap more ETH.'
     //alert('Insufficient balance. Please wrap more ETH.')
   }
@@ -383,6 +412,7 @@ function check_errors(msg){
 }
 
 async function placeBid(){
+  create_seaport()
   if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
     assetCount *= 2
   }
@@ -461,6 +491,9 @@ async function placeBid(){
       var error_message = check_errors(ex.message)
       text.style.color = 'red'
       text.innerHTML = error_message
+      if(error_message === 'Insufficient balance. Please wrap more ETH.'){
+        await new Promise(resolve => setTimeout(resolve, 180000))
+      }
       if(error_message === 0 ){
         text.innerHTML = 'Error.. retrying'
         console.log('**FAILED**! #' + name_array[i])
@@ -560,6 +593,9 @@ async function placeBid2(){
       var error_message = check_errors(ex.message)
       text.style.color = 'red'
       text.innerHTML = error_message
+      if(error_message === 'Insufficient balance. Please wrap more ETH.'){
+        await new Promise(resolve => setTimeout(resolve, 180000))
+      }
       if(error_message === 0 ){
         text.innerHTML = 'Error.. retrying'
         console.log('**FAILED**! #' + name_array[i])
@@ -610,6 +646,8 @@ document.getElementById('reset-2').addEventListener('click', function(){
   quickButton.disabled = true
   progressBar.hidden = true
   offersMade.innerHTML = ''
+  tokenId_array = []
+  name_array = []
 })
 
 // Convert time to a format of hours, minutes, seconds, and milliseconds

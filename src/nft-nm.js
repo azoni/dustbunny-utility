@@ -11,9 +11,9 @@ const MnemonicWalletSubprovider = require("@0x/subproviders")
   .MnemonicWalletSubprovider;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
-//teacuppig1234 d0fc2dfb800045358e70548d71176469
+//teacuppig1234 d0fc2dfb800045358e70548d71176469-
 //charltonsmith f934d4e8e2af46b38c60826c4fde1afa-
-//janeejacobsen 8dfb7126fa454b3a9d3b48f0435b8c05
+//janeejacobsen 8dfb7126fa454b3a9d3b48f0435b8c05--
 //joecurry c2941943ae8341dca396d5dc49426f92-
 var myAccount = document.getElementById('myAccount')
 var myAccount2 = document.getElementById('myAccount2')
@@ -75,7 +75,7 @@ var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: values.default.API_KEY
+    apiKey: '8dfb7126fa454b3a9d3b48f0435b8c05'
   },
   (arg) => console.log(arg)
 );
@@ -250,6 +250,7 @@ function update_floor(){
   getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
   document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
   });
+
   getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
       document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
   });
@@ -663,8 +664,13 @@ async function main(){
 }
 function check_errors(msg){
   if(msg.includes('Insufficient balance.')){
+    beep()
+    beep()
     return 'Insufficient balance. Please wrap more ETH.'
     //alert('Insufficient balance. Please wrap more ETH.')
+  }
+  else if(msg.includes('Invalid JSON RPC response')){
+    return 'Invalid JSON RPC response'
   }
   else if(msg.includes('This order does not have a valid bid price for the auction')){
     return 'Auction'
@@ -673,7 +679,9 @@ function check_errors(msg){
     return 'Asset not found.'
   } else if(msg.includes('Trading is not enabled for')){
     return 'Trading not enalbed on asset.'
-  } 
+  } else if(msg.includes('Internal server error')){
+    return 'Internal server error.'
+  }
   return 0
 }
 
