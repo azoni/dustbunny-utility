@@ -20,7 +20,7 @@ var myAccount2 = document.getElementById('myAccount2')
 // Set initial Owner Address.
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 var MNEMONIC = secret.default.MNEMONIC
-
+//BLACK_LIST: ['DrBurry', 'DustBunny', 'BalloonAnimal', 'DE2E017', 'CakeBatter', 'T74b93017', 'DoughnutHole', 'ad002d', 'Ti801703'],
 // web3.eth.getBalance("0x407d73d8a49eeb85d32cf465507dd71d507100c1")
 // .then(console.log);
 // account1.addEventListener('click', function(){
@@ -75,7 +75,7 @@ var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: values.default.API_KEY
+    apiKey: values.default.API_KEY2
   },
   (arg) => console.log(arg)
 );
@@ -125,6 +125,7 @@ function event_bid(){
 }
 //  BLACK_LIST: ['nftd00d', 'DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703', 'forbayc'],
 document.getElementById('upbid_bot').innerHTML = values.default.API_KEY.substring(0, 5)
+document.getElementById('api2').innerHTML = values.default.API_KEY2.substring(0, 5)
 document.getElementById('upbid_bot').addEventListener('click', function(){
   //event_bid()
   console.log('events started')
@@ -134,10 +135,12 @@ async function buy_order(){
   const collection_orders = []
   const wallet_orders = []
   try{
+    //0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea
+    //0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5
     const order = await seaport.api.getOrders({
       side: 0,
       order_by: 'created_date',
-      maker: '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
+      maker: '0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea',
       //limit: 50
     })
     console.log(order)
