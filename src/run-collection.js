@@ -379,6 +379,7 @@ async function run(){
     console.log(tokenId_array.length)
     text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
   }
+  direction = 'asc'
   }
   for(var offset = 0; offset < assetCount; offset+=50){
     //await new Promise(resolve => setTimeout(resolve, 5000))
