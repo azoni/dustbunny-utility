@@ -75,7 +75,7 @@ var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: 'c7f80b9a713c4bd3b9feb25b57bf1f98'
+    apiKey: values.default.API_KEY
   },
   (arg) => console.log(arg)
 );
