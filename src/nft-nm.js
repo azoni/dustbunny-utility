@@ -75,7 +75,7 @@ var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: values.default.API_KEY
+    apiKey: 'c7f80b9a713c4bd3b9feb25b57bf1f98'
   },
   (arg) => console.log(arg)
 );
@@ -131,6 +131,8 @@ document.getElementById('upbid_bot').addEventListener('click', function(){
   buy_order()
 })
 async function buy_order(){
+  const collection_orders = []
+  const wallet_orders = []
   try{
     const order = await seaport.api.getOrders({
       side: 0,
@@ -146,7 +148,6 @@ async function buy_order(){
   } catch(ex) {
     console.log('error with buy orders')
   }
-  
 }
 
 async function placeBid(){ 
