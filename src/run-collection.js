@@ -707,7 +707,7 @@ async function placeBid2(){
     offersMade.innerHTML = offers + '/' + progressBar.max 
     if(offers % 100 === 0) {
       update_floor()
-      buy_order()
+      //buy_order()
     }
   }
   stop2 = 1
