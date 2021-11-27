@@ -498,7 +498,7 @@ async function placeBid(){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
     if(maxOfferAmount !== 0){
-      var username = ''
+      var username = 'No-User'
       try{
         const order = await seaport.api.getOrders({
           asset_contract_address: NFT_CONTRACT_ADDRESS,
@@ -621,7 +621,7 @@ async function placeBid2(){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
     if(maxOfferAmount !== 0){
-      var username = ''
+      var username = 'No-User'
       try{
         const order = await seaport.api.getOrders({
           asset_contract_address: NFT_CONTRACT_ADDRESS,
