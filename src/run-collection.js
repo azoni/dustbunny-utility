@@ -41,24 +41,24 @@ var seaport = new OpenSeaPort(
   (arg) => console.log(arg)
 );
 function create_seaport(){
-currentHour = new Date().getHours()
-INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  currentHour = new Date().getHours()
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
 
-infuraRpcSubprovider = new RPCSubprovider({
-  rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-});
-providerEngine = new Web3ProviderEngine();
-providerEngine.addProvider(mnemonicWalletSubprovider);
-providerEngine.addProvider(infuraRpcSubprovider);
-providerEngine.start();
-seaport = new OpenSeaPort(
-  providerEngine,
-  {
-    networkName: Network.Main,
-    apiKey: values.default.API_KEY
-  },
-  (arg) => console.log(arg)
-);
+  infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main,
+      apiKey: values.default.API_KEY
+    },
+    (arg) => console.log(arg)
+  );
 }
 // const seaport2 = new OpenSeaPort(
 //   providerEngine,
@@ -92,6 +92,7 @@ var increaseBid1 = document.getElementById('increaseBid1-2')
 
 var blacklist = values.default.BLACK_LIST
 var text = document.getElementById('text-2')
+var text1 = document.getElementById('text1-2')
 
 const collectionButton = document.getElementById('collectionButton-2')
 const collectionInput = document.getElementById('collectionInput-2')
@@ -311,10 +312,14 @@ function update_floor(){
   }
 }
 text.style.fontSize = '20px'
+text1.style.fontSize = '20px'
 async function run(){
   
   text.innerHTML = 'Starting.....'
   var direction = 'desc'
+  if(document.getElementById('reverse-2').checked){
+    direction = 'asc'
+  }
   var collectionName = COLLECTION_NAME.trim()
   console.log(assetCount)
   if(collectionName === 'mutant-ape-yacht-club'){
@@ -447,10 +452,13 @@ async function run(){
   start()
   stop = 0
   stop2 = 0
-  placeBid()
+
+    placeBid()
   if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601'){
     placeBid2()
+  
   }
+
   
 }
 
@@ -559,6 +567,8 @@ async function placeBid(){
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
+      text1.style.color = 'black'
+      text1.innerHTML = 'top bid: ' + topBid.toFixed(4) + ' #' + name_array[i]
     } catch(ex){
       console.log(ex)
       var error_message = check_errors(ex.message)
@@ -579,6 +589,7 @@ async function placeBid(){
     offersMade.innerHTML = offers + '/' + progressBar.max 
     if(offers % 100 === 0) {
       update_floor()
+      //buy_order()
     }
   }
   stop = 1
@@ -674,6 +685,8 @@ async function placeBid2(){
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
+      text1.style.color = 'black'
+      text1.innerHTML = 'top bid: ' + topBid.toFixed(4) + ' #' + name_array[i]
     } catch(ex){
       console.log(ex)
       var error_message = check_errors(ex.message)
@@ -694,6 +707,7 @@ async function placeBid2(){
     offersMade.innerHTML = offers + '/' + progressBar.max 
     if(offers % 100 === 0) {
       update_floor()
+      buy_order()
     }
   }
   stop2 = 1
@@ -715,7 +729,59 @@ async function placeBid2(){
   }
   
 }
+async function buy_order(){
+  const collection_orders = []
+  const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5']
+  
+  try{
+    //0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea 0-flash
+    //0x701c1a9d3fc47f7949178c99b141c86fac72a1c4 1-flash
+    //0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5 flash
+    let search_time = Math.floor(+new Date() / 1000) - 180
+    search_time = new Date(search_time).toISOString();
+    const order = await seaport.api.getOrders({
+      side: 0,
+      //order_by: 'created_date',
+      maker: '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
+      listed_after: search_time,
+      limit: 50
+    })
 
+    var username = 'Null'
+    console.log(order.length)
+    for(var o in order['orders']){
+          try{
+          username = order['orders'][o].makerAccount.user.username
+          console.log(username)
+
+        } catch(ex){
+          username = 'Null'
+        }
+      if (blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < maxOfferAmount && parseFloat(order['orders'][o].basePrice/1000000000000000000) > offerAmount){
+        var asset = {
+          tokenId: order['orders'][o]['asset']['tokenId'],
+          tokenAddress: NFT_CONTRACT_ADDRESS,
+          //schemaName: WyvernSchemaName.ERC1155
+        }
+        try{
+          await seaport.createBuyOrder({
+            asset,
+            startAmount: parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001),
+            accountAddress: OWNER_ADDRESS,
+            expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
+          })
+          console.log(order['orders'][o]['asset']['collection']['name'] + ' ' + order['orders'][o]['asset']['tokenId'] + ' ' + order['orders'][o].basePrice/1000000000000000000)
+          console.log("upbidding flash-prpatel05 ")// + wallet_orders[wallet])
+        } catch(ex){
+          console.log(ex)
+        }
+
+      }
+    }
+  } catch(ex) {
+    console.log('error with buy orders')
+  }
+}
 document.getElementById('reset-2').addEventListener('click', function(){ 
   reset()
   document.getElementById('assetCount').value = ''
@@ -727,6 +793,7 @@ document.getElementById('reset-2').addEventListener('click', function(){
   offerAmount = 0
   expirationHours = 0
   text.innerHTML = ''
+  text1.innerHTML = ''
   increaseBid.disabled = true
   increaseBid1.disabled = true
   quickButton.disabled = true
