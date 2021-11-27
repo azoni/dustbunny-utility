@@ -159,15 +159,15 @@ async function buy_order(){
         } catch(ex){
           username = 'Null'
         }
-      console.log(order['orders'][o]['asset']['collection']['name'])
-      // try{
-      //   const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['name'])
-      //   var floor_price = collect['collection']['stats']['floor_price']
-      // } catch (ex) {
-      //   console.log("couldn't get floor")
-      // } 
-      console.log(parseFloat(order['orders'][o].basePrice/1000000000000000000))
-      //console.log(floor_price)
+      console.log(order['orders'][o]['asset']['collection']['slug'])
+      try{
+        const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
+        var floor_price = collect['collection']['stats']['floor_price']
+      } catch (ex) {
+        console.log("couldn't get floor")
+      } 
+      console.log('bid: ' + parseFloat(order['orders'][o].basePrice/1000000000000000000))
+      console.log('floor: ' + floor_price)
       if (blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < maxOfferAmount && parseFloat(order['orders'][o].basePrice/1000000000000000000) > offerAmount){
         var asset = {
           tokenId: order['orders'][o]['asset']['tokenId'],
