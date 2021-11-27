@@ -567,8 +567,10 @@ async function placeBid(){
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
-      text1.style.color = 'black'
-      text1.innerHTML = 'top bid: ' + topBid.toFixed(4) + ' #' + name_array[i]
+      if(maxOfferAmount !== 0){
+        text1.style.color = 'black'
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(4) + ' #' + name_array[i]
+      }
     } catch(ex){
       console.log(ex)
       var error_message = check_errors(ex.message)
@@ -685,8 +687,11 @@ async function placeBid2(){
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
-      text1.style.color = 'black'
-      text1.innerHTML = 'top bid: ' + topBid.toFixed(4) + ' #' + name_array[i]
+      if(maxOfferAmount !== 0){
+        text1.style.color = 'black'
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(4) + ' #' + name_array[i]
+      }
+      
     } catch(ex){
       console.log(ex)
       var error_message = check_errors(ex.message)
