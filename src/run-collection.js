@@ -323,7 +323,7 @@ async function run(){
   }
   var collectionName = COLLECTION_NAME.trim()
   console.log(assetCount)
-  if(collectionName === 'mutant-ape-yacht-club'){
+  if(assetCount > 10000){
     direction = 'asc'
     assetCount = assetCount/2
   for(var offset = 0; offset < assetCount; offset+=50){
