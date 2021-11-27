@@ -516,20 +516,20 @@ async function placeBid(){
         } catch(ex){
           username = 'No-User'
         }
-        if(blacklist.includes(username) === true){
-          for(var b in order['orders']){
-            try{
-              username = order['orders'][b].makerAccount.user.username
-              console.log(username)
-            } catch(ex){
-              username = 'No-User'
-            }
-            if(blacklist.includes(username) !== true){
-              topBid = order['orders'][b].basePrice / 1000000000000000000
-              break
-            }
-          }
-        }
+        // if(blacklist.includes(username) === true){
+        //   for(var b in order['orders']){
+        //     try{
+        //       username = order['orders'][b].makerAccount.user.username
+        //       console.log(username)
+        //     } catch(ex){
+        //       username = 'No-User'
+        //     }
+        //     if(blacklist.includes(username) !== true){
+        //       topBid = order['orders'][b].basePrice / 1000000000000000000
+        //       break
+        //     }
+        //   }
+        // }
         
 
         if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
@@ -639,20 +639,20 @@ async function placeBid2(){
         } catch(ex){
           username = 'No-User'
         }
-        if(blacklist.includes(username) === true){
-          for(var b in order['orders']){
-            try{
-              username = order['orders'][b].makerAccount.user.username
-              console.log(username)
-            } catch(ex){
-              username = 'No-User'
-            }
-            if(blacklist.includes(username) !== true){
-              topBid = order['orders'][b].basePrice / 1000000000000000000
-              break
-            }
-          }
-        }
+        // if(blacklist.includes(username) === true){
+        //   for(var b in order['orders']){
+        //     try{
+        //       username = order['orders'][b].makerAccount.user.username
+        //       console.log(username)
+        //     } catch(ex){
+        //       username = 'No-User'
+        //     }
+        //     if(blacklist.includes(username) !== true){
+        //       topBid = order['orders'][b].basePrice / 1000000000000000000
+        //       break
+        //     }
+        //   }
+        // }
         if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
           offset = .001 + parseFloat(topBid - offerAmount)
         }
