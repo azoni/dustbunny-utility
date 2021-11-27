@@ -508,7 +508,7 @@ async function placeBid(){
           order_direction: 'asc',
           limit: 50
         })
-        var topBid = order['orders'][0].basePrice / 1000000000000000000
+        const topBid = order['orders'][0].basePrice / 1000000000000000000
         try{
           username = order['orders'][0].makerAccount.user.username
           console.log(username)
@@ -566,10 +566,10 @@ async function placeBid(){
       })
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
-      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
+      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(6) + " on " + name_array[i]
       if(maxOfferAmount !== 0){
         text1.style.color = 'black'
-        text1.innerHTML = 'top bid: ' + topBid.toFixed(4) + ' #' + name_array[i]
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(6) + ' #' + name_array[i]
       }
     } catch(ex){
       console.log(ex)
@@ -631,7 +631,7 @@ async function placeBid2(){
           order_direction: 'desc',
           limit: 50
         })
-        var topBid = order['orders'][0].basePrice / 1000000000000000000
+        const topBid = order['orders'][0].basePrice / 1000000000000000000
         try{
           username = order['orders'][0].makerAccount.user.username
           console.log(username)
@@ -686,10 +686,10 @@ async function placeBid2(){
       })
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
-      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
+      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(6) + " on " + name_array[i]
       if(maxOfferAmount !== 0){
         text1.style.color = 'black'
-        text1.innerHTML = 'top bid: ' + topBid.toFixed(4) + ' #' + name_array[i]
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(6) + ' #' + name_array[i]
       }
       
     } catch(ex){
