@@ -514,7 +514,7 @@ async function placeBid(){
           console.log(username)
 
         } catch(ex){
-          username = 'Null'
+          username = 'No-User'
         }
         if(blacklist.includes(username) === true){
           for(var b in order['orders']){
@@ -522,7 +522,7 @@ async function placeBid(){
               username = order['orders'][b].makerAccount.user.username
               console.log(username)
             } catch(ex){
-              username = 'Null'
+              username = 'No-User'
             }
             if(blacklist.includes(username) !== true){
               topBid = order['orders'][b].basePrice / 1000000000000000000
@@ -637,7 +637,7 @@ async function placeBid2(){
           console.log(username)
 
         } catch(ex){
-          username = 'Null'
+          username = 'No-User'
         }
         if(blacklist.includes(username) === true){
           for(var b in order['orders']){
@@ -645,7 +645,7 @@ async function placeBid2(){
               username = order['orders'][b].makerAccount.user.username
               console.log(username)
             } catch(ex){
-              username = 'Null'
+              username = 'No-User'
             }
             if(blacklist.includes(username) !== true){
               topBid = order['orders'][b].basePrice / 1000000000000000000
