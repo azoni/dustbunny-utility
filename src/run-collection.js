@@ -505,9 +505,9 @@ async function placeBid(){
           token_id: tokenId_array[i],
           side: 0,
           order_by: 'eth_price',
-          order_direction: 'asc',
+          order_direction: 'desc',
         })
-        const topBid = order['orders'][0].basePrice / 1000000000000000000
+        var topBid = order['orders'][0].basePrice / 1000000000000000000
         try{
           username = order['orders'][0].makerAccount.user.username
           console.log(username)
@@ -515,20 +515,20 @@ async function placeBid(){
         } catch(ex){
           username = 'No-User'
         }
-        // if(blacklist.includes(username) === true){
-        //   for(var b in order['orders']){
-        //     try{
-        //       username = order['orders'][b].makerAccount.user.username
-        //       console.log(username)
-        //     } catch(ex){
-        //       username = 'No-User'
-        //     }
-        //     if(blacklist.includes(username) !== true){
-        //       topBid = order['orders'][b].basePrice / 1000000000000000000
-        //       break
-        //     }
-        //   }
-        // }
+        if(blacklist.includes(username) === true){
+          for(var b in order['orders']){
+            try{
+              username = order['orders'][b].makerAccount.user.username
+              console.log(username)
+            } catch(ex){
+              username = 'No-User'
+            }
+            if(blacklist.includes(username) !== true){
+              topBid = order['orders'][b].basePrice / 1000000000000000000
+              break
+            }
+          }
+        }
         
 
         if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
@@ -536,10 +536,7 @@ async function placeBid(){
         }
 
         console.log('top bid: ' + topBid + ' #' + name_array[i])
-      if(maxOfferAmount !== 0){
-        text1.style.color = 'black'
-        text1.innerHTML = 'top bid: ' + topBid.toFixed(6) + ' #' + name_array[i]
-      }
+
       }
       catch(ex){
         console.log(ex.message)
@@ -569,7 +566,10 @@ async function placeBid(){
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(6) + " on " + name_array[i]
-
+      if(maxOfferAmount !== 0){
+        text1.style.color = 'black'
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(6) + ' #' + name_array[i]
+      }
     } catch(ex){
       console.log(ex)
       var error_message = check_errors(ex.message)
@@ -629,7 +629,7 @@ async function placeBid2(){
           order_by: 'eth_price',
           order_direction: 'desc',
         })
-        const topBid = order['orders'][0].basePrice / 1000000000000000000
+        var topBid = order['orders'][0].basePrice / 1000000000000000000
         try{
           username = order['orders'][0].makerAccount.user.username
           console.log(username)
@@ -637,29 +637,26 @@ async function placeBid2(){
         } catch(ex){
           username = 'No-User'
         }
-        // if(blacklist.includes(username) === true){
-        //   for(var b in order['orders']){
-        //     try{
-        //       username = order['orders'][b].makerAccount.user.username
-        //       console.log(username)
-        //     } catch(ex){
-        //       username = 'No-User'
-        //     }
-        //     if(blacklist.includes(username) !== true){
-        //       topBid = order['orders'][b].basePrice / 1000000000000000000
-        //       break
-        //     }
-        //   }
-        // }
+        if(blacklist.includes(username) === true){
+          for(var b in order['orders']){
+            try{
+              username = order['orders'][b].makerAccount.user.username
+              console.log(username)
+            } catch(ex){
+              username = 'No-User'
+            }
+            if(blacklist.includes(username) !== true){
+              topBid = order['orders'][b].basePrice / 1000000000000000000
+              break
+            }
+          }
+        }
         if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
           offset = .001 + parseFloat(topBid - offerAmount)
         }
 
         console.log('top bid: ' + topBid + ' #' + name_array[i])
-              if(maxOfferAmount !== 0){
-        text1.style.color = 'black'
-        text1.innerHTML = 'top bid: ' + topBid.toFixed(6) + ' #' + name_array[i]
-      }
+
       }
       catch(ex){
         console.log(ex.message)
@@ -689,7 +686,10 @@ async function placeBid2(){
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(6) + " on " + name_array[i]
-
+              if(maxOfferAmount !== 0){
+        text1.style.color = 'black'
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(6) + ' #' + name_array[i]
+      }
       
     } catch(ex){
       console.log(ex)
