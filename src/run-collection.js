@@ -506,7 +506,6 @@ async function placeBid(){
           side: 0,
           order_by: 'eth_price',
           order_direction: 'asc',
-          limit: 50
         })
         const topBid = order['orders'][0].basePrice / 1000000000000000000
         try{
