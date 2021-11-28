@@ -183,7 +183,7 @@ collectionButtonClear.addEventListener('click', function(){
 collectionButton.addEventListener('click', function(){
   getCollection(collectionInput.value)
 })
-document.getElementById('api2').addEventListener('click', function(){
+document.getElementById('api3').addEventListener('click', function(){
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
 
@@ -203,6 +203,27 @@ document.getElementById('api2').addEventListener('click', function(){
     (arg) => console.log(arg)
   );
   console.log('swapping to public api key')
+})
+document.getElementById('api2').addEventListener('click', function(){
+  currentHour = new Date().getHours()
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+
+  infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main,
+      apiKey: values.default.API_KEY
+    },
+    (arg) => console.log(arg)
+  );
+  console.log('swapping to non-public api key')
 })
 increaseBid.addEventListener('click', function(){
   offerAmount = .01 + parseFloat(offerAmount)
