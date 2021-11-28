@@ -183,7 +183,10 @@ collectionButtonClear.addEventListener('click', function(){
 collectionButton.addEventListener('click', function(){
   getCollection(collectionInput.value)
 })
-
+document.getElementById('api2').addEventListener('click', function(){
+  create_seaport()
+  console.log('swapping api key')
+})
 increaseBid.addEventListener('click', function(){
   offerAmount = .01 + parseFloat(offerAmount)
   document.getElementById('offerAmount-2').value = offerAmount
@@ -459,8 +462,6 @@ async function run(){
     placeBid2()
   
   }
-
-  
 }
 
 function check_errors(msg){
@@ -482,6 +483,25 @@ function check_errors(msg){
     return 'Trading not enalbed on asset.'
   } else if(msg.includes('Internal server error')){
     return 'Internal server error.'
+  } else if(msg.includes('Not enough token approved for trade')){
+      INFURA_KEY = values.default.INFURA_KEY[4]
+
+      infuraRpcSubprovider = new RPCSubprovider({
+        rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+      });
+      providerEngine = new Web3ProviderEngine();
+      providerEngine.addProvider(mnemonicWalletSubprovider);
+      providerEngine.addProvider(infuraRpcSubprovider);
+      providerEngine.start();
+      seaport = new OpenSeaPort(
+        providerEngine,
+        {
+          networkName: Network.Main,
+          apiKey: values.default.API_KEY
+        },
+        (arg) => console.log(arg)
+      );
+    return 'Out of Infura requests.. swappinp keys.'
   }
   return 0
 }
