@@ -186,7 +186,7 @@ collectionButton.addEventListener('click', function(){
 document.getElementById('api3').addEventListener('click', function(){
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-
+  delay.value = 3000
   infuraRpcSubprovider = new RPCSubprovider({
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
   });
@@ -207,7 +207,28 @@ document.getElementById('api3').addEventListener('click', function(){
 document.getElementById('api2').addEventListener('click', function(){
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-
+  delay.value = 250
+  infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main,
+      apiKey: values.default.API_KEY2
+    },
+    (arg) => console.log(arg)
+  );
+  console.log('swapping to non-public api key')
+})
+document.getElementById('api1').addEventListener('click', function(){
+  currentHour = new Date().getHours()
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  delay.value = 250
   infuraRpcSubprovider = new RPCSubprovider({
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
   });

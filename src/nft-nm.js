@@ -124,7 +124,7 @@ function event_bid(){
   //console.log(eventDict)
 }
 //  BLACK_LIST: ['nftd00d', 'DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703', 'forbayc'],
-document.getElementById('upbid_bot').innerHTML = values.default.API_KEY.substring(0, 5)
+document.getElementById('api1').innerHTML = values.default.API_KEY.substring(0, 5)
 document.getElementById('api2').innerHTML = values.default.API_KEY2.substring(0, 5)
 document.getElementById('upbid_bot').addEventListener('click', function(){
   //event_bid()
