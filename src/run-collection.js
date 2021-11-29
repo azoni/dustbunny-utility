@@ -30,6 +30,7 @@ providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
 providerEngine.start();
 
+var run_count = 0
 // Create seaport object using provider created. 
 var seaport = new OpenSeaPort(
 
@@ -41,8 +42,8 @@ var seaport = new OpenSeaPort(
   (arg) => console.log(arg)
 );
 function create_seaport(){
-  currentHour = new Date().getHours()
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  //currentHour = new Date().getHours()
+  INFURA_KEY = values.default.INFURA_KEY[run_count%values.default.INFURA_KEY.length - 1]
 
   infuraRpcSubprovider = new RPCSubprovider({
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
@@ -543,23 +544,8 @@ function check_errors(msg){
   } else if(msg.includes('Internal server error')){
     return 'Internal server error.'
   } else if(msg.includes('Not enough token approved for trade')){
-      INFURA_KEY = values.default.INFURA_KEY[4]
-
-      infuraRpcSubprovider = new RPCSubprovider({
-        rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-      });
-      providerEngine = new Web3ProviderEngine();
-      providerEngine.addProvider(mnemonicWalletSubprovider);
-      providerEngine.addProvider(infuraRpcSubprovider);
-      providerEngine.start();
-      seaport = new OpenSeaPort(
-        providerEngine,
-        {
-          networkName: Network.Main,
-          apiKey: values.default.API_KEY
-        },
-        (arg) => console.log(arg)
-      );
+      run_count += 1
+      create_seaport()
     return 'Out of Infura requests.. swappinp keys.'
   }
   return 0
@@ -567,6 +553,8 @@ function check_errors(msg){
 
 async function placeBid(){
   create_seaport()
+  run_count = run_count + 1
+  console.log(INFURA_KEY)
   if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
     assetCount *= 2
   }
