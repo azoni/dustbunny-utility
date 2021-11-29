@@ -618,9 +618,11 @@ async function placeBid(){
           }
 
           console.log('top bid: ' + topBid + ' #' + name_array[i])
+        } else {
+          console.log('No bids found.')
+          text1.innerHTML = 'No bids found.'
         }
-        console.log('No bids found.')
-        text1.innerHTML = 'No bids found.'
+        
       }
       catch(ex){
         console.log(ex.message)
@@ -744,9 +746,10 @@ async function placeBid2(){
           }
 
           console.log('top bid: ' + topBid + ' #' + name_array[i])
+        } else {
+          console.log('No bids found.')
+          text1.innerHTML = 'No bids found.'
         }
-        console.log('No bids found.')
-        text1.innerHTML = 'No bids found.'
       }
       catch(ex){
         console.log(ex.message)
