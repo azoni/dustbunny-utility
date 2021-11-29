@@ -55,7 +55,7 @@ function create_seaport(){
     providerEngine,
     {
       networkName: Network.Main,
-      apiKey: values.default.API_KEY
+      apiKey: values.default.API_KEY2
     },
     (arg) => console.log(arg)
   );
@@ -377,17 +377,14 @@ function update_floor(){
 text.style.fontSize = '20px'
 text1.style.fontSize = '20px'
 async function run(){
-  
+  var direction = 'asc'
   text.innerHTML = 'Starting.....'
-  var direction = 'desc'
   if(document.getElementById('reverse-2').checked){
-    direction = 'asc'
+    direction = 'desc'
   }
   var collectionName = COLLECTION_NAME.trim()
   console.log(assetCount)
-  if(assetCount > 10000){
-    direction = 'asc'
-    assetCount = assetCount/2
+  assetCount = assetCount/2
   for(var offset = 0; offset < assetCount; offset+=50){
     //await new Promise(resolve => setTimeout(resolve, 5000))
     try{
@@ -447,8 +444,10 @@ async function run(){
     console.log(tokenId_array.length)
     text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
   }
-  direction = 'desc'
+  if(document.getElementById('reverse-2').checked){
+    direction = 'asc'
   }
+  direction = 'desc'
   for(var offset = 0; offset < assetCount; offset+=50){
     //await new Promise(resolve => setTimeout(resolve, 5000))
     try{

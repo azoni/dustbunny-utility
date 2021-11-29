@@ -75,7 +75,7 @@ var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: values.default.API_KEY2
+    apiKey: values.default.API_KEY
   },
   (arg) => console.log(arg)
 );
@@ -133,62 +133,69 @@ document.getElementById('upbid_bot').addEventListener('click', function(){
 })
 async function buy_order(){
   const collection_orders = []
-  const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5']
+  const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669']
   
   try{
     //0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea 0-flash
     //0x701c1a9d3fc47f7949178c99b141c86fac72a1c4 1-flash
     //0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5 flash
+    //0xfdb32c8ddda21172a031d928056e19725a0836c5 2flash
+    //0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669 3flash
     let search_time = Math.floor(+new Date() / 1000) - 1800
     search_time = new Date(search_time).toISOString();
-    const order = await seaport.api.getOrders({
+    for(var wallet in wallet_orders){
+      const order = await seaport.api.getOrders({
       side: 0,
       //order_by: 'created_date',
-      maker: '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
+      maker: wallet_orders[wallet],
       listed_after: search_time,
-      //limit: 50
-    })
+      limit: 50
+      })
 
-    var username = 'Null'
-    console.log(order)
-    for(var o in order['orders']){
-          try{
-          username = order['orders'][o].makerAccount.user.username
-          console.log(username)
-
-        } catch(ex){
-          username = 'Null'
-        }
-      console.log(order['orders'][o]['asset']['collection']['slug'])
+      var username = 'Null'
       try{
-        const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
-        var floor_price = collect['collection']['stats']['floor_price']
-      } catch (ex) {
-        console.log("couldn't get floor")
-      } 
-      console.log('bid: ' + parseFloat(order['orders'][o].basePrice/1000000000000000000))
-      console.log('floor: ' + floor_price)
-      if (blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < maxOfferAmount && parseFloat(order['orders'][o].basePrice/1000000000000000000) > offerAmount){
-        var asset = {
-          tokenId: order['orders'][o]['asset']['tokenId'],
-          tokenAddress: NFT_CONTRACT_ADDRESS,
-          //schemaName: WyvernSchemaName.ERC1155
-        }
-        // try{
-        //   await seaport.createBuyOrder({
-        //     asset,
-        //     startAmount: parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001),
-        //     accountAddress: OWNER_ADDRESS,
-        //     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
-        //   })
-        //   console.log(order['orders'][o]['asset']['collection']['name'] + ' ' + order['orders'][o]['asset']['tokenId'] + ' ' + order['orders'][o].basePrice/1000000000000000000)
-        //   console.log("upbidding flash-prpatel05 ")// + wallet_orders[wallet])
-        // } catch(ex){
-        //   console.log(ex)
-        // }
+        username = order['orders'][0].makerAccount.user.username
+        console.log(username)
 
+      } catch(ex){
+        username = 'Null'
+      }
+      console.log(order)
+      for(var o in order['orders']){
+
+        //console.log(order['orders'][o]['asset']['collection']['slug'])
+        try{
+          const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
+          var floor_price = collect['collection']['stats']['floor_price']
+        } catch (ex) {
+          console.log("couldn't get floor")
+        } 
+
+        if (order['orders'][o]['asset']['collection']['slug'] === COLLECTION_NAME && blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < maxOfferAmount){
+          //console.log('bid: ' + parseFloat(order['orders'][o].basePrice/1000000000000000000))
+          //console.log('floor: ' + floor_price)
+          var asset = {
+            tokenId: order['orders'][o]['asset']['tokenId'],
+            tokenAddress: order['orders'][o]['asset']['tokenAddress'],
+            //schemaName: WyvernSchemaName.ERC1155
+          }
+          try{
+            await seaport.createBuyOrder({
+              asset,
+              startAmount: parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001),
+              accountAddress: OWNER_ADDRESS,
+              expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
+            })
+            console.log(order['orders'][o]['asset']['collection']['name'] + ' ' + order['orders'][o]['asset']['tokenId'] + ' ' + order['orders'][o].basePrice/1000000000000000000)
+            console.log("upbidding flash-prpatel05 ")// + wallet_orders[wallet])
+          } catch(ex){
+            console.log(ex)
+          }
+
+        }
       }
     }
+
   } catch(ex) {
     console.log(ex)
     console.log('error with buy orders')
