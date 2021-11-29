@@ -4,6 +4,7 @@ require('./traits.js')
 const cool_cat_traits = require('./coolcats.js')
 var utils = require('./utils.js')
 require('./run-collection.js')
+require('./run-collection-mid.js')
 const opensea = require("opensea-js");
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;

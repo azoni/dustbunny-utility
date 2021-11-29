@@ -40,7 +40,136 @@
         <a href='https://opensea.io/account' target="_blank" style='font-size: 22px; display: inline;' id='myAccount2'></a>
         <p style="display: inline;" id='balance2'></p>
 
-        <h3 id='collectionName'>Hi</h3>
+
+         <h3 id='collectionName-1'>Hi</h3>
+
+        <div style="float: left; margin-left: 10%; margin-right: 50px">
+          <a href="https://opensea.io/" target="_blank">
+            <img id='collectionImage-1' style="display: inline; width: 200px;height: 200px" src='https://cdn-images-1.medium.com/max/1200/1*U0m-Cl7qvflUX4QmdIdzoQ.png'>
+          </a>   
+          <br>   
+          <a id='collectionHome-1' style='font-size: 24px'></a>&nbsp&nbsp&nbsp
+          <a id='bidsActivity-1' style='font-size: 24px'></a>&nbsp&nbsp&nbsp
+          <a id='assetFloor-1' style='font-size: 24px'></a>
+
+        </div>
+        <br>
+        <div style="text-align: left; padding-left: 5%">
+          <input style="width:175px" id='collectionInput-1' placeholder='Collection Name'></input>
+          <button id='collectionButton-1'>Submit</button>
+          <button id='collectionButtonClear-1'>Clear</button>
+          <br>
+          <input id='addProperty-1' placeholder="property" style="width: 75px;"></input>
+          <input id='addTrait-1' placeholder="trait" style="width: 75px;"></input>
+          Listed<input id='sellOrder-1' type='checkbox' style="width: 25px;"></input> < Floor * 
+          <input id='aboveFloor-1' placeholder="1.2" style="width: 25px;"></input>
+          Auto<input id='bidMultiplier-1' placeholder=".8" style="width: 25px;"></input>-
+          <input id='maxbidMultiplier-1' placeholder=".85" style="width: 25px;"></input>
+          Loop<input id='repeat-1' type='checkbox'></input>
+          Reverse<input id='reverse-1' type='checkbox'></input>
+          <div id='traitsDiv-1'>
+          </div>
+          <a id='collectionHome-1'></a>
+          <a id='bidsActivity-1'></a>
+          <a id='assetFloor-1'></a>
+          Min:
+          <input id='offerAmount-1' placeholder='.251' style="width:40px">
+          Max:
+          <input id='maxOfferAmount-1' placeholder='.32' style="width:40px">
+          <button id='increaseBid-1'>+.01</button><button id='increaseBid1-1'>+.001</button>
+          Exp:
+          <input id='expireInput-1' style="width:25px" placeholder='1'></input>
+          <br><br>
+<!--           <input id='offerAmount2' placeholder='.28' style="width:40px">
+          <input id='expireInput2' style="width:25px" placeholder='4'></input>
+          <input id='offerAmount3' placeholder='.24' style="width:40px">
+          <input id='expireInput3' style="width:25px" placeholder='8'></input>
+          <br><br> -->
+<!--           <button id='apply' style="width: 75px; height: 35px">Apply</button>
+ --><!--           <button id='resetButton'>Reset</button>
+ -->          <button id='confirmButton-1' style="width: 75px; height: 35px">Confirm</button>
+<!--           <button id='startButton-1' style="width: 75px; height: 35px">Start</button>
+ --><!--           <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
+ -->          <button id='quickStart-1' style="width: 75px; height: 35px">Go</button>
+              <button id='reset-1' style="width: 75px; height: 35px">Reset</button>
+          <br><br>
+          <p id='text1-1'></p>
+            <p id='text-1'></p>
+            
+        <br>
+                <progress id='progressBar-1' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
+<p id='offersMade-1' style="display: inline;"></p>
+      <span class="time" id="display-1">00:00:00:00</span>
+
+        </div>
+
+
+    <div>
+      <br>
+        
+         <h3 id='collectionName-2'>Hi</h3>
+
+        <div style="float: left; margin-left: 10%; margin-right: 50px">
+          <a href="https://opensea.io/" target="_blank">
+            <img id='collectionImage-2' style="display: inline; width: 200px;height: 200px" src='https://cdn-images-1.medium.com/max/1200/1*U0m-Cl7qvflUX4QmdIdzoQ.png'>
+          </a>   
+          <br>   
+          <a id='collectionHome-2' style='font-size: 24px'></a>&nbsp&nbsp&nbsp
+          <a id='bidsActivity-2' style='font-size: 24px'></a>&nbsp&nbsp&nbsp
+          <a id='assetFloor-2' style='font-size: 24px'></a>
+
+        </div>
+        <br>
+        <div style="text-align: left; padding-left: 5%">
+          <input style="width:175px" id='collectionInput-2' placeholder='Collection Name'></input>
+          <button id='collectionButton-2'>Submit</button>
+          <button id='collectionButtonClear-2'>Clear</button>
+          <br>
+          <input id='addProperty-2' placeholder="property" style="width: 75px;"></input>
+          <input id='addTrait-2' placeholder="trait" style="width: 75px;"></input>
+          Listed<input id='sellOrder-2' type='checkbox' style="width: 25px;"></input> < Floor * 
+          <input id='aboveFloor-2' placeholder="1.2" style="width: 25px;"></input>
+          Auto<input id='bidMultiplier-2' placeholder=".8" style="width: 25px;"></input>-
+          <input id='maxbidMultiplier-2' placeholder=".85" style="width: 25px;"></input>
+          Loop<input id='repeat-2' type='checkbox'></input>
+          Reverse<input id='reverse-2' type='checkbox'></input>
+          <div id='traitsDiv-2'>
+          </div>
+          <a id='collectionHome-2'></a>
+          <a id='bidsActivity-2'></a>
+          <a id='assetFloor-2'></a>
+          Min:
+          <input id='offerAmount-2' placeholder='.251' style="width:40px">
+          Max:
+          <input id='maxOfferAmount-2' placeholder='.32' style="width:40px">
+          <button id='increaseBid-2'>+.01</button><button id='increaseBid1-2'>+.001</button>
+          Exp:
+          <input id='expireInput-2' style="width:25px" placeholder='1'></input>
+          <br><br>
+<!--           <input id='offerAmount2' placeholder='.28' style="width:40px">
+          <input id='expireInput2' style="width:25px" placeholder='4'></input>
+          <input id='offerAmount3' placeholder='.24' style="width:40px">
+          <input id='expireInput3' style="width:25px" placeholder='8'></input>
+          <br><br> -->
+<!--           <button id='apply' style="width: 75px; height: 35px">Apply</button>
+ --><!--           <button id='resetButton'>Reset</button>
+ -->          <button id='confirmButton-2' style="width: 75px; height: 35px">Confirm</button>
+<!--           <button id='startButton-2' style="width: 75px; height: 35px">Start</button>
+ --><!--           <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
+ -->          <button id='quickStart-2' style="width: 75px; height: 35px">Go</button>
+              <button id='reset-2' style="width: 75px; height: 35px">Reset</button>
+          <br><br>
+          <p id='text1-2'></p>
+            <p id='text-2'></p>
+            
+        <br>
+                <progress id='progressBar-2' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
+<p id='offersMade-2' style="display: inline;"></p>
+      <span class="time" id="display-2">00:00:00:00</span>
+
+        </div>
+
+          <h3 id='collectionName'>Hi</h3>
         <div style="float: left; margin-left: 10%; margin-right: 50px">
           <a href="https://opensea.io/" target="_blank">
             <img id='collectionImage' style="display: inline; width: 200px;height: 200px" src='https://cdn-images-1.medium.com/max/1200/1*U0m-Cl7qvflUX4QmdIdzoQ.png'>
@@ -104,75 +233,9 @@
 
         </div>
       
-    
-
-    <div>
+        <div>
       <br>
-        
-         <h3 id='collectionName-2'>Hi</h3>
-
-        <div style="float: left; margin-left: 10%; margin-right: 50px">
-          <a href="https://opensea.io/" target="_blank">
-            <img id='collectionImage-2' style="display: inline; width: 200px;height: 200px" src='https://cdn-images-1.medium.com/max/1200/1*U0m-Cl7qvflUX4QmdIdzoQ.png'>
-          </a>   
-          <br>   
-          <a id='collectionHome-2' style='font-size: 24px'></a>&nbsp&nbsp&nbsp
-          <a id='bidsActivity-2' style='font-size: 24px'></a>&nbsp&nbsp&nbsp
-          <a id='assetFloor-2' style='font-size: 24px'></a>
-
-        </div>
-        <br>
-        <div style="text-align: left; padding-left: 5%">
-          <input style="width:175px" id='collectionInput-2' placeholder='Collection Name'></input>
-          <button id='collectionButton-2'>Submit</button>
-          <button id='collectionButtonClear-2'>Clear</button>
-          <br>
-          <input id='addProperty-2' placeholder="property" style="width: 75px;"></input>
-          <input id='addTrait-2' placeholder="trait" style="width: 75px;"></input>
-          Listed<input id='sellOrder-2' type='checkbox' style="width: 25px;"></input> < Floor * 
-          <input id='aboveFloor-2' placeholder="1.2" style="width: 25px;"></input>
-          Auto<input id='bidMultiplier-2' placeholder=".8" style="width: 25px;"></input>-
-          <input id='maxbidMultiplier-2' placeholder=".85" style="width: 25px;"></input>
-          Loop<input id='repeat-2' type='checkbox'></input>
-          Reverse<input id='reverse-2' type='checkbox'></input>
-          <div id='traitsDiv-2'>
-          </div>
-          <a id='collectionHome-2'></a>
-          <a id='bidsActivity-2'></a>
-          <a id='assetFloor-2'></a>
-          Min:
-          <input id='offerAmount-2' placeholder='.251' style="width:40px">
-          Max:
-          <input id='maxOfferAmount-2' placeholder='.32' style="width:40px">
-          <button id='increaseBid-2'>+.01</button><button id='increaseBid1-2'>+.001</button>
-          Exp:
-          <input id='expireInput-2' style="width:25px" placeholder='1'></input>
-          <br><br>
-<!--           <input id='offerAmount2' placeholder='.28' style="width:40px">
-          <input id='expireInput2' style="width:25px" placeholder='4'></input>
-          <input id='offerAmount3' placeholder='.24' style="width:40px">
-          <input id='expireInput3' style="width:25px" placeholder='8'></input>
-          <br><br> -->
-<!--           <button id='apply' style="width: 75px; height: 35px">Apply</button>
- --><!--           <button id='resetButton'>Reset</button>
- -->          <button id='confirmButton-2' style="width: 75px; height: 35px">Confirm</button>
-<!--           <button id='startButton-2' style="width: 75px; height: 35px">Start</button>
- --><!--           <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
- -->          <button id='quickStart-2' style="width: 75px; height: 35px">Go</button>
-              <button id='reset-2' style="width: 75px; height: 35px">Reset</button>
-              <button id='reset-2' style="width: 75px; height: 35px">Reset</button>
-          <br><br>
-          <p id='text1-2'></p>
-            <p id='text-2'></p>
-            
-        <br>
-                <progress id='progressBar-2' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
-<p id='offersMade-2' style="display: inline;"></p>
-      <span class="time" id="display-2">00:00:00:00</span>
-
-        </div>
-
-        
+              
       
 </div><br><br><br>
       <div id='favorites' style="padding-left: 5%">

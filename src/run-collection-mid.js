@@ -4,8 +4,7 @@ const opensea = require("opensea-js")
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
-var OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
-var OWNER_ADDRESS2 = values.default.OWNER_ADDRESS[0].address
+var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 // Provider
 const MnemonicWalletSubprovider = require("@0x/subproviders")
 .MnemonicWalletSubprovider;
@@ -37,7 +36,7 @@ var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: values.default.API_KEY2
+    apiKey: values.default.API_KEY
   },
   (arg) => console.log(arg)
 );
@@ -56,7 +55,7 @@ function create_seaport(){
     providerEngine,
     {
       networkName: Network.Main,
-      apiKey: values.default.API_KEY2
+      apiKey: values.default.API_KEY
     },
     (arg) => console.log(arg)
   );
@@ -88,20 +87,20 @@ var delay = document.getElementById('delay')
 // 
 // Input boxes, text, buttons from frontend. 
 // 
-var increaseBid = document.getElementById('increaseBid-2')
-var increaseBid1 = document.getElementById('increaseBid1-2')
+var increaseBid = document.getElementById('increaseBid-1')
+var increaseBid1 = document.getElementById('increaseBid1-1')
 
 var blacklist = values.default.BLACK_LIST
-var text = document.getElementById('text-2')
-var text1 = document.getElementById('text1-2')
+var text = document.getElementById('text-1')
+var text1 = document.getElementById('text1-1')
 
-const collectionButton = document.getElementById('collectionButton-2')
-const collectionInput = document.getElementById('collectionInput-2')
-const collectionButtonClear = document.getElementById('collectionButtonClear-2')
+const collectionButton = document.getElementById('collectionButton-1')
+const collectionInput = document.getElementById('collectionInput-1')
+const collectionButtonClear = document.getElementById('collectionButtonClear-1')
 
-var offersMade = document.getElementById('offersMade-2')
+var offersMade = document.getElementById('offersMade-1')
 var confirmCollection = 0
-var progressBar = document.getElementById('progressBar-2')
+var progressBar = document.getElementById('progressBar-1')
 
 var current_floor = 0
 var service_fee = 0
@@ -128,28 +127,28 @@ async function getCollection(collectionName){
       console.log(collect)
       assetCount = collect['collection']['stats']['count']
       //window.open('https://opensea.io/collection/' + COLLECTION_NAME,'name','width=this.width,height=this.height')
-      document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
+      document.getElementById('collectionName-1').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
       // collection.innerHTML = NFT_CONTRACT_ADDRESS
       current_floor = collect['collection']['stats']['floor_price']
       service_fee = collect['collection']['dev_seller_fee_basis_points']
-      document.getElementById('collectionImage-2').src = collect['collection'].image_url
-      document.getElementById('collectionImage-2').style.height = "200px"
-      document.getElementById('collectionImage-2').style.width = "200px"
+      document.getElementById('collectionImage-1').src = collect['collection'].image_url
+      document.getElementById('collectionImage-1').style.height = "200px"
+      document.getElementById('collectionImage-1').style.width = "200px"
       confirmCollection = 1
-      document.getElementById('bidsActivity-2').innerHTML = "Bids"
-      document.getElementById('bidsActivity-2').target = "_blank"
-      document.getElementById('bidsActivity-2').href = 'https://opensea.io/activity/' + COLLECTION_NAME + '?collectionSlug=' + COLLECTION_NAME + '&search[isSingleCollection]=true&search[eventTypes][0]=AUCTION_SUCCESSFUL&search[eventTypes][1]=OFFER_ENTERED'
-      document.getElementById('collectionHome-2').innerHTML = "Home"
-      document.getElementById('collectionHome-2').target = "_blank"
-      document.getElementById('collectionHome-2').href = 'https://opensea.io/collection/' + COLLECTION_NAME
-      document.getElementById('assetFloor-2').innerHTML = "Floor"
-      document.getElementById('assetFloor-2').target = "_blank"
-      document.getElementById('assetFloor-2').href = 'https://opensea.io/collection/' + COLLECTION_NAME + '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
+      document.getElementById('bidsActivity-1').innerHTML = "Bids"
+      document.getElementById('bidsActivity-1').target = "_blank"
+      document.getElementById('bidsActivity-1').href = 'https://opensea.io/activity/' + COLLECTION_NAME + '?collectionSlug=' + COLLECTION_NAME + '&search[isSingleCollection]=true&search[eventTypes][0]=AUCTION_SUCCESSFUL&search[eventTypes][1]=OFFER_ENTERED'
+      document.getElementById('collectionHome-1').innerHTML = "Home"
+      document.getElementById('collectionHome-1').target = "_blank"
+      document.getElementById('collectionHome-1').href = 'https://opensea.io/collection/' + COLLECTION_NAME
+      document.getElementById('assetFloor-1').innerHTML = "Floor"
+      document.getElementById('assetFloor-1').target = "_blank"
+      document.getElementById('assetFloor-1').href = 'https://opensea.io/collection/' + COLLECTION_NAME + '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
 
     } catch(ex) {
       console.log(ex)
-      document.getElementById('collectionName-2').innerHTML = ''
-      document.getElementById('collectionImage-2').src = ''
+      document.getElementById('collectionName-1').innerHTML = ''
+      document.getElementById('collectionImage-1').src = ''
       NFT_CONTRACT_ADDRESS = ''
       // collection.innerHTML = collectionName + " don't exist." + NFT_CONTRACT_ADDRESS
       confirmCollection = 0
@@ -164,21 +163,21 @@ collectionButtonClear.addEventListener('click', function(){
   COLLECTION_NAME = ''
   confirmCollection = 0
   quickButton.disabled = true
-  document.getElementById('collectionName-2').innerHTML = 'Collection'
+  document.getElementById('collectionName-1').innerHTML = 'Collection'
     // collection.innerHTML = 'Collection Address:'
-    document.getElementById('collectionImage-2').src = 'https://cdn-images-1.medium.com/max/1200/1*U0m-Cl7qvflUX4QmdIdzoQ.png'
-    document.getElementById('collectionImage-2').style.height = '200px'
-    document.getElementById('collectionImage-2').style.width = '200px'
+    document.getElementById('collectionImage-1').src = 'https://cdn-images-1.medium.com/max/1200/1*U0m-Cl7qvflUX4QmdIdzoQ.png'
+    document.getElementById('collectionImage-1').style.height = '200px'
+    document.getElementById('collectionImage-1').style.width = '200px'
     collectionInput.value = ''
-    document.getElementById('bidsActivity-2').innerHTML = ""
-    document.getElementById('bidsActivity-2').target = "_blank"
-    document.getElementById('bidsActivity-2').href = 'https://opensea.io/activity/' + COLLECTION_NAME + '?collectionSlug=' + COLLECTION_NAME + '&search[isSingleCollection]=true&search[eventTypes][0]=AUCTION_SUCCESSFUL&search[eventTypes][1]=OFFER_ENTERED'
-    document.getElementById('collectionHome-2').innerHTML = ""
-    document.getElementById('collectionHome-2').target = "_blank"
-    document.getElementById('collectionHome-2').href = 'https://opensea.io/collection/' + COLLECTION_NAME
-    document.getElementById('assetFloor-2').innerHTML = ""
-    document.getElementById('assetFloor-2').target = "_blank"
-    document.getElementById('assetFloor-2').href = 'https://opensea.io/collection/' + COLLECTION_NAME + '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
+    document.getElementById('bidsActivity-1').innerHTML = ""
+    document.getElementById('bidsActivity-1').target = "_blank"
+    document.getElementById('bidsActivity-1').href = 'https://opensea.io/activity/' + COLLECTION_NAME + '?collectionSlug=' + COLLECTION_NAME + '&search[isSingleCollection]=true&search[eventTypes][0]=AUCTION_SUCCESSFUL&search[eventTypes][1]=OFFER_ENTERED'
+    document.getElementById('collectionHome-1').innerHTML = ""
+    document.getElementById('collectionHome-1').target = "_blank"
+    document.getElementById('collectionHome-1').href = 'https://opensea.io/collection/' + COLLECTION_NAME
+    document.getElementById('assetFloor-1').innerHTML = ""
+    document.getElementById('assetFloor-1').target = "_blank"
+    document.getElementById('assetFloor-1').href = 'https://opensea.io/collection/' + COLLECTION_NAME + '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
   })
 
 collectionButton.addEventListener('click', function(){
@@ -249,16 +248,16 @@ document.getElementById('api1').addEventListener('click', function(){
 })
 increaseBid.addEventListener('click', function(){
   offerAmount = .01 + parseFloat(offerAmount)
-  document.getElementById('offerAmount-2').value = offerAmount
+  document.getElementById('offerAmount-1').value = offerAmount
 })
 increaseBid1.addEventListener('click', function(){
   offerAmount = .001 + parseFloat(offerAmount)
-  document.getElementById('offerAmount-2').value = offerAmount
+  document.getElementById('offerAmount-1').value = offerAmount
 })
 
 ////////////////////////////////////////////////
-const confirmButton = document.getElementById('confirmButton-2')
-const quickButton = document.getElementById('quickStart-2')
+const confirmButton = document.getElementById('confirmButton-1')
+const quickButton = document.getElementById('quickStart-1')
 
 quickButton.disabled = true
 increaseBid.disabled = true
@@ -286,7 +285,7 @@ quickButton.addEventListener('click', function(){
 var offersDict = {}
 confirmButton.addEventListener('click', function(){
   if (confirmCollection === 1) {
-    var traitsDiv = document.getElementById('traitsDiv-2')
+    var traitsDiv = document.getElementById('traitsDiv-1')
     offersDict = {}
     for (const property in traitsDiv.children) {
       try {
@@ -296,19 +295,19 @@ confirmButton.addEventListener('click', function(){
       } catch (ex) {
       }
     }
-    offerAmount = document.getElementById('offerAmount-2').value
-    if (document.getElementById('maxOfferAmount-2').value === ''){
+    offerAmount = document.getElementById('offerAmount-1').value
+    if (document.getElementById('maxOfferAmount-1').value === ''){
       maxOfferAmount = 0
     } else {
-      maxOfferAmount = document.getElementById('maxOfferAmount-2').value
+      maxOfferAmount = document.getElementById('maxOfferAmount-1').value
     }
 
-    expirationHours = document.getElementById('expireInput-2').value
+    expirationHours = document.getElementById('expireInput-1').value
     if(expirationHours === '') {
      expirationHours = 1
    }
-   if(document.getElementById('bidMultiplier-2').value !== ''){
-    bidMultiplier = document.getElementById('bidMultiplier-2').value
+   if(document.getElementById('bidMultiplier-1').value !== ''){
+    bidMultiplier = document.getElementById('bidMultiplier-1').value
     
     console.log(current_floor)
     console.log(current_floor*bidMultiplier)
@@ -316,14 +315,14 @@ confirmButton.addEventListener('click', function(){
   
     offerAmount = current_floor*(bidMultiplier - service_fee/10000)
     
-    document.getElementById('offerAmount-2').value = offerAmount
+    document.getElementById('offerAmount-1').value = offerAmount
   }
-  if(document.getElementById('maxbidMultiplier-2').value !== ''){
+  if(document.getElementById('maxbidMultiplier-1').value !== ''){
     console.log(current_floor*maxbidMultiplier)
     console.log(current_floor*(maxbidMultiplier - service_fee/10000))  
-    maxbidMultiplier = document.getElementById('maxbidMultiplier-2').value
+    maxbidMultiplier = document.getElementById('maxbidMultiplier-1').value
     maxOfferAmount = current_floor*(maxbidMultiplier - service_fee/10000)
-    document.getElementById('maxOfferAmount-2').value = maxOfferAmount
+    document.getElementById('maxOfferAmount-1').value = maxOfferAmount
   }
    if (offerAmount === ''){
     alert('No bid entered.')
@@ -350,20 +349,20 @@ function update_floor(){
   if(COLLECTION_NAME !== ''){
     getCollectionDetails(COLLECTION_NAME).then(function (collect){
       try{
-      document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
+      document.getElementById('collectionName-1').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
       current_floor = collect['collection']['stats']['floor_price']
       service_fee = collect['collection']['dev_seller_fee_basis_points']
-       if(document.getElementById('bidMultiplier-2').value !== ''){
+       if(document.getElementById('bidMultiplier-1').value !== ''){
         console.log(current_floor*bidMultiplier)
         console.log(current_floor*(bidMultiplier - service_fee/10000))
         offerAmount = current_floor*(bidMultiplier - service_fee/10000)
-        document.getElementById('offerAmount-2').value = offerAmount
+        document.getElementById('offerAmount-1').value = offerAmount
       }
-       if(document.getElementById('maxbidMultiplier-2').value !== ''){
+       if(document.getElementById('maxbidMultiplier-1').value !== ''){
         console.log(current_floor*maxbidMultiplier)
         console.log(current_floor*(maxbidMultiplier - service_fee/10000))
         maxOfferAmount = current_floor*(maxbidMultiplier - service_fee/10000)
-        document.getElementById('maxOfferAmount-2').value = maxOfferAmount
+        document.getElementById('maxOfferAmount-1').value = maxOfferAmount
       }
       console.log('Floor updated: ' + collect['collection']['stats']['floor_price'])
     } catch(ex){
@@ -380,7 +379,7 @@ text1.style.fontSize = '20px'
 async function run(){
   var direction = 'asc'
   text.innerHTML = 'Starting.....'
-  if(document.getElementById('reverse-2').checked){
+  if(document.getElementById('reverse-1').checked){
     direction = 'desc'
   }
   var collectionName = COLLECTION_NAME.trim()
@@ -397,11 +396,11 @@ async function run(){
       })
       console.log(collection)
       for(var asset in collection['assets']){
-        if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
+        if(document.getElementById('sellOrder-1').checked && document.getElementById('addProperty-1').value === ''){
           
           if(collection['assets'][asset]['sellOrders'] !== null){
-            if(document.getElementById('aboveFloor-2').value !== ''){
-              if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
+            if(document.getElementById('aboveFloor-1').value !== ''){
+              if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-1').value)){
                 tokenId_array.push(collection['assets'][asset]['tokenId'])
                 name_array.push(collection['assets'][asset]['name'])    
                 console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
@@ -414,11 +413,11 @@ async function run(){
             
           }
         } else {
-          if(document.getElementById('addProperty-2').value !== ''){
+          if(document.getElementById('addProperty-1').value !== ''){
             for(var trait in collection['assets'][asset]['traits']){
-              if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
-                if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
-                  if(document.getElementById('sellOrder-2').checked){
+              if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-1').value)){
+                if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-1').value)){
+                  if(document.getElementById('sellOrder-1').checked){
                     if(collection['assets'][asset]['sellOrders'] !== null){
                       
                       tokenId_array.push(collection['assets'][asset]['tokenId'])
@@ -446,7 +445,7 @@ async function run(){
     text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
   }
   direction = 'desc'
-  if(document.getElementById('reverse-2').checked){
+  if(document.getElementById('reverse-1').checked){
     direction = 'asc'
   }
   
@@ -461,11 +460,11 @@ async function run(){
       })
       console.log(collection)
       for(var asset in collection['assets']){
-        if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
+        if(document.getElementById('sellOrder-1').checked && document.getElementById('addProperty-1').value === ''){
           
           if(collection['assets'][asset]['sellOrders'] !== null){
-            if(document.getElementById('aboveFloor-2').value !== ''){
-              if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
+            if(document.getElementById('aboveFloor-1').value !== ''){
+              if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-1').value)){
                 tokenId_array.push(collection['assets'][asset]['tokenId'])
                 name_array.push(collection['assets'][asset]['name'])    
                 console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
@@ -478,11 +477,11 @@ async function run(){
             
           }
         } else {
-          if(document.getElementById('addProperty-2').value !== ''){
+          if(document.getElementById('addProperty-1').value !== ''){
             for(var trait in collection['assets'][asset]['traits']){
-              if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
-                if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
-                  if(document.getElementById('sellOrder-2').checked){
+              if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-1').value)){
+                if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-1').value)){
+                  if(document.getElementById('sellOrder-1').checked){
                     if(collection['assets'][asset]['sellOrders'] !== null){
                       
                       tokenId_array.push(collection['assets'][asset]['tokenId'])
@@ -672,7 +671,7 @@ async function placeBid(){
     pause()
     document.getElementById('body').style.background = "#E6FBFF"
     beep()
-    if(document.getElementById('repeat-2').checked){
+    if(document.getElementById('repeat-1').checked){
       document.getElementById('body').style.background = '#90EE90'
       stop = 0
       stop2 = 0
@@ -800,7 +799,7 @@ async function placeBid2(){
     pause()
     document.getElementById('body').style.background = "#E6FBFF"
     beep()
-    if(document.getElementById('repeat-2').checked){
+    if(document.getElementById('repeat-1').checked){
       document.getElementById('body').style.background = '#90EE90'
       stop2 = 0
       stop = 0
@@ -867,7 +866,7 @@ async function placeBid2(){
 //     console.log('error with buy orders')
 //   }
 // }
-document.getElementById('reset-2').addEventListener('click', function(){ 
+document.getElementById('reset-1').addEventListener('click', function(){ 
   reset()
   document.getElementById('assetCount').value = ''
   stop = 1
@@ -920,7 +919,7 @@ let timerInterval;
 // Create function to modify innerHTML
 
 function print(txt) {
-  document.getElementById("display-2").innerHTML = txt;
+  document.getElementById("display-1").innerHTML = txt;
 }
 
 // Create "start", "pause" and "reset" functions
