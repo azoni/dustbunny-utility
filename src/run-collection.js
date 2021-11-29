@@ -588,36 +588,39 @@ async function placeBid(){
           order_direction: 'desc',
           limit: 50
         })
-        var topBid = order['orders'][0].basePrice / 1000000000000000000
-        try{
-          username = order['orders'][0].makerAccount.user.username
-          console.log(username)
+        if(order['orders'].length !== 0){
+          var topBid = order['orders'][0].basePrice / 1000000000000000000
+          try{
+            username = order['orders'][0].makerAccount.user.username
+            console.log(username)
 
-        } catch(ex){
-          username = 'No-User'
-        }
-        if(blacklist.includes(username) === true){
-          for(var b in order['orders']){
-            try{
-              username = order['orders'][b].makerAccount.user.username
-              console.log(username)
-            } catch(ex){
-              username = 'No-User'
-            }
-            if(blacklist.includes(username) !== true){
-              topBid = order['orders'][b].basePrice / 1000000000000000000
-              break
+          } catch(ex){
+            username = 'No-User'
+          }
+          if(blacklist.includes(username) === true){
+            for(var b in order['orders']){
+              try{
+                username = order['orders'][b].makerAccount.user.username
+                console.log(username)
+              } catch(ex){
+                username = 'No-User'
+              }
+              if(blacklist.includes(username) !== true){
+                topBid = order['orders'][b].basePrice / 1000000000000000000
+                break
+              }
             }
           }
+          
+
+          if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
+            offset = .001 + parseFloat(topBid - offerAmount)
+          }
+
+          console.log('top bid: ' + topBid + ' #' + name_array[i])
         }
-        
-
-        if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
-          offset = .001 + parseFloat(topBid - offerAmount)
-        }
-
-        console.log('top bid: ' + topBid + ' #' + name_array[i])
-
+        console.log('No bids found.')
+        text1.innerHTML = 'No bids found.'
       }
       catch(ex){
         console.log(ex.message)
@@ -711,34 +714,39 @@ async function placeBid2(){
           order_direction: 'desc',
           limit: 50
         })
-        var topBid = order['orders'][0].basePrice / 1000000000000000000
-        try{
-          username = order['orders'][0].makerAccount.user.username
-          console.log(username)
+        if(order['orders'].length !== 0){
+          var topBid = order['orders'][0].basePrice / 1000000000000000000
+          try{
+            username = order['orders'][0].makerAccount.user.username
+            console.log(username)
 
-        } catch(ex){
-          username = 'No-User'
-        }
-        if(blacklist.includes(username) === true){
-          for(var b in order['orders']){
-            try{
-              username = order['orders'][b].makerAccount.user.username
-              console.log(username)
-            } catch(ex){
-              username = 'No-User'
-            }
-            if(blacklist.includes(username) !== true){
-              topBid = order['orders'][b].basePrice / 1000000000000000000
-              break
+          } catch(ex){
+            username = 'No-User'
+          }
+          if(blacklist.includes(username) === true){
+            for(var b in order['orders']){
+              try{
+                username = order['orders'][b].makerAccount.user.username
+                console.log(username)
+              } catch(ex){
+                username = 'No-User'
+              }
+              if(blacklist.includes(username) !== true){
+                topBid = order['orders'][b].basePrice / 1000000000000000000
+                break
+              }
             }
           }
-        }
-        if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
-          offset = .001 + parseFloat(topBid - offerAmount)
-        }
+          
 
-        console.log('top bid: ' + topBid + ' #' + name_array[i])
+          if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
+            offset = .001 + parseFloat(topBid - offerAmount)
+          }
 
+          console.log('top bid: ' + topBid + ' #' + name_array[i])
+        }
+        console.log('No bids found.')
+        text1.innerHTML = 'No bids found.'
       }
       catch(ex){
         console.log(ex.message)
