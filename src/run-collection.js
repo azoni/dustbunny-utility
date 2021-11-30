@@ -676,6 +676,11 @@ async function placeBid(){
       }
     } catch(ex){
       console.log(ex)
+      console.log(ex.message)
+      console.log(ex.code)
+      if(ex.code === -32603){
+        create_seaport()
+      }
       var error_message = check_errors(ex.message)
       text.style.color = 'red'
       text.innerHTML = error_message
@@ -812,6 +817,11 @@ async function placeBid2(){
       
     } catch(ex){
       console.log(ex)
+      console.log(ex.message)
+      console.log(ex.code)
+      if(ex.code === -32603){
+        create_seaport()
+      }
       var error_message = check_errors(ex.message)
       text.style.color = 'red'
       text.innerHTML = error_message
