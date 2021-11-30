@@ -4,8 +4,7 @@ const opensea = require("opensea-js")
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
-var OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
-var OWNER_ADDRESS2 = values.default.OWNER_ADDRESS[0].address
+var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 // Provider
 const MnemonicWalletSubprovider = require("@0x/subproviders")
 .MnemonicWalletSubprovider;
@@ -37,14 +36,15 @@ var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: values.default.API_KEY2
+    apiKey: values.default.API_KEY
   },
   (arg) => console.log(arg)
 );
 function create_seaport(){
   //currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
-
+  console.log('creating seaport ' + INFURA_KEY)
+  console.log(run_count)
   infuraRpcSubprovider = new RPCSubprovider({
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
   });
@@ -83,6 +83,7 @@ var offers = 0
 
 var stop = 0
 var stop2 = 0
+var halt = 0
 
 var delay = document.getElementById('delay')
 // 
@@ -377,7 +378,10 @@ function update_floor(){
 }
 text.style.fontSize = '20px'
 text1.style.fontSize = '20px'
+var midrun = false
 async function run(){
+  document.getElementById('toprun').checked = true
+  midrun = document.getElementById('midrun').checked 
   var direction = 'asc'
   text.innerHTML = 'Starting.....'
   if(document.getElementById('reverse-2').checked){
@@ -385,8 +389,11 @@ async function run(){
   }
   var collectionName = COLLECTION_NAME.trim()
   console.log(assetCount)
-  assetCount = assetCount/2
-  for(var offset = 0; offset < assetCount; offset+=50){
+  // assetCount = assetCount/2
+  for(var offset = 0; offset < assetCount/2; offset+=50){
+    if(halt === 1) {
+      break
+    }
     //await new Promise(resolve => setTimeout(resolve, 5000))
     try{
       var collection = await seaport.api.getAssets({
@@ -450,7 +457,10 @@ async function run(){
     direction = 'asc'
   }
   
-  for(var offset = 0; offset < assetCount; offset+=50){
+  for(var offset = 0; offset < assetCount/2; offset+=50){
+    if(halt === 1) {
+      break
+    }
     //await new Promise(resolve => setTimeout(resolve, 5000))
     try{
       var collection = await seaport.api.getAssets({
@@ -509,6 +519,24 @@ async function run(){
     console.log(tokenId_array.length)
     text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
   }
+  if(halt === 1) {
+    offers = 0
+    progressBar.value = 0
+    maxOfferAmount = 0
+    offerAmount = 0
+    expirationHours = 0
+    text.innerHTML = ''
+    text1.innerHTML = ''
+    increaseBid.disabled = true
+    increaseBid1.disabled = true
+    quickButton.disabled = true
+    progressBar.hidden = true
+    offersMade.innerHTML = ''
+    tokenId_array = []
+    name_array = []
+    halt = 0
+    return 0
+  }
   assetCount = tokenId_array.length - 1
   progressBar.max = assetCount
   pause()
@@ -516,9 +544,11 @@ async function run(){
   start()
   stop = 0
   stop2 = 0
+  halt = 0
+
 
     placeBid()
-  if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601'){
+  if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601' && midrun === false){
     placeBid2()
   
   }
@@ -555,11 +585,11 @@ async function placeBid(){
   create_seaport()
   run_count = run_count + 1
   console.log(INFURA_KEY)
-  if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
+  if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601' || midrun === true){
     assetCount *= 2
   }
   await new Promise(resolve => setTimeout(resolve, 2000))
-  if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
+  if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601' ) {
     delay.value = 250
   }
   for(var i = 0; i < Math.floor(assetCount/2); i++){
@@ -652,7 +682,7 @@ async function placeBid(){
       if(error_message === 'Insufficient balance. Please wrap more ETH.'){
         await new Promise(resolve => setTimeout(resolve, 180000))
       }
-      if(error_message === 0 ){
+      if(error_message === 0 && halt === 0){
         text.innerHTML = 'Error.. retrying'
         console.log('**FAILED**! #' + name_array[i])
         await new Promise(resolve => setTimeout(resolve, 60000))
@@ -666,6 +696,12 @@ async function placeBid(){
       update_floor()
       //buy_order()
     }
+    if(halt === 1){
+      break
+    }
+  }
+  if(halt === 1){
+    return 0
   }
   stop = 1
   if(stop === 1 && stop2 === 1){
@@ -682,6 +718,8 @@ async function placeBid(){
       start()
       placeBid()
       placeBid2()
+    } else {
+      document.getElementById('toprun').checked = false
     }
   }
 }
@@ -780,7 +818,7 @@ async function placeBid2(){
       if(error_message === 'Insufficient balance. Please wrap more ETH.'){
         await new Promise(resolve => setTimeout(resolve, 180000))
       }
-      if(error_message === 0 ){
+      if(error_message === 0 && halt === 0){
         text.innerHTML = 'Error.. retrying'
         console.log('**FAILED**! #' + name_array[i])
         await new Promise(resolve => setTimeout(resolve, 60000))
@@ -794,6 +832,12 @@ async function placeBid2(){
       update_floor()
       //buy_order()
     }
+    if(halt === 1){
+      break
+    }
+  }
+  if(halt === 1){
+    return 0
   }
   stop2 = 1
   if(stop === 1 && stop2 === 1){
@@ -810,6 +854,8 @@ async function placeBid2(){
       start()
       placeBid()
       placeBid2()
+    } else {
+      document.getElementById('toprun').checked = false
     }
   }
   
@@ -870,8 +916,8 @@ async function placeBid2(){
 document.getElementById('reset-2').addEventListener('click', function(){ 
   reset()
   document.getElementById('assetCount').value = ''
-  stop = 1
-  stop2 = 1
+  document.getElementById('toprun').checked = false
+  halt = 1
   offers = 0
   progressBar.value = 0
   maxOfferAmount = 0

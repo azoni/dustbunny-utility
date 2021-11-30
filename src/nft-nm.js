@@ -19,7 +19,7 @@ const Web3ProviderEngine = require("web3-provider-engine");
 var myAccount = document.getElementById('myAccount')
 var myAccount2 = document.getElementById('myAccount2')
 // Set initial Owner Address.
-var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
+var OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
 var MNEMONIC = secret.default.MNEMONIC
 //BLACK_LIST: ['DrBurry', 'DustBunny', 'BalloonAnimal', 'DE2E017', 'CakeBatter', 'T74b93017', 'DoughnutHole', 'ad002d', 'Ti801703'],
 // web3.eth.getBalance("0x407d73d8a49eeb85d32cf465507dd71d507100c1")
@@ -34,8 +34,9 @@ var MNEMONIC = secret.default.MNEMONIC
 //   myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
 //   myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[1].username
 // })
-myAccount.innerHTML = values.default.OWNER_ADDRESS[0].username
-myAccount2.innerHTML = values.default.OWNER_ADDRESS[1].username
+myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
+myAccount2.innerHTML = values.default.OWNER_ADDRESS[0].username
+document.getElementById('myAccountbottom').innerHTML = values.default.OWNER_ADDRESS[1].username
 // account1.innerHTML = values.default.OWNER_ADDRESS[0].username
 // account2.innerHTML = values.default.OWNER_ADDRESS[1].username
 
@@ -84,6 +85,17 @@ var eventDict = {}
 var blacklist = values.default.BLACK_LIST
 ////////UPBIDBOT
 //  INFURA_KEY: ['55b37dd4e48b49cb8c5f9e90445088a1', '9e30b32ca14a408c99ae890ac2c8e8dc', '1bac20c89d97488491bad84f22d7a15b', '231011f146004bd1927eaf77c8b69aac'],
+
+document.getElementById('hidemid').addEventListener('click', function(){
+
+  if(document.getElementById('hidemid').innerHTML === 'Show'){
+    document.getElementById('hidemid').innerHTML = "Hide"
+    document.getElementById('midui').style.display = 'block';
+  } else {
+   document.getElementById('midui').style.display = 'none';
+   document.getElementById('hidemid').innerHTML = 'Show'   
+  }
+})
 
 function event_bid(){
   reset()
@@ -320,30 +332,36 @@ function update_floor(){
   } else {
     console.log('No Collection selected.')
   }
-  getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
+  getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
   document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
   });
 
-  getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
+  getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
       document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
   });
-  eth.getBalance(values.default.OWNER_ADDRESS[0].address)
-  .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
   eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+  .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+  eth.getBalance(values.default.OWNER_ADDRESS[0].address)
   .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+  eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+  .then(res => document.getElementById('balancebottom').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 }
 
-getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
+getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
     document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
 
 });
 getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
+    document.getElementById('balancebottom').innerHTML = (result/1000000000000000000).toFixed(4)
+
+});
+getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
 });
 
-eth.getBalance(values.default.OWNER_ADDRESS[0].address)
-.then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+.then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+eth.getBalance(values.default.OWNER_ADDRESS[0].address)
 .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 
 var total_weth = 0
