@@ -137,26 +137,33 @@ function event_bid(){
   //console.log(eventDict)
 }
 //  BLACK_LIST: ['nftd00d', 'DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703', 'forbayc'],
-document.getElementById('api1').innerHTML = values.default.API_KEY.substring(0, 5)
-document.getElementById('api2').innerHTML = values.default.API_KEY2.substring(0, 5)
+// document.getElementById('api1').innerHTML = values.default.API_KEY.substring(0, 5)
+// document.getElementById('api2').innerHTML = values.default.API_KEY2.substring(0, 5)
 document.getElementById('upbid_bot').addEventListener('click', function(){
   //event_bid()
   console.log('events started')
   buy_order()
 })
 async function buy_order(){
-  const collection_orders = []
   const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669']
-  
-  try{
+  reset()
+  start()
+        text.style.fontSize = '20px'
+    text.innerHTML = 'Starting.....'
+        text1.style.fontSize = '20px'
     //0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea 0-flash
     //0x701c1a9d3fc47f7949178c99b141c86fac72a1c4 1-flash
     //0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5 flash
     //0xfdb32c8ddda21172a031d928056e19725a0836c5 2flash
     //0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669 3flash
-    let search_time = Math.floor(+new Date() / 1000) - 1800
+    let search_time = Math.floor(+new Date() / 1000) - 180
     search_time = new Date(search_time).toISOString();
+    var counter = 0
     for(var wallet in wallet_orders){
+      try{
+      if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
+        await new Promise(resolve => setTimeout(resolve, 3000))
+      }
       const order = await seaport.api.getOrders({
       side: 0,
       //order_by: 'created_date',
@@ -164,7 +171,8 @@ async function buy_order(){
       listed_after: search_time,
       limit: 50
       })
-
+      text.innerHTML = 'Getting wallet: ' + (parseInt(wallet) + 1) + '(' + wallet_orders.length + ') ' + wallet_orders[wallet]
+      text1.innerHTML = counter + ' bids made'
       var username = 'Null'
       try{
         username = order['orders'][0].makerAccount.user.username
@@ -175,16 +183,21 @@ async function buy_order(){
       }
       console.log(order)
       for(var o in order['orders']){
-
+        // text.innerHTML = order['orders'][o]['asset']['collection']['slug']
+        // text1.innerHTML = ''
         //console.log(order['orders'][o]['asset']['collection']['slug'])
         try{
           const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
           var floor_price = collect['collection']['stats']['floor_price']
+          var flooroffer = floor_price * (.85 - collect['collection']['dev_seller_fee_basis_points']/10000)
         } catch (ex) {
           console.log("couldn't get floor")
+          var floor_price = 0
+          var flooroffer = 0
+          continue
         } 
-
-        if (order['orders'][o]['asset']['collection']['slug'] === COLLECTION_NAME && blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < maxOfferAmount){
+        
+        if (Object.keys(values.default.WALLET_SETS).includes(order['orders'][o]['asset']['collection']['slug']) && blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
           //console.log('bid: ' + parseFloat(order['orders'][o].basePrice/1000000000000000000))
           //console.log('floor: ' + floor_price)
           var asset = {
@@ -192,27 +205,38 @@ async function buy_order(){
             tokenAddress: order['orders'][o]['asset']['tokenAddress'],
             //schemaName: WyvernSchemaName.ERC1155
           }
+          console.log(order['orders'][o]['asset']['collection']['slug'] + ', ' + floor_price + ' max bid: ' + flooroffer)
+                if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
+        await new Promise(resolve => setTimeout(resolve, 3000))
+      }
           try{
             await seaport.createBuyOrder({
               asset,
               startAmount: parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001),
-              accountAddress: OWNER_ADDRESS,
+              accountAddress: values.default.WALLET_SETS[order['orders'][o]['asset']['collection']['slug']],
               expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
             })
+            text.innerHTML = order['orders'][o]['asset']['collection']['slug'] + ' Floor: ' + floor_price.toFixed(2) + ' max bid: ' + flooroffer.toFixed(4)
+            text1.innerHTML = username + ' #' + order['orders'][o]['asset']['tokenId'] + ' upbid: ' + parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001).toFixed(4)
             console.log(order['orders'][o]['asset']['collection']['name'] + ' ' + order['orders'][o]['asset']['tokenId'] + ' ' + order['orders'][o].basePrice/1000000000000000000)
-            console.log("upbidding flash-prpatel05 ")// + wallet_orders[wallet])
+            console.log("upbidding " + username + ': ' + parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001))// + wallet_orders[wallet])
           } catch(ex){
-            console.log(ex)
+            console.log(ex.message)
           }
-
+          counter += 1
         }
       }
     }
-
-  } catch(ex) {
-    console.log(ex)
+    catch(ex) {
+    console.log(ex.message)
     console.log('error with buy orders')
   }
+
+  } 
+  console.log('offers made: ' + counter)
+  text.innerHTML = 'Finding more offers soon...'
+  text1.innerHTML = 'offers made: ' + counter
+  pause()
 }
 
 async function placeBid(){ 
@@ -236,7 +260,7 @@ async function placeBid(){
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
       console.log('Bid: ' + eventDict[Object.keys(eventDict)[key]].toFixed(4) + ' on ' + Object.keys(eventDict)[key])
-      document.getElementById('eventText').innerHTML = key + '/' + Object.keys(eventDict).length + ' Bid: ' + eventDict[Object.keys(eventDict)[key]].toFixed(4) + ' on ' + Object.keys(eventDict)[key]
+      //document.getElementById('eventText').innerHTML = key + '/' + Object.keys(eventDict).length + ' Bid: ' + eventDict[Object.keys(eventDict)[key]].toFixed(4) + ' on ' + Object.keys(eventDict)[key]
       progressBar.value += 1
     } catch(ex){
       console.log(ex)
@@ -402,8 +426,9 @@ getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(function (result) 
     eth.getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
+
 getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(function (result) {
-    console.log('Ti801703: ' + (result/1000000000000000000).toFixed(4))
+    console.log('T801703: ' + (result/1000000000000000000).toFixed(4))
     eth.getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
