@@ -85,7 +85,23 @@ var eventDict = {}
 var blacklist = values.default.BLACK_LIST
 ////////UPBIDBOT
 //  INFURA_KEY: ['55b37dd4e48b49cb8c5f9e90445088a1', '9e30b32ca14a408c99ae890ac2c8e8dc', '1bac20c89d97488491bad84f22d7a15b', '231011f146004bd1927eaf77c8b69aac'],
+document.getElementById('readme').addEventListener('click', function(){
+  alert("Welcome to the latest version of DustBunny — your local liquidity provider" + "\nTop(A) runs on 2 threads\n" + "Bottom(B) runs on a more optimized single thread but is about 30% slower than A\n" + "New features:\n" + "Cycle through accounts using the >> button before account name\n" + "Hide B to move Event bids up for easier access\n"+"Not 100% sure it works or buggy…\n"+
+  "- Infura swap\n"+
+  "- Reset Button\n"+
+  
 
+"Recently added\n"+
+
+"Loop checkbox will run the same set of assets continuously\n"+
+  "- Changes to bids, expiration can be made during run, direction cannot\n"+
+  "- Can toggle loop on and off\n"+
+"Reverse checkbox to run the collection in reverse\n"+
+  "-Once started cannot be undone\n"+
+
+"Next:\n"+
+  "Multi-trait bidding")
+})
 document.getElementById('hidemid').addEventListener('click', function(){
 
   if(document.getElementById('hidemid').innerHTML === 'Show'){
