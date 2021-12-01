@@ -382,11 +382,34 @@ getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
 getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
 });
-
-eth.getBalance(values.default.OWNER_ADDRESS[1].address)
-.then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
-eth.getBalance(values.default.OWNER_ADDRESS[0].address)
-.then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+var accountIndex = 0
+document.getElementById('nextAccount-2').addEventListener('click', function(){
+  console.log('nft-nm')
+  accountIndex += 1
+  if(accountIndex === values.default.OWNER_ADDRESS.length){
+    accountIndex = 0
+  }
+  myAccount2.innerHTML = values.default.OWNER_ADDRESS[accountIndex].username
+  getBalance(values.default.OWNER_ADDRESS[accountIndex].address).then(function (result) {
+    document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
+  });
+})
+var accountIndex1 = 1
+document.getElementById('nextAccount-1').addEventListener('click', function(){
+  console.log('nft-nm')
+  accountIndex1 += 1
+  if(accountIndex1 === values.default.OWNER_ADDRESS.length){
+    accountIndex1 = 0
+  }
+  myAccount.innerHTML = values.default.OWNER_ADDRESS[accountIndex1].username
+  getBalance(values.default.OWNER_ADDRESS[accountIndex1].address).then(function (result) {
+    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
+  });
+})
+// eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+// .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+// eth.getBalance(values.default.OWNER_ADDRESS[0].address)
+// .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 
 var total_weth = 0
 var total_eth = 0

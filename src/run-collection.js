@@ -56,7 +56,7 @@ function create_seaport(){
     providerEngine,
     {
       networkName: Network.Main,
-      apiKey: values.default.API_KEY2
+      apiKey: values.default.API_KEY
     },
     (arg) => console.log(arg)
   );
@@ -110,6 +110,17 @@ var assetCount = 0
 //
 // Grab collection to submit offers on. 
 //
+var accountIndex = 0
+document.getElementById('nextAccount-2').addEventListener('click', function(){
+  console.log('run-collection')
+  accountIndex += 1
+  if(accountIndex === values.default.OWNER_ADDRESS.length){
+    accountIndex = 0
+  }
+  OWNER_ADDRESS = values.default.OWNER_ADDRESS[accountIndex].address
+})
+
+
 async function getCollection(collectionName){
   progressBar.value = 0
   collectionName = collectionName.trim()
@@ -283,7 +294,18 @@ quickButton.addEventListener('click', function(){
   //   run()
   // }
 })
-
+document.getElementById('smartStart-2').addEventListener('click', function(){
+  document.getElementById('body').style.background = '#90EE90'
+  reset()
+  start()
+  progressBar.value =  0
+  quickButton.disabled = true
+  progressBar.hidden = false
+  increaseBid.disabled = false
+  increaseBid1.disabled = false
+  progressBar.max = assetCount
+  run()
+})
 var offersDict = {}
 confirmButton.addEventListener('click', function(){
   if (confirmCollection === 1) {
@@ -378,10 +400,10 @@ function update_floor(){
 }
 text.style.fontSize = '20px'
 text1.style.fontSize = '20px'
-var midrun = false
+// var midrun = false
 async function run(){
-  document.getElementById('toprun').checked = true
-  midrun = document.getElementById('midrun').checked 
+  // document.getElementById('toprun').checked = true
+  // midrun = document.getElementById('midrun').checked 
   var direction = 'asc'
   text.innerHTML = 'Starting.....'
   if(document.getElementById('reverse-2').checked){
@@ -546,9 +568,9 @@ async function run(){
   stop2 = 0
   halt = 0
 
-
+  console.log(tokenId_array)
     placeBid()
-  if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601' && midrun === false){
+  if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601'){// && midrun === false){
     placeBid2()
   
   }
@@ -577,6 +599,8 @@ function check_errors(msg){
       run_count += 1
       create_seaport()
     return 'Out of Infura requests.. swappinp keys.'
+  } else if(msg.includes('has too many outstanding orders.')){
+    return 'Too many outstanding orders.'
   }
   return 0
 }
@@ -585,7 +609,7 @@ async function placeBid(){
   create_seaport()
   run_count = run_count + 1
   console.log(INFURA_KEY)
-  if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601' || midrun === true){
+  if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){// || midrun === true){
     assetCount *= 2
   }
   await new Promise(resolve => setTimeout(resolve, 2000))
@@ -723,9 +747,10 @@ async function placeBid(){
       start()
       placeBid()
       placeBid2()
-    } else {
-      document.getElementById('toprun').checked = false
-    }
+    } 
+    // else {
+    //   document.getElementById('toprun').checked = false
+    // }
   }
 }
 async function placeBid2(){
@@ -864,9 +889,10 @@ async function placeBid2(){
       start()
       placeBid()
       placeBid2()
-    } else {
-      document.getElementById('toprun').checked = false
-    }
+    } 
+    // else {
+    //   document.getElementById('toprun').checked = false
+    // }
   }
   
 }
@@ -926,7 +952,7 @@ async function placeBid2(){
 document.getElementById('reset-2').addEventListener('click', function(){ 
   reset()
   document.getElementById('assetCount').value = ''
-  document.getElementById('toprun').checked = false
+  // document.getElementById('toprun').checked = false
   halt = 1
   offers = 0
   progressBar.value = 0
