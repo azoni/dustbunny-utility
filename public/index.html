@@ -29,7 +29,7 @@
         <button id='api2'>api2</button>
         <button id='api3'>Public</button> -->
         <button id='update_floor'>Floor</button>
-        <button id='readme'>Click here to begin</button>
+        <button id='readme'>Click here for info</button>
 <!--         <input id='toprun' type='checkbox'></input> 
         <input id='midrun' type='checkbox'></input> -->
         <div id='account-list' style="display: inline;">
@@ -87,6 +87,8 @@
           Max:
           <input id='maxOfferAmount-2' placeholder='.32' style="width:40px">
           <button id='increaseBid-2'>+.01</button><button id='increaseBid1-2'>+.001</button>
+          Upbid:
+          <input id='upbidincrement-2' placeholder='.001' style="width:40px">
           Exp:
           <input id='expireInput-2' style="width:25px" placeholder='1'></input>
           Loop<input id='repeat-2' type='checkbox'></input>
@@ -187,7 +189,7 @@
 </div>
         
         </div>
-        <br><br>
+        <br>
         <a href='https://opensea.io/account' target="_blank" style='font-size: 22px' id='myAccountbottom'></a>
         <p style="display: inline;" id='balancebottom'></p>
           <h3 style="display: inline;" id='collectionName'></h3>
@@ -237,27 +239,40 @@
 <!--           <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
  -->          <button id='quickStart' style="width: 75px; height: 35px">Go</button>
               <button id='reset' style="width: 75px; height: 35px">Reset</button>
-              <button id='upbid_bot' style="width: 75px; height: 35px">Events</button>
-          <br><br>
+              <br>
+
+          <br>
             Thread 1
             <input id='startToken' style="width:50px" placeholder='#start'></input>
             <input id='endToken' style="width:50px" placeholder='#end'></input>
-            <p id='text' style="display:inline;"></p>
+            
             <br>
             Thread 2
             <input id='startToken1' style="width:50px" placeholder='#start'></input>
             <input id='endToken1' style="width:50px" placeholder='#end'></input>
+
+            <br>
+            <button id='upbid_bot' style="width: 75px; height: 35px">Events</button>
+           <button id='stop-upbid_bott' style="width: 75px; height: 35px">Stop</button>
+    Bid: <input id='bidMultiplier-1' placeholder=".8" style="width: 25px;"></input>*Floor
+    Exp<input id='bidMultiplier-1' placeholder="1" style="width: 25px;"></input>
+    <br>
+            <p id='text' style="display:inline;"></p>
+            <br>
             <p id='text1' style="display:inline;"></p>
             <br>
+                       
+    
                     <progress id='progressBar' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
+
         <p id='offersMade' style="display: inline;"></p>
-      <span class="time" id="display">00:00:00:00</span>
+        <span class="time" id="display">00:00:00:00</span>
 
         </div>
-      
+
         <div>
       <br>
-              
+
       
 </div><br><br><br>
       <div id='favorites' style="padding-left: 5%">

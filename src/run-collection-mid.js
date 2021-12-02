@@ -555,7 +555,7 @@ async function run(){
   reset()
   start()
   stop = 0
-  stop2 = 0
+  stop2 = 1
   halt = 0
 
     placeBid()
@@ -731,7 +731,7 @@ async function placeBid(){
     if(document.getElementById('repeat-1').checked){
       document.getElementById('body').style.background = '#90EE90'
       stop = 0
-      stop2 = 0
+      stop2 = 1
       offers = 0
       progressBar.value = 0
       reset()

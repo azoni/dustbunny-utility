@@ -166,7 +166,9 @@ document.getElementById('upbid_bot').addEventListener('click', function(){
   console.log('events started')
   buy_order()
 })
+
 async function buy_order(){
+
   const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669']
   reset()
   start()
@@ -258,6 +260,13 @@ async function buy_order(){
   console.log('offers made: ' + counter)
   text.innerHTML = 'Finding more offers soon...'
   text1.innerHTML = 'offers made: ' + counter
+  
+  if(counter < 80){
+    //150
+    var wait_time = 155000
+    wait_time -= ((80 - (80 - counter)) * 1000)*2
+    await new Promise(resolve => setTimeout(resolve, wait_time))
+  }
   pause()
 }
 
@@ -1119,7 +1128,7 @@ resetButton.addEventListener('click', function(){
   progressBar.value = 0
   maxOfferAmount = 0
   offerAmount = 0
-  expirationHours = 0
+  expirationHours = 1
   text.innerHTML = ''
   text1.innerHTML = ''
   increaseBid.disabled = true
