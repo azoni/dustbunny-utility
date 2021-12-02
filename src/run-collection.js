@@ -19,7 +19,7 @@ console.log('Collection loaded.')
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
 var currentHour = new Date().getHours()
-var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
 
 var infuraRpcSubprovider = new RPCSubprovider({
   rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
@@ -42,7 +42,7 @@ var seaport = new OpenSeaPort(
 );
 function create_seaport(){
   //currentHour = new Date().getHours()
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   console.log('creating seaport ' + INFURA_KEY)
   console.log(run_count)
   infuraRpcSubprovider = new RPCSubprovider({

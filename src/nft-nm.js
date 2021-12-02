@@ -48,7 +48,7 @@ console.log('App loaded.')
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
 var currentHour = new Date().getHours()
-var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
 
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
