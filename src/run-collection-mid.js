@@ -40,6 +40,7 @@ var seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
+
 function create_seaport(){
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
@@ -82,7 +83,7 @@ var COLLECTION_NAME = ''
 var offers = 0
 
 var stop = 0
-var stop2 = 1
+var stop2 = 0
 var halt = 0
 
 var delay = document.getElementById('delay')
@@ -287,6 +288,7 @@ quickButton.addEventListener('click', function(){
   increaseBid.disabled = false
   increaseBid1.disabled = false
   progressBar.max = assetCount
+  //test_buy()
   run()
   // if(tokenId_array.length !== 0){
   //   placeBid()
@@ -468,7 +470,7 @@ async function run(){
   if(document.getElementById('reverse-1').checked){
     direction = 'asc'
   }
-  
+  var temp_offset = offset
   for(var offset = 0; offset < assetCount/2; offset+=50){
         if(halt === 1) {
       break
@@ -529,7 +531,7 @@ async function run(){
       console.log(ex)
     }
     console.log(tokenId_array.length)
-    text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
+    text.innerHTML = tokenId_array.length + '(' + (parseInt(offset) + temp_offset) + ') of ' + assetCount + ' collected'
   }
     if(halt === 1) {
       offers = 0
@@ -555,14 +557,14 @@ async function run(){
   reset()
   start()
   stop = 0
-  stop2 = 1
+  stop2 = 0
   halt = 0
-
+  //test_buy()
     placeBid()
-  // if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601' && toprun === false){
-  //   placeBid2()
+  if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601'){ //&& toprun === false){
+    placeBid2()
   
-  // }
+  }
 }
 
 function check_errors(msg){
@@ -605,7 +607,7 @@ async function placeBid(){
   // if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
   //   delay.value = 250
   // }
-  for(var i = 0; i < Math.floor(assetCount); i++){
+  for(var i = 0; i < Math.floor(assetCount/2); i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
     if(maxOfferAmount !== 0){
@@ -730,7 +732,7 @@ async function placeBid(){
     if(document.getElementById('repeat-1').checked){
       document.getElementById('body').style.background = '#90EE90'
       stop = 0
-      stop2 = 1
+      stop2 = 0
       offers = 0
       progressBar.value = 0
       reset()
@@ -887,6 +889,22 @@ async function placeBid2(){
   }
   
 }
+async function test_buy(){
+  try{
+    const order = await seaport.api.getOrders({
+      asset_contract_address: NFT_CONTRACT_ADDRESS,
+      token_ids: tokenId_array.slice(1,30),
+      side: 0,
+      order_by: 'eth_price',
+      order_direction: 'desc',
+      limit: 50
+    })
+    console.log(order)
+  } catch(ex){
+    console.log(ex)
+  }
+}
+
 // async function buy_order(){
 //   const collection_orders = []
 //   const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5']

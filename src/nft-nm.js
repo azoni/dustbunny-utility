@@ -170,9 +170,10 @@ document.getElementById('stop-upbid_bot').addEventListener('click', function(){
   event_stop = 1
 })
 var event_stop = 0
+var eventbidcount = 0
 async function buy_order(){
 
-  const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669']
+  const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', '0xadee30341a9e98ed145ccb02b00da15e74e305b5']
   reset()
   start()
         text.style.fontSize = '20px'
@@ -247,10 +248,13 @@ async function buy_order(){
             text1.innerHTML = username + ' #' + order['orders'][o]['asset']['tokenId'] + ' upbid: ' + parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001).toFixed(4)
             console.log(order['orders'][o]['asset']['collection']['name'] + ' ' + order['orders'][o]['asset']['tokenId'] + ' ' + order['orders'][o].basePrice/1000000000000000000)
             console.log("upbidding " + username + ': ' + parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001))// + wallet_orders[wallet])
-          } catch(ex){
+            eventbidcount += 1
+            counter += 1 
+          }
+
+          catch(ex){
             console.log(ex.message)
           }
-          counter += 1
         }
       }
     }
@@ -262,7 +266,7 @@ async function buy_order(){
   } 
   console.log('offers made: ' + counter)
   text.innerHTML = 'Finding more offers soon...'
-  text1.innerHTML = 'offers made: ' + counter
+  text1.innerHTML = 'offers made: ' + counter + ' total: ' + eventbidcount
   
   if(counter < 80){
     //150
