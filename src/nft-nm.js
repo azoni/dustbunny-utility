@@ -166,7 +166,10 @@ document.getElementById('upbid_bot').addEventListener('click', function(){
   console.log('events started')
   buy_order()
 })
-
+document.getElementById('stop-upbid_bot').addEventListener('click', function(){
+  event_stop = 1
+})
+var event_stop = 0
 async function buy_order(){
 
   const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669']
@@ -268,6 +271,15 @@ async function buy_order(){
     await new Promise(resolve => setTimeout(resolve, wait_time))
   }
   pause()
+  if(event_stop === 0){
+    buy_order()
+  } else {
+    event_stop = 0
+    reset()
+    text.innerHTML = ''
+    text1.innerHTML = ''
+  }
+  
 }
 
 async function placeBid(){ 
@@ -1340,3 +1352,42 @@ function reset() {
   print("00:00:00:00");
   elapsedTime = 0;
 }
+
+
+
+    // { //kongz, metaheroes 
+    //   username: 'BalloonAnimal',
+    //   address: '0x4beac303c8fdf1f3cd34509b344067e86dcbc506'
+    // },
+    // { //doodles
+    //   username: 'Sad002d',
+    //   address: '0x41899a097dac875318bf731e5f4a972544ad002d'
+    // },
+    // { //cats
+    //   username: 'DustBunny',
+    //   address: '0x13b451d77b87361d376ae211f640ed1a4491181d'
+    // },
+    // { //toadz
+    //   username: 'cakebatter',
+    //   address: '0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65'
+    // },
+    // { //loot, mice
+    //   username: 'doughnuthole',
+    //   address: '0x60bf609e0e8b724dc61ffee24737af15a6f6d905'
+    // },
+    // { //cats
+    //   username: 'DE2E017',
+    //   address: '0x774a4a3c3130e4850a84dc8c80945dee4de2e017'
+    // },
+    // { //creatures, women
+    //   username: 'T74b93017',
+    //   address: '0x1484d9ae6d590d6b0981e802f555a8dd74b93017'
+    // },
+    // { //creatures, women
+    //   username: 'T801703',
+    //   address: '0x873da8e14fd648b763fe896caa41935e17801703'
+    // },
+    // { //bears
+    //   username: 'nftd00d',
+    //   address: '0xd76654102c5f3c27886d5b3ec47b3111e18d8126'
+    // },
