@@ -100,7 +100,13 @@ document.getElementById('readme').addEventListener('click', function(){
   "-Once started cannot be undone\n"+
 
 "Next:\n"+
-  "Multi-trait bidding")
+  "Add inputs for event bidding -- works through values file right now.\n"+
+  "Multi-trait bidding\n"+
+  "Sample WALLET_SETS for event bidding\n"+
+  "WALLET_SETS: {\n"+
+  " 'cool-cats-nft': '0x4beac303c8fdf1f3cd34509b344067e86dcbc506',\n"+
+  " 'doodles-official': '0x41899a097dac875318bf731e5f4a972544ad002d',\n" +
+  "},")
 })
 document.getElementById('hidemid').addEventListener('click', function(){
 
@@ -507,7 +513,7 @@ var confirmCollection = 0
 var progressBar = document.getElementById('progressBar')
 
 var delay = document.getElementById('delay')
-delay.value = 500
+delay.value = 250
 if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
   delay.value = 3000
 }

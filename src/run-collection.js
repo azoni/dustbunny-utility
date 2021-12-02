@@ -42,6 +42,7 @@ var seaport = new OpenSeaPort(
 );
 function create_seaport(){
   //currentHour = new Date().getHours()
+  run_count += 1
   INFURA_KEY = values.default.INFURA_KEY[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   console.log('creating seaport ' + INFURA_KEY)
   console.log(run_count)
@@ -71,6 +72,8 @@ function create_seaport(){
 // );
 var tokenId_array = []
 var name_array = []
+var asset_array = []
+
 
 var NFT_CONTRACT_ADDRESS = ''
 var offerAmount = 0
@@ -567,7 +570,7 @@ async function run(){
   stop = 0
   stop2 = 0
   halt = 0
-
+  //testbundlebid()
   console.log(tokenId_array)
     placeBid()
   if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601'){// && midrun === false){
@@ -613,9 +616,9 @@ async function placeBid(){
     assetCount *= 2
   }
   await new Promise(resolve => setTimeout(resolve, 2000))
-  if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601' ) {
-    delay.value = 250
-  }
+  // if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601' ) {
+  //   delay.value = 250
+  // }
   for(var i = 0; i < Math.floor(assetCount/2); i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
@@ -708,6 +711,9 @@ async function placeBid(){
       var error_message = check_errors(ex.message)
       text.style.color = 'red'
       text.innerHTML = error_message
+      if(error_message === 'Too many outstanding orders.'){
+        await new Promise(resolve => setTimeout(resolve, 30000))
+      }
       if(error_message === 'Insufficient balance. Please wrap more ETH.'){
         await new Promise(resolve => setTimeout(resolve, 180000))
       }
@@ -755,9 +761,9 @@ async function placeBid(){
 }
 async function placeBid2(){
   await new Promise(resolve => setTimeout(resolve, 1000))
-  if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
-    delay.value = 250
-  }
+  // if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
+  //   delay.value = 250
+  // }
   for(var i = Math.floor(assetCount/2); i < assetCount; i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
@@ -850,6 +856,9 @@ async function placeBid2(){
       var error_message = check_errors(ex.message)
       text.style.color = 'red'
       text.innerHTML = error_message
+      if(error_message === 'Too many outstanding orders.'){
+        await new Promise(resolve => setTimeout(resolve, 30000))
+      }
       if(error_message === 'Insufficient balance. Please wrap more ETH.'){
         await new Promise(resolve => setTimeout(resolve, 180000))
       }
@@ -970,6 +979,26 @@ document.getElementById('reset-2').addEventListener('click', function(){
   name_array = []
 })
 
+// async function testbundlebid() {
+//   for(var i in tokenId_array){
+//     var a = {
+//       tokenId:tokenId_array[i],
+//       tokenAddress: NFT_CONTRACT_ADDRESS,
+//     }
+//     asset_array.push(a)
+//   }
+//   try{
+//     await seaport.createBuyOrder({
+//       asset_array,
+//       startAmount: offerAmount,
+//       accountAddress: OWNER_ADDRESS,
+//       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
+//     })
+//     console.log('bids made?')
+//   } catch(ex){
+//     console.log(ex)
+//   }
+// }
 // Convert time to a format of hours, minutes, seconds, and milliseconds
 
 function timeToString(time) {

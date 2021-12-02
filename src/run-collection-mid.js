@@ -41,6 +41,7 @@ var seaport = new OpenSeaPort(
   (arg) => console.log(arg)
 );
 function create_seaport(){
+  run_count += 1
   //currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   console.log('creating seaport ' + INFURA_KEY)
@@ -602,9 +603,9 @@ async function placeBid(){
   //   stop2 = 1
   // }
   await new Promise(resolve => setTimeout(resolve, 2000))
-  if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
-    delay.value = 250
-  }
+  // if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
+  //   delay.value = 250
+  // }
   for(var i = 0; i < Math.floor(assetCount); i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
@@ -695,6 +696,9 @@ async function placeBid(){
       var error_message = check_errors(ex.message)
       text.style.color = 'red'
       text.innerHTML = error_message
+      if(error_message === 'Too many outstanding orders.'){
+        await new Promise(resolve => setTimeout(resolve, 30000))
+      }
       if(error_message === 'Insufficient balance. Please wrap more ETH.'){
         await new Promise(resolve => setTimeout(resolve, 180000))
       }
@@ -742,9 +746,9 @@ async function placeBid(){
 }
 async function placeBid2(){
   await new Promise(resolve => setTimeout(resolve, 1000))
-  if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
-    delay.value = 250
-  }
+  // if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601') {
+  //   delay.value = 250
+  // }
   for(var i = Math.floor(assetCount/2); i < assetCount; i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
@@ -835,6 +839,9 @@ async function placeBid2(){
       var error_message = check_errors(ex.message)
       text.style.color = 'red'
       text.innerHTML = error_message
+      if(error_message === 'Too many outstanding orders.'){
+        await new Promise(resolve => setTimeout(resolve, 30000))
+      }
       if(error_message === 'Insufficient balance. Please wrap more ETH.'){
         await new Promise(resolve => setTimeout(resolve, 180000))
       }
