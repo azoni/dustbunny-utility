@@ -40,8 +40,37 @@ var seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
+
+// document.getElementById('delayStart-2').addEventListener('click', function(){
+
+// })
+document.getElementById('increaseBid1multi-2').addEventListener('click', function(){
+  bidMultiplier = .005 + parseFloat(bidMultiplier)
+  maxbidMultiplier = .005 + parseFloat(maxbidMultiplier)
+  document.getElementById('bidMultiplier-2').value = bidMultiplier
+  document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+})
+document.getElementById('decreaseBidmulti-2').addEventListener('click', function(){
+  bidMultiplier = parseFloat(bidMultiplier) - .005
+  maxbidMultiplier = parseFloat(maxbidMultiplier) - .005
+  document.getElementById('bidMultiplier-2').value = bidMultiplier
+  document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+})
+document.getElementById('passivemulti-2').addEventListener('click', function(){
+  bidMultiplier = .6
+  maxbidMultiplier = .8
+  document.getElementById('bidMultiplier-2').value = bidMultiplier
+  document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+})
+document.getElementById('aggressivemulti-2').addEventListener('click', function(){
+  bidMultiplier = .7
+  maxbidMultiplier = .9
+  document.getElementById('bidMultiplier-2').value = bidMultiplier
+  document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+})
+
 function create_seaport(){
-  //currentHour = new Date().getHours()
+  currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   console.log('creating seaport ' + INFURA_KEY)
   console.log(run_count)
@@ -407,6 +436,12 @@ text1.style.fontSize = '20px'
 async function run(){
   // document.getElementById('toprun').checked = true
   // midrun = document.getElementById('midrun').checked 
+  if(document.getElementById('delayStart-2').value !== ''){
+    text.innerHTML = 'Starting in ' + document.getElementById('delayStart-2').value + ' minutes.'
+    await new Promise(resolve => setTimeout(resolve, document.getElementById('delayStart-2').value * 60000));
+    reset()
+  }
+
   var direction = 'asc'
   text.innerHTML = 'Starting.....'
   if(document.getElementById('reverse-2').checked){
