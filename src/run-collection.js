@@ -44,6 +44,29 @@ var seaport = new OpenSeaPort(
 // document.getElementById('delayStart-2').addEventListener('click', function(){
 
 // })
+var infura_index = 0
+document.getElementById('infurakey').addEventListener('click', function(){
+  INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
+  infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main,
+      apiKey: values.default.API_KEY
+    },
+    (arg) => console.log(arg)
+  );
+  infura_index += 1
+  if(infura_index === values.default.INFURA_KEY.length - 1){
+    infura_index = 0
+  }
+})
 document.getElementById('increaseBid1multi-2').addEventListener('click', function(){
   bidMultiplier = .005 + parseFloat(bidMultiplier)
   maxbidMultiplier = .005 + parseFloat(maxbidMultiplier)
