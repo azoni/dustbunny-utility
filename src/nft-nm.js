@@ -1474,7 +1474,22 @@ function reset() {
   print("00:00:00:00");
   elapsedTime = 0;
 }
-
+  // DEFAULT_SET: 'doodles-official',
+  // DEFAULT_TRAIT: ['',''],
+  // DEFAULT_DELAY: 50,
+  // WALLET_SETS: {
+  //   'cool-cats-nft': '0x13b451d77b87361d376ae211f640ed1a4491181d',
+  //   // 'doodles-official': '0x4beac303c8fdf1f3cd34509b344067e86dcbc506',
+  //   // 'bears-deluxe': '0x41899a097dac875318bf731e5f4a972544ad002d',
+  //   // 'anonymice': '0x4beac303c8fdf1f3cd34509b344067e86dcbc506',
+  //   // 'creatureworld': '0x41899a097dac875318bf731e5f4a972544ad002d',
+  //   // 'cryptoadz-by-gremplin': '0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65',
+  //   // 'world-of-women-nft':'0x41899a097dac875318bf731e5f4a972544ad002d',
+  //   // // 'loot': '0x60bf609e0e8b724dc61ffee24737af15a6f6d905',
+  //   // 'cyberkongz': '0x4beac303c8fdf1f3cd34509b344067e86dcbc506',
+  //   // 'metahero-generative': '0x4beac303c8fdf1f3cd34509b344067e86dcbc506',
+  // },
+  // FAVORITES: ['doodles-official', 'cryptoadz-by-gremplin', 'cyberkongz'],
 
 
     // { //kongz, metaheroes 
