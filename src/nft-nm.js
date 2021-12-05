@@ -14,7 +14,7 @@ const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
 //teacuppig1234 d0fc2dfb800045358e70548d71176469-
 //charltonsmith f934d4e8e2af46b38c60826c4fde1afa-
-//janeejacobsen 8dfb7126fa454b3a9d3b48f0435b8c05--
+//janeejacobsen 8dfb7126fa454b3a9d3b48f0435qaeb8c05--
 //joecurry c2941943ae8341dca396d5dc49426f92-
 var myAccount = document.getElementById('myAccount')
 var myAccount2 = document.getElementById('myAccount2')
@@ -86,6 +86,7 @@ var seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
+
 function create_seaport(){
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
@@ -138,7 +139,6 @@ var blacklist = values.default.BLACK_LIST
 //   " 'doodles-official': '0x41899a097dac875318bf731e5f4a972544ad002d',\n" +
 //   "},")
 // })
-hide_mid()
 document.getElementById('hidemid').addEventListener('click', function(){
   hide_mid()
 })
@@ -259,6 +259,13 @@ async function buy_order(){
   if(document.getElementById('event_wallet').value !== ''){
     wallet_orders = [document.getElementById('event_wallet').value]
   }
+  var wallet_set = values.default.WALLET_SETS
+  if(document.getElementById('event_collection').value !== ''){
+    var collect_set = document.getElementById('event_collection').value
+    wallet_set = {}
+    wallet_set[collect_set] = OWNER_ADDRESS
+
+  }
   reset()
   start()
         text.style.fontSize = '20px'
@@ -280,6 +287,10 @@ async function buy_order(){
     
     for(var wallet in wallet_orders){
       var offset = 0
+      var event_multi = .9
+      if(document.getElementById('event-multiplier').value !== ''){
+        event_multi = document.getElementById('event-multiplier').value
+      }
       do{
         
         var order_length = 0
@@ -324,15 +335,14 @@ async function buy_order(){
         try{
           const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
           var floor_price = collect['collection']['stats']['floor_price']
-          var flooroffer = floor_price * (.91 - collect['collection']['dev_seller_fee_basis_points']/10000)
+          var flooroffer = floor_price * (event_multi - collect['collection']['dev_seller_fee_basis_points']/10000)
         } catch (ex) {
           console.log("couldn't get floor")
           var floor_price = 0
           var flooroffer = 0
           continue
         } 
-        
-        if (Object.keys(values.default.WALLET_SETS).includes(order['orders'][o]['asset']['collection']['slug']) && blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
+        if (Object.keys(wallet_set).includes(order['orders'][o]['asset']['collection']['slug']) && blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
           //console.log('bid: ' + parseFloat(order['orders'][o].basePrice/1000000000000000000))
           //console.log('floor: ' + floor_price)
           var asset = {
@@ -348,7 +358,7 @@ async function buy_order(){
             await seaport.createBuyOrder({
               asset,
               startAmount: parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001),
-              accountAddress: values.default.WALLET_SETS[order['orders'][o]['asset']['collection']['slug']],
+              accountAddress: wallet_set[order['orders'][o]['asset']['collection']['slug']],
               expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
             })
             text.innerHTML = order['orders'][o]['asset']['collection']['slug'] + ' Floor: ' + floor_price.toFixed(2) + ' max bid: ' + flooroffer.toFixed(4)
@@ -561,6 +571,7 @@ document.getElementById('nextAccount-1').addEventListener('click', function(){
   if(accountIndex1 === values.default.OWNER_ADDRESS.length){
     accountIndex1 = 0
   }
+  OWNER_ADDRESS = values.default.OWNER_ADDRESS[accountIndex1].address
   myAccount.innerHTML = values.default.OWNER_ADDRESS[accountIndex1].username
   getBalance(values.default.OWNER_ADDRESS[accountIndex1].address).then(function (result) {
     document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
