@@ -30,7 +30,7 @@
         <button id='api3'>Public</button> -->
         <button id='update_floor'>Floor</button>
         <button id='infurakey'>Infura</button>
-        <button id='readme'>Click here for info</button>
+        <!-- <button id='readme'>Click here for info</button> -->
 <!--         <input id='toprun' type='checkbox'></input> 
         <input id='midrun' type='checkbox'></input> -->
         <div id='account-list' style="display: inline;">
@@ -60,24 +60,24 @@
           <a id='assetFloor-2' style='font-size: 24px'></a>
 
         </div>
-        <br>
+        <br><br>
         <div style="text-align: left; padding-left: 5%">
+          <button id='nextCollection-2'>>></button>
           <input style="width:175px" id='collectionInput-2' placeholder='Collection Name'></input>
           <button id='collectionButton-2'>Submit</button>
           <button id='collectionButtonClear-2'>Clear</button>
-          <br>
+          <br><br>
           <input id='addProperty-2' placeholder="property" style="width: 75px;"></input>
           <input id='addTrait-2' placeholder="trait" style="width: 75px;"></input>
           
-          Auto<input id='bidMultiplier-2' placeholder=".8" style="width: 30px;"></input>
+          Auto<input id='bidMultiplier-2' placeholder=".8" style="width: 35px;"></input>
           -
-          <input id='maxbidMultiplier-2' placeholder=".85" style="width: 30px;"></input>
+          <input id='maxbidMultiplier-2' placeholder=".85" style="width: 35px;"></input>
           <button id='decreaseBidmulti-2'>-</button>
           <button id='increaseBid1multi-2'>+</button>
           <button id='passivemulti-2'>Low</button>
           <button id='aggressivemulti-2'>High</button>
-          Listed<input id='sellOrder-2' type='checkbox' style="width: 25px;"></input>< Floor * 
-          <input id='aboveFloor-2' placeholder="1.2" style="width: 25px;"></input>
+<br><br>
           <div id='traitsDiv-2'>
           </div>
           <a id='collectionHome-2'></a>
@@ -92,11 +92,14 @@
           <input id='upbidincrement-2' placeholder='.001' style="width:40px">
           Exp:
           <input id='expireInput-2' style="width:20px" placeholder='1'></input>
-          Loop<input id='repeat-2' checked="true" type='checkbox'></input>
-          Reverse<input id='reverse-2' type='checkbox'></input>
-          <br>
+
+          <br><br>
           Delay:
           <input id='delayStart-2' placeholder="20" style="width: 20px;"></input>min
+                    Loop<input id='repeat-2' checked="true" type='checkbox'></input>
+          Reverse<input id='reverse-2' type='checkbox'></input>
+                    Listed<input id='sellOrder-2' type='checkbox' style="width: 25px;"></input>< Floor * 
+          <input id='aboveFloor-2' placeholder="1.2" style="width: 25px;"></input>
           <br><br>
 <!--           <input id='offerAmount2' placeholder='.28' style="width:40px">
           <input id='expireInput2' style="width:25px" placeholder='4'></input>
@@ -108,11 +111,12 @@
  -->          <button id='confirmButton-2' style="width: 75px; height: 35px">Confirm</button>
 <!--           <button id='startButton-2' style="width: 75px; height: 35px">Start</button>
  --><!--           <button id='stopButton' style="width: 75px; height: 35px">Stop</button>
- -->          <button id='quickStart-2' style="width: 75px; height: 35px">Go</button>
+ -->          <button id='quickStart-2' style="width: 75px; height: 35px">Run</button>
               <button id='reset-2' style="width: 75px; height: 35px">Reset</button>
                         <button id='smartStart-2' style="width: 75px; height: 35px">Smart</button>
 
           <br>
+          <div style="text-align: center;">
           <p id='text1-2'></p>
             <p id='text-2'></p>
             
@@ -120,6 +124,7 @@
                 <progress id='progressBar-2' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
 <p id='offersMade-2' style="display: inline;"></p>
       <span class="time" id="display-2">00:00:00:00</span>
+    </div>
       </div>
 <br>
 <button id='hidemid' style="display: inline;">hide</button>
@@ -194,6 +199,9 @@
         
         </div>
         <br>
+        <button id='hidebottom' style="display: inline;">hide</button>
+      <div id='bottomui'>
+        <br>
         <a href='https://opensea.io/account' target="_blank" style='font-size: 22px' id='myAccountbottom'></a>
         <p style="display: inline;" id='balancebottom'></p>
           <h3 style="display: inline;" id='collectionName'></h3>
@@ -254,10 +262,16 @@
             Thread 2
             <input id='startToken1' style="width:50px" placeholder='#start'></input>
             <input id='endToken1' style="width:50px" placeholder='#end'></input>
-
+    </div></div>
             <br>
+
+    <div style="text-align: center">
+        <input id='event_wallet' style="width:325px" placeholder='0x13b451d77b87361d376ae211f640ed1a4491181d'></input>
+        <input id='event_collection' style="width:125px" placeholder='cool-cats-nft'></input>
+        <br>
             <button id='upbid_bot' style="width: 75px; height: 35px">Events</button>
            <button id='stop-upbid_bot' style="width: 75px; height: 35px">Stop</button>
+    Window:<input id='event_window' placeholder="180" style="width: 35px;"></input>seconds
     Bid: <input id='bidMultiplier-1' placeholder=".8" style="width: 25px;"></input>*Floor
     Exp<input id='bidMultiplier-1' placeholder="1" style="width: 25px;"></input>
     <br>
@@ -266,19 +280,16 @@
             <p id='text1' style="display:inline;"></p>
             <br>
                        
-    
+   
                     <progress id='progressBar' style='height: 60px; width: 50%' value ="0" max ="100" hidden></progress>
 
-        <p id='offersMade' style="display: inline;"></p>
+        
         <span class="time" id="display">00:00:00:00</span>
-
+        <br>
+         <p id='offersMade' style="display: inline;"></p>
         </div>
 
-        <div>
-      <br>
-
-      
-</div><br><br><br>
+     <br><br><br>
       <div id='favorites' style="padding-left: 5%">
       </div>
 

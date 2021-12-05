@@ -49,6 +49,11 @@ console.log('App loaded.')
 //
 var currentHour = new Date().getHours()
 var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
+if(values.default.INFURA_KEY.length === 6){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+} else if(values.default.INFURA_KEY.length === 4){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+}
 
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
@@ -81,35 +86,63 @@ var seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
+function create_seaport(){
+  currentHour = new Date().getHours()
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }
+  console.log('creating seaport ' + INFURA_KEY)
+  infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main,
+      apiKey: values.default.API_KEY2
+    },
+    (arg) => console.log(arg)
+  );
+}
 var eventDict = {}
 var blacklist = values.default.BLACK_LIST
 ////////UPBIDBOT
 //  INFURA_KEY: ['55b37dd4e48b49cb8c5f9e90445088a1', '9e30b32ca14a408c99ae890ac2c8e8dc', '1bac20c89d97488491bad84f22d7a15b', '231011f146004bd1927eaf77c8b69aac'],
-document.getElementById('readme').addEventListener('click', function(){
-  alert("Welcome to the latest version of DustBunny — your local liquidity provider" + "\nTop(A) runs on 2 threads\n" + "Bottom(B) runs on a more optimized single thread but is about 30% slower than A\n" + "New features:\n" + "Cycle through accounts using the >> button before account name\n" + "Hide B to move Event bids up for easier access\n"+"Not 100% sure it works or buggy…\n"+
-  "- Infura swap\n"+
-  "- Reset Button\n"+
+// document.getElementById('readme').addEventListener('click', function(){
+//   alert("Welcome to the latest version of DustBunny — your local liquidity provider" + "\nTop(A) runs on 2 threads\n" + "Bottom(B) runs on a more optimized single thread but is about 30% slower than A\n" + "New features:\n" + "Cycle through accounts using the >> button before account name\n" + "Hide B to move Event bids up for easier access\n"+"Not 100% sure it works or buggy…\n"+
+//   "- Infura swap\n"+
+//   "- Reset Button\n"+
   
 
-"Recently added\n"+
+// "Recently added\n"+
 
-"Loop checkbox will run the same set of assets continuously\n"+
-  "- Changes to bids, expiration can be made during run, direction cannot\n"+
-  "- Can toggle loop on and off\n"+
-"Reverse checkbox to run the collection in reverse\n"+
-  "-Once started cannot be undone\n"+
+// "Loop checkbox will run the same set of assets continuously\n"+
+//   "- Changes to bids, expiration can be made during run, direction cannot\n"+
+//   "- Can toggle loop on and off\n"+
+// "Reverse checkbox to run the collection in reverse\n"+
+//   "-Once started cannot be undone\n"+
 
-"Next:\n"+
-  "Add inputs for event bidding -- works through values file right now.\n"+
-  "Multi-trait bidding\n"+
-  "Sample WALLET_SETS for event bidding\n"+
-  "WALLET_SETS: {\n"+
-  " 'cool-cats-nft': '0x4beac303c8fdf1f3cd34509b344067e86dcbc506',\n"+
-  " 'doodles-official': '0x41899a097dac875318bf731e5f4a972544ad002d',\n" +
-  "},")
-})
+// "Next:\n"+
+//   "Add inputs for event bidding -- works through values file right now.\n"+
+//   "Multi-trait bidding\n"+
+//   "Sample WALLET_SETS for event bidding\n"+
+//   "WALLET_SETS: {\n"+
+//   " 'cool-cats-nft': '0x4beac303c8fdf1f3cd34509b344067e86dcbc506',\n"+
+//   " 'doodles-official': '0x41899a097dac875318bf731e5f4a972544ad002d',\n" +
+//   "},")
+// })
+hide_mid()
 document.getElementById('hidemid').addEventListener('click', function(){
-
+  hide_mid()
+})
+function hide_mid(){
   if(document.getElementById('hidemid').innerHTML === 'Show'){
     document.getElementById('hidemid').innerHTML = "Hide"
     document.getElementById('midui').style.display = 'block';
@@ -117,7 +150,20 @@ document.getElementById('hidemid').addEventListener('click', function(){
    document.getElementById('midui').style.display = 'none';
    document.getElementById('hidemid').innerHTML = 'Show'   
   }
+}
+hide_bottom()
+document.getElementById('hidebottom').addEventListener('click', function(){
+  hide_bottom()
 })
+function hide_bottom(){
+  if(document.getElementById('hidebottom').innerHTML === 'Show'){
+    document.getElementById('hidebottom').innerHTML = "Hide"
+    document.getElementById('bottomui').style.display = 'block';
+  } else {
+   document.getElementById('bottomui').style.display = 'none';
+   document.getElementById('hidebottom').innerHTML = 'Show'   
+  }
+}
 var infura_index = 0
 document.getElementById('infurakey').addEventListener('click', function(){
   INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
@@ -188,40 +234,68 @@ document.getElementById('upbid_bot').addEventListener('click', function(){
   //event_bid()
   console.log('events started')
   buy_order()
+  offersMade.innerHTML = ''
+  event_stop = 0
 })
 document.getElementById('stop-upbid_bot').addEventListener('click', function(){
   event_stop = 1
+  pause()
+  text.innerHTML = ''
+  text1.innerHTML = ''
 })
+
 var event_stop = 0
 var eventbidcount = 0
+var event_window = 0
 async function buy_order(){
-
-  const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', '0xadee30341a9e98ed145ccb02b00da15e74e305b5']
+  if(document.getElementById('event_window').value === ''){
+    event_window = 180000
+  } else {
+    event_window = document.getElementById('event_window').value * 1000
+  }
+  var start_time = Math.floor(+new Date() / 1000)
+  // kj_8 ['0xd9453e907ac6ea8a276a9534ec39e1550e674848']
+  var wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', '0xadee30341a9e98ed145ccb02b00da15e74e305b5']
+  if(document.getElementById('event_wallet').value !== ''){
+    wallet_orders = [document.getElementById('event_wallet').value]
+  }
   reset()
   start()
         text.style.fontSize = '20px'
     text.innerHTML = 'Starting.....'
+    
         text1.style.fontSize = '20px'
     //0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea 0-flash
     //0x701c1a9d3fc47f7949178c99b141c86fac72a1c4 1-flash
     //0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5 flash
     //0xfdb32c8ddda21172a031d928056e19725a0836c5 2flash
     //0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669 3flash
-    let search_time = Math.floor(+new Date() / 1000) - 180
+    console.log(event_window)
+    console.log(Math.floor(+new Date()))
+    let search_time = Math.floor(+new Date()) - event_window
+    
     search_time = new Date(search_time).toISOString();
+    console.log(search_time)
     var counter = 0
+    
     for(var wallet in wallet_orders){
+      var offset = 0
+      do{
+        
+        var order_length = 0
       try{
       if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
         await new Promise(resolve => setTimeout(resolve, 3000))
       }
       const order = await seaport.api.getOrders({
       side: 0,
-      //order_by: 'created_date',
+      order_by: 'created_date',
       maker: wallet_orders[wallet],
       listed_after: search_time,
-      limit: 50
+      limit: 50,
+      offset: offset
       })
+
       text.innerHTML = 'Getting wallet: ' + (parseInt(wallet) + 1) + '(' + wallet_orders.length + ') ' + wallet_orders[wallet]
       text1.innerHTML = counter + ' bids made'
       var username = 'Null'
@@ -232,15 +306,25 @@ async function buy_order(){
       } catch(ex){
         username = 'Null'
       }
+     if(event_stop === 1){
+          break
+      }
+
+      order_length = order['orders'].length
       console.log(order)
+      console.log(order_length)
+      console.log(offset)
       for(var o in order['orders']){
+        if(event_stop === 1){
+            break
+          }
         // text.innerHTML = order['orders'][o]['asset']['collection']['slug']
         // text1.innerHTML = ''
         //console.log(order['orders'][o]['asset']['collection']['slug'])
         try{
           const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
           var floor_price = collect['collection']['stats']['floor_price']
-          var flooroffer = floor_price * (.85 - collect['collection']['dev_seller_fee_basis_points']/10000)
+          var flooroffer = floor_price * (.91 - collect['collection']['dev_seller_fee_basis_points']/10000)
         } catch (ex) {
           console.log("couldn't get floor")
           var floor_price = 0
@@ -256,10 +340,10 @@ async function buy_order(){
             tokenAddress: order['orders'][o]['asset']['tokenAddress'],
             //schemaName: WyvernSchemaName.ERC1155
           }
-          console.log(order['orders'][o]['asset']['collection']['slug'] + ', ' + floor_price + ' max bid: ' + flooroffer)
-                if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
-        await new Promise(resolve => setTimeout(resolve, 3000))
-      }
+          console.log(order['orders'][o]['asset']['collection']['slug'] + ' ' + order['orders'][o]['asset']['tokenId'] + ', ' + floor_price + ' max bid: ' + flooroffer)
+          if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
+            await new Promise(resolve => setTimeout(resolve, 3000))
+          }
           try{
             await seaport.createBuyOrder({
               asset,
@@ -273,6 +357,7 @@ async function buy_order(){
             console.log("upbidding " + username + ': ' + parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001))// + wallet_orders[wallet])
             eventbidcount += 1
             counter += 1 
+            offersMade.innerHTML = 'offers made: ' + counter + ' total: ' + eventbidcount
           }
 
           catch(ex){
@@ -285,27 +370,32 @@ async function buy_order(){
     console.log(ex.message)
     console.log('error with buy orders')
   }
-
+  offset += 50
+    }while(order_length === 50)
   } 
   console.log('offers made: ' + counter)
   text.innerHTML = 'Finding more offers soon...'
-  text1.innerHTML = 'offers made: ' + counter + ' total: ' + eventbidcount
+  text1.innerHTML = ''
   
-  if(counter < 80){
-    //150
-    var wait_time = 155000
-    wait_time -= ((80 - (80 - counter)) * 1000)*2
-    await new Promise(resolve => setTimeout(resolve, wait_time))
+  if(event_stop === 1) {
+    pause()
+    text.innerHTML = ''
+    text1.innerHTML = ''
+  }
+  
+  if(eventbidcount > 1000){
+    create_seaport()
+  }
+  console.log(start_time)
+  console.log(end_time)
+  var end_time = Math.floor(+new Date() / 1000)
+  if (end_time - start_time < event_window/1000){
+    await new Promise(resolve => setTimeout(resolve, (event_window/1000 - (end_time - start_time)) * 1000))
   }
   pause()
   if(event_stop === 0){
     buy_order()
-  } else {
-    event_stop = 0
-    reset()
-    text.innerHTML = ''
-    text1.innerHTML = ''
-  }
+  } 
   
 }
 
@@ -562,6 +652,11 @@ var progressBar = document.getElementById('progressBar')
 
 var delay = document.getElementById('delay')
 delay.value = 250
+try{
+  delay.value = values.default.DEFAULT_DELAY
+} catch(ex){
+  console.log('No default delay set')
+}
 if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
   delay.value = 3000
 }
@@ -642,9 +737,9 @@ async function getCollection(collectionName){
       document.getElementById('assetFloor').innerHTML = "Floor"
       document.getElementById('assetFloor').target = "_blank"
       document.getElementById('assetFloor').href = 'https://opensea.io/collection/' + COLLECTION_NAME + '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
-      if (Object.keys(favorite_dict).includes(COLLECTION_NAME)){
+
         document.getElementById('assetCount').value = collect['collection']['stats']['count']
-      } 
+      
 
     } catch(ex) {
       console.log(ex)
@@ -1238,7 +1333,7 @@ function beep() {
 
 ///////////////////////////////////////////////
 var favorites = document.getElementById('favorites')
-var favorite_dict = values.default.favorites
+var favorite_array = values.default.FAVORITES
 
 getCollectionDetails_fav()
 async function getCollectionDetails(collectionName){
@@ -1250,8 +1345,8 @@ async function getCollectionDetails(collectionName){
   }  
 }
 async function getCollectionDetails_fav(){
-  for(var key in favorite_dict){
-  const fav = key
+  for(var key in favorite_array){
+  const fav = favorite_array[key]
     try{  
     const collect = await seaport.api.get('/api/v1/collection/' + fav)
     //var totalAssets = favorite_dict[fav][0]
@@ -1262,8 +1357,8 @@ async function getCollectionDetails_fav(){
     //nodep.innerHTML = fav + '<br>' + totalAssets + '<br>'
     nodep.addEventListener('click', function(){
       if (progressBar.value === 0){
-        getCollection(fav)
-        collectionInput.value = fav
+        //getCollection(fav)
+        //collectionInput.value = fav
         document.getElementById('collectionInput-2').value = fav
       }
       window.scrollTo(0, 0);
@@ -1275,7 +1370,7 @@ async function getCollectionDetails_fav(){
     nodeaimg.href = 'https://opensea.io/collection/' + fav
     try {
     var current_floor = collect['collection']['stats']['floor_price']
-    nodep.innerHTML = fav + ' ' + current_floor + '<br>' + collect['collection']['stats']['count'] + ' ' + (collect['collection']['dev_seller_fee_basis_points'] / 100) + '%<br>'
+    nodep.innerHTML = fav + ' ' + current_floor.toFixed(2) + '<br>' + collect['collection']['stats']['count'] + ' ' + (collect['collection']['dev_seller_fee_basis_points'] / 100) + '%<br>'
     } catch(ex){
       return
     }

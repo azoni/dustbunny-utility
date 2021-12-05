@@ -20,7 +20,11 @@ console.log('Collection loaded.')
 //
 var currentHour = new Date().getHours()
 var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
-
+if(values.default.INFURA_KEY.length === 6){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+} else if(values.default.INFURA_KEY.length === 4){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+}
 var infuraRpcSubprovider = new RPCSubprovider({
   rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
 });
@@ -66,6 +70,11 @@ document.getElementById('infurakey').addEventListener('click', function(){
 function create_seaport(){
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }
   console.log('creating seaport ' + INFURA_KEY)
   console.log(run_count)
   infuraRpcSubprovider = new RPCSubprovider({

@@ -20,7 +20,11 @@ console.log('Collection loaded.')
 //
 var currentHour = new Date().getHours()
 var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
-
+if(values.default.INFURA_KEY.length === 6){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+} else if(values.default.INFURA_KEY.length === 4){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+}
 var infuraRpcSubprovider = new RPCSubprovider({
   rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
 });
@@ -68,33 +72,74 @@ document.getElementById('infurakey').addEventListener('click', function(){
   }
 })
 document.getElementById('increaseBid1multi-2').addEventListener('click', function(){
-  bidMultiplier = .005 + parseFloat(bidMultiplier)
-  maxbidMultiplier = .005 + parseFloat(maxbidMultiplier)
-  document.getElementById('bidMultiplier-2').value = bidMultiplier
-  document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+  
+
+  if(document.getElementById('bidMultiplier-2').value !== ''){
+    bidMultiplier = .005 + parseFloat(bidMultiplier)
+    document.getElementById('bidMultiplier-2').value = bidMultiplier
+    offerAmount = current_floor*(bidMultiplier - service_fee/10000)
+    document.getElementById('offerAmount-2').value = offerAmount
+  }
+   if(document.getElementById('maxbidMultiplier-2').value !== ''){
+    maxbidMultiplier = .005 + parseFloat(maxbidMultiplier)
+    document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+    maxOfferAmount = current_floor*(maxbidMultiplier - service_fee/10000)
+    document.getElementById('maxOfferAmount-2').value = maxOfferAmount
+  }
 })
 document.getElementById('decreaseBidmulti-2').addEventListener('click', function(){
-  bidMultiplier = parseFloat(bidMultiplier) - .005
-  maxbidMultiplier = parseFloat(maxbidMultiplier) - .005
-  document.getElementById('bidMultiplier-2').value = bidMultiplier
-  document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+  
+  
+  if(document.getElementById('bidMultiplier-2').value !== ''){
+    bidMultiplier = parseFloat(bidMultiplier) - .005
+    document.getElementById('bidMultiplier-2').value = bidMultiplier
+    offerAmount = current_floor*(bidMultiplier - service_fee/10000)
+    document.getElementById('offerAmount-2').value = offerAmount
+  }
+   if(document.getElementById('maxbidMultiplier-2').value !== ''){
+    maxbidMultiplier = parseFloat(maxbidMultiplier) - .005
+    document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+    maxOfferAmount = current_floor*(maxbidMultiplier - service_fee/10000)
+    document.getElementById('maxOfferAmount-2').value = maxOfferAmount
+  }
 })
 document.getElementById('passivemulti-2').addEventListener('click', function(){
   bidMultiplier = .6
   maxbidMultiplier = .8
   document.getElementById('bidMultiplier-2').value = bidMultiplier
   document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+  if(document.getElementById('bidMultiplier-2').value !== ''){
+    offerAmount = current_floor*(bidMultiplier - service_fee/10000)
+    document.getElementById('offerAmount-2').value = offerAmount
+  }
+ if(document.getElementById('maxbidMultiplier-2').value !== ''){
+    maxOfferAmount = current_floor*(maxbidMultiplier - service_fee/10000)
+    document.getElementById('maxOfferAmount-2').value = maxOfferAmount
+  }
 })
 document.getElementById('aggressivemulti-2').addEventListener('click', function(){
   bidMultiplier = .7
   maxbidMultiplier = .9
   document.getElementById('bidMultiplier-2').value = bidMultiplier
   document.getElementById('maxbidMultiplier-2').value = maxbidMultiplier
+  if(document.getElementById('bidMultiplier-2').value !== ''){
+    offerAmount = current_floor*(bidMultiplier - service_fee/10000)
+    document.getElementById('offerAmount-2').value = offerAmount
+  }
+ if(document.getElementById('maxbidMultiplier-2').value !== ''){
+    maxOfferAmount = current_floor*(maxbidMultiplier - service_fee/10000)
+    document.getElementById('maxOfferAmount-2').value = maxOfferAmount
+  }
 })
 
 function create_seaport(){
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }
   console.log('creating seaport ' + INFURA_KEY)
   console.log(run_count)
   infuraRpcSubprovider = new RPCSubprovider({
@@ -173,7 +218,16 @@ document.getElementById('nextAccount-2').addEventListener('click', function(){
   }
   OWNER_ADDRESS = values.default.OWNER_ADDRESS[accountIndex].address
 })
-
+var fav_index = 0
+getCollection(values.default.FAVORITES[fav_index])
+document.getElementById('nextCollection-2').addEventListener('click', function(){
+  fav_index += 1
+  
+  if(fav_index === values.default.FAVORITES.length){
+    fav_index = 0
+  }
+  getCollection(values.default.FAVORITES[fav_index])
+})
 
 async function getCollection(collectionName){
   progressBar.value = 0
@@ -183,6 +237,7 @@ async function getCollection(collectionName){
   collect.then(function(collect){
     try { 
       COLLECTION_NAME = collectionName
+      document.getElementById('collectionInput-2').value = COLLECTION_NAME
       if(COLLECTION_NAME === 'guttercatgang'){
         NFT_CONTRACT_ADDRESS = '0xedb61f74b0d09b2558f1eeb79b247c1f363ae452'
       }
@@ -194,7 +249,7 @@ async function getCollection(collectionName){
       console.log(collect)
       assetCount = collect['collection']['stats']['count']
       //window.open('https://opensea.io/collection/' + COLLECTION_NAME,'name','width=this.width,height=this.height')
-      document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
+      document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price'].toFixed(3)
       // collection.innerHTML = NFT_CONTRACT_ADDRESS
       current_floor = collect['collection']['stats']['floor_price']
       service_fee = collect['collection']['dev_seller_fee_basis_points']
@@ -223,6 +278,14 @@ async function getCollection(collectionName){
     quickButton.disabled = true
     increaseBid.disabled = true
     increaseBid1.disabled = true
+      if(document.getElementById('bidMultiplier-2').value !== ''){
+    offerAmount = current_floor*(bidMultiplier - service_fee/10000)
+    document.getElementById('offerAmount-2').value = offerAmount
+  }
+ if(document.getElementById('maxbidMultiplier-2').value !== ''){
+    maxOfferAmount = current_floor*(maxbidMultiplier - service_fee/10000)
+    document.getElementById('maxOfferAmount-2').value = maxOfferAmount
+  }
   })
 }
 
@@ -230,7 +293,7 @@ collectionButtonClear.addEventListener('click', function(){
   COLLECTION_NAME = ''
   confirmCollection = 0
   quickButton.disabled = true
-  document.getElementById('collectionName-2').innerHTML = 'Collection'
+  document.getElementById('collectionName-2').innerHTML = ''
     // collection.innerHTML = 'Collection Address:'
     document.getElementById('collectionImage-2').src = 'https://cdn-images-1.medium.com/max/1200/1*U0m-Cl7qvflUX4QmdIdzoQ.png'
     document.getElementById('collectionImage-2').style.height = '200px'
@@ -336,6 +399,7 @@ quickButton.addEventListener('click', function(){
   start()
   progressBar.value =  0
   run_count = 0
+  document.getElementById('nextCollection-2').disabled = true
   quickButton.disabled = true
   progressBar.hidden = false
   increaseBid.disabled = false
@@ -354,6 +418,7 @@ document.getElementById('smartStart-2').addEventListener('click', function(){
   reset()
   start()
   progressBar.value =  0
+  document.getElementById('nextCollection-2').disabled = true
   quickButton.disabled = true
   progressBar.hidden = false
   increaseBid.disabled = false
@@ -415,6 +480,10 @@ confirmButton.addEventListener('click', function(){
     alert('Get valid collection first.')
   }
 })
+
+function test_run(){
+
+}
 
 async function getCollectionDetails(collectionName){
   try{
@@ -539,7 +608,7 @@ async function run(){
   if(document.getElementById('reverse-2').checked){
     direction = 'asc'
   }
-  
+  var temp_offset = offset
   for(var offset = 0; offset < assetCount/2; offset+=50){
     if(halt === 1) {
       break
@@ -600,7 +669,7 @@ async function run(){
       console.log(ex)
     }
     console.log(tokenId_array.length)
-    text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
+    text.innerHTML = tokenId_array.length + '(' + (parseInt(offset) + temp_offset) + ') of ' + assetCount + ' collected'
   }
   if(halt === 1) {
     offers = 0
@@ -1030,6 +1099,7 @@ document.getElementById('reset-2').addEventListener('click', function(){
   increaseBid.disabled = true
   increaseBid1.disabled = true
   quickButton.disabled = true
+  document.getElementById('nextCollection-2').disabled = false
   progressBar.hidden = true
   offersMade.innerHTML = ''
   tokenId_array = []
