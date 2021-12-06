@@ -525,6 +525,8 @@ function update_floor(){
 text.style.fontSize = '20px'
 text1.style.fontSize = '20px'
 // var midrun = false
+
+
 async function run(){
   // document.getElementById('toprun').checked = true
   // midrun = document.getElementById('midrun').checked 
@@ -536,140 +538,148 @@ async function run(){
 
   var direction = 'asc'
   text.innerHTML = 'Starting.....'
-  if(document.getElementById('reverse-2').checked){
-    direction = 'desc'
-  }
+
+
   var collectionName = COLLECTION_NAME.trim()
   console.log(assetCount)
   // assetCount = assetCount/2
-  for(var offset = 0; offset < assetCount/2; offset+=50){
-    if(halt === 1) {
-      break
-    }
-    //await new Promise(resolve => setTimeout(resolve, 5000))
-    try{
-      var collection = await seaport.api.getAssets({
-        'collection': collectionName,
-        'offset': offset,
-        'limit': '50',
-        'order_direction': direction
-      })
-      console.log(collection)
-      for(var asset in collection['assets']){
-        if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
-          
-          if(collection['assets'][asset]['sellOrders'] !== null){
-            if(document.getElementById('aboveFloor-2').value !== ''){
-              if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
+  var offset = 0
+  if(document.getElementById('secondhalf-2').checked === false){
+    for(offset = 0; offset < assetCount/2; offset+=50){
+      if(halt === 1) {
+        break
+      }
+      //await new Promise(resolve => setTimeout(resolve, 5000))
+      try{
+        var collection = await seaport.api.getAssets({
+          'collection': collectionName,
+          'offset': offset,
+          'limit': '50',
+          'order_direction': direction
+        })
+        console.log(collection)
+        for(var asset in collection['assets']){
+          if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
+            if(collection['assets'][asset]['sellOrders'] !== null){
+              if(document.getElementById('aboveFloor-2').value !== ''){
+                if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
+                  tokenId_array.push(collection['assets'][asset]['tokenId'])
+                  name_array.push(collection['assets'][asset]['name'])    
+                  console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
+                }
+              } else {
+                console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)
                 tokenId_array.push(collection['assets'][asset]['tokenId'])
-                name_array.push(collection['assets'][asset]['name'])    
-                console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
-              }
-            } else {
-              console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)
-              tokenId_array.push(collection['assets'][asset]['tokenId'])
-              name_array.push(collection['assets'][asset]['name'])
+                name_array.push(collection['assets'][asset]['name'])
+              }     
             }
-            
-          }
-        } else {
-          if(document.getElementById('addProperty-2').value !== ''){
-            for(var trait in collection['assets'][asset]['traits']){
-              if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
-                if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
-                  if(document.getElementById('sellOrder-2').checked){
-                    if(collection['assets'][asset]['sellOrders'] !== null){
-                      
+          } else {
+            if(document.getElementById('addProperty-2').value !== ''){
+              for(var trait in collection['assets'][asset]['traits']){
+                if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
+                  if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
+                    if(document.getElementById('sellOrder-2').checked){
+                      if(collection['assets'][asset]['sellOrders'] !== null){
+                        
+                        tokenId_array.push(collection['assets'][asset]['tokenId'])
+                        name_array.push(collection['assets'][asset]['name'])
+                      }
+                    } else{
                       tokenId_array.push(collection['assets'][asset]['tokenId'])
                       name_array.push(collection['assets'][asset]['name'])
                     }
-                  } else{
-                    tokenId_array.push(collection['assets'][asset]['tokenId'])
-                    name_array.push(collection['assets'][asset]['name'])
                   }
                 }
               }
+            } 
+            else {
+              tokenId_array.push(collection['assets'][asset]['tokenId'])
+              name_array.push(collection['assets'][asset]['name'])
+
+
+
+              asset_array.push('')
             }
-          } 
-          else {
-            tokenId_array.push(collection['assets'][asset]['tokenId'])
-            name_array.push(collection['assets'][asset]['name'])
           }
         }
+      } catch (ex){
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        console.log(ex)
       }
-    } catch (ex){
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      console.log(ex)
+      console.log(tokenId_array.length)
+      text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
     }
-    console.log(tokenId_array.length)
-    text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
   }
   direction = 'desc'
-  if(document.getElementById('reverse-2').checked){
-    direction = 'asc'
-  }
-  var temp_offset = offset
-  for(var offset = 0; offset < assetCount/2; offset+=50){
-    if(halt === 1) {
-      break
-    }
-    //await new Promise(resolve => setTimeout(resolve, 5000))
-    try{
-      var collection = await seaport.api.getAssets({
-        'collection': collectionName,
-        'offset': offset,
-        'limit': '50',
-        'order_direction': direction
-      })
-      console.log(collection)
-      for(var asset in collection['assets']){
-        if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
-          
-          if(collection['assets'][asset]['sellOrders'] !== null){
-            if(document.getElementById('aboveFloor-2').value !== ''){
-              if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
-                tokenId_array.push(collection['assets'][asset]['tokenId'])
-                name_array.push(collection['assets'][asset]['name'])    
-                console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
-              }
-            } else {
-              console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)
-              tokenId_array.push(collection['assets'][asset]['tokenId'])
-              name_array.push(collection['assets'][asset]['name'])
-            }
+
+  if(document.getElementById('firsthalf-2').checked === false){
+    var temp_offset = offset
+    for(var offset = 0; offset < assetCount/2; offset+=50){
+      if(halt === 1) {
+        break
+      }
+      //await new Promise(resolve => setTimeout(resolve, 5000))
+      try{
+        var collection = await seaport.api.getAssets({
+          'collection': collectionName,
+          'offset': offset,
+          'limit': '50',
+          'order_direction': direction
+        })
+        console.log(collection)
+        for(var asset in collection['assets']){
+          if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
             
-          }
-        } else {
-          if(document.getElementById('addProperty-2').value !== ''){
-            for(var trait in collection['assets'][asset]['traits']){
-              if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
-                if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
-                  if(document.getElementById('sellOrder-2').checked){
-                    if(collection['assets'][asset]['sellOrders'] !== null){
-                      
+            if(collection['assets'][asset]['sellOrders'] !== null){
+              if(document.getElementById('aboveFloor-2').value !== ''){
+                if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
+                  tokenId_array.push(collection['assets'][asset]['tokenId'])
+                  name_array.push(collection['assets'][asset]['name'])    
+                  console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
+                }
+              } else {
+                console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)
+                tokenId_array.push(collection['assets'][asset]['tokenId'])
+                name_array.push(collection['assets'][asset]['name'])
+              }
+              
+            }
+          } else {
+            if(document.getElementById('addProperty-2').value !== ''){
+              for(var trait in collection['assets'][asset]['traits']){
+                if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
+                  if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
+                    if(document.getElementById('sellOrder-2').checked){
+                      if(collection['assets'][asset]['sellOrders'] !== null){
+                        
+                        tokenId_array.push(collection['assets'][asset]['tokenId'])
+                        name_array.push(collection['assets'][asset]['name'])
+                      }
+                    } else{
                       tokenId_array.push(collection['assets'][asset]['tokenId'])
                       name_array.push(collection['assets'][asset]['name'])
                     }
-                  } else{
-                    tokenId_array.push(collection['assets'][asset]['tokenId'])
-                    name_array.push(collection['assets'][asset]['name'])
                   }
                 }
               }
+            } 
+            else {
+              tokenId_array.push(collection['assets'][asset]['tokenId'])
+              name_array.push(collection['assets'][asset]['name'])
             }
-          } 
-          else {
-            tokenId_array.push(collection['assets'][asset]['tokenId'])
-            name_array.push(collection['assets'][asset]['name'])
           }
         }
+      } catch (ex){
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        console.log(ex)
       }
-    } catch (ex){
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      console.log(ex)
+      console.log(tokenId_array.length)
+      text.innerHTML = tokenId_array.length + '(' + (parseInt(offset) + temp_offset) + ') of ' + assetCount + ' collected'
     }
-    console.log(tokenId_array.length)
-    text.innerHTML = tokenId_array.length + '(' + (parseInt(offset) + temp_offset) + ') of ' + assetCount + ' collected'
+  }
+  if(document.getElementById('reverse-2').checked){
+    tokenId_array.reverse()
+    name_array.reverse()
   }
   if(halt === 1) {
     offers = 0
@@ -730,6 +740,8 @@ function check_errors(msg){
     return 'Out of Infura requests.. swappinp keys.'
   } else if(msg.includes('has too many outstanding orders.')){
     return 'Too many outstanding orders.'
+  } else if(msg.includes('Bid amount is not 5.0% higher than the previous bid')){
+    return 'Bid amount is not 5.0% higher than the previous bid'
   }
   return 0
 }
@@ -750,6 +762,9 @@ async function placeBid(){
     var offset = 0
     if(maxOfferAmount !== 0){
       var username = 'No-User'
+      while(values.default.EVENT === 1){
+        await new Promise(resolve => setTimeout(resolve, 2000))
+      }
       try{
         const order = await seaport.api.getOrders({
           asset_contract_address: NFT_CONTRACT_ADDRESS,
@@ -895,6 +910,9 @@ async function placeBid2(){
     var offset = 0
     if(maxOfferAmount !== 0){
       var username = 'No-User'
+      while(values.default.EVENT === 1){
+        await new Promise(resolve => setTimeout(resolve, 2000))
+      }
       try{
         const order = await seaport.api.getOrders({
           asset_contract_address: NFT_CONTRACT_ADDRESS,

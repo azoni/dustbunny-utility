@@ -165,6 +165,7 @@ function hide_bottom(){
   }
 }
 var infura_index = 0
+document.getElementById('infurakey').innerHTML = 'Inufra(' + values.default.INFURA_KEY.length + ')'
 document.getElementById('infurakey').addEventListener('click', function(){
   INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   console.log('creating seaport ' + INFURA_KEY)
@@ -270,7 +271,7 @@ async function buy_order(){
   start()
         text.style.fontSize = '20px'
     text.innerHTML = 'Starting.....'
-    
+    offersMade.style.fontSize = '20px'
         text1.style.fontSize = '20px'
     //0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea 0-flash
     //0x701c1a9d3fc47f7949178c99b141c86fac72a1c4 1-flash
@@ -284,12 +285,17 @@ async function buy_order(){
     search_time = new Date(search_time).toISOString();
     console.log(search_time)
     var counter = 0
-    
+    var order_array = []
+    values.default.EVENT = 1
     for(var wallet in wallet_orders){
       var offset = 0
       var event_multi = .9
       if(document.getElementById('event-multiplier').value !== ''){
         event_multi = document.getElementById('event-multiplier').value
+      }
+      var expiration = 1
+      if(document.getElementById('event-expiration').value !== ''){
+        expiration = document.getElementById('event-expiration').value
       }
       do{
         
@@ -298,6 +304,7 @@ async function buy_order(){
       if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
         await new Promise(resolve => setTimeout(resolve, 3000))
       }
+      
       const order = await seaport.api.getOrders({
       side: 0,
       order_by: 'created_date',
@@ -306,10 +313,14 @@ async function buy_order(){
       limit: 50,
       offset: offset
       })
+      
 
       text.innerHTML = 'Getting wallet: ' + (parseInt(wallet) + 1) + '(' + wallet_orders.length + ') ' + wallet_orders[wallet]
       text1.innerHTML = counter + ' bids made'
       var username = 'Null'
+      if(order['orders'].length === 0){
+        await new Promise(resolve => setTimeout(resolve, 2000))
+      }
       try{
         username = order['orders'][0].makerAccount.user.username
         console.log(username)
@@ -331,7 +342,7 @@ async function buy_order(){
           }
         // text.innerHTML = order['orders'][o]['asset']['collection']['slug']
         // text1.innerHTML = ''
-        //console.log(order['orders'][o]['asset']['collection']['slug'])
+        console.log(order['orders'][o]['asset']['collection']['slug'])
         try{
           const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
           var floor_price = collect['collection']['stats']['floor_price']
@@ -350,39 +361,53 @@ async function buy_order(){
             tokenAddress: order['orders'][o]['asset']['tokenAddress'],
             //schemaName: WyvernSchemaName.ERC1155
           }
-          console.log(order['orders'][o]['asset']['collection']['slug'] + ' ' + order['orders'][o]['asset']['tokenId'] + ', ' + floor_price + ' max bid: ' + flooroffer)
-          if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
-            await new Promise(resolve => setTimeout(resolve, 3000))
-          }
-          try{
-            await seaport.createBuyOrder({
-              asset,
-              startAmount: parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001),
-              accountAddress: wallet_set[order['orders'][o]['asset']['collection']['slug']],
-              expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
-            })
-            text.innerHTML = order['orders'][o]['asset']['collection']['slug'] + ' Floor: ' + floor_price.toFixed(2) + ' max bid: ' + flooroffer.toFixed(4)
-            text1.innerHTML = username + ' #' + order['orders'][o]['asset']['tokenId'] + ' upbid: ' + parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001).toFixed(4)
-            console.log(order['orders'][o]['asset']['collection']['name'] + ' ' + order['orders'][o]['asset']['tokenId'] + ' ' + order['orders'][o].basePrice/1000000000000000000)
-            console.log("upbidding " + username + ': ' + parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001))// + wallet_orders[wallet])
-            eventbidcount += 1
-            counter += 1 
-            offersMade.innerHTML = 'offers made: ' + counter + ' total: ' + eventbidcount
-          }
-
-          catch(ex){
-            console.log(ex.message)
-          }
+          var order_dict = {}
+          order_dict['collection'] = order['orders'][o]['asset']['collection']['slug']
+          order_dict['asset'] = asset
+          order_dict['bid'] = parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001)
+          order_dict['floor'] = floor_price
+          order_dict['maxbid'] = flooroffer
+          order_array.push(order_dict)
         }
       }
+
     }
     catch(ex) {
-    console.log(ex.message)
-    console.log('error with buy orders')
+      values.default.EVENT = 0
+      console.log(ex.message)
+      console.log('error with buy orders')
+    }
+    offset += 50
+    } while(order_length === 50)
   }
-  offset += 50
-    }while(order_length === 50)
-  } 
+  values.default.EVENT = 0
+  console.log(order_array.length)
+  for(var i in order_array){
+    console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
+    if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
+      await new Promise(resolve => setTimeout(resolve, 3000))
+    }
+    try{
+      await seaport.createBuyOrder({
+        asset: order_array[i].asset,
+        startAmount: order_array[i].bid,
+        accountAddress: wallet_set[order_array[i].collection],
+        expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
+      })
+      text.innerHTML = order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)
+      text1.innerHTML = username + ' #' + order_array[i].asset.tokenId + ' upbid: ' + order_array[i].bid.toFixed(4)
+      console.log(order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
+      console.log(username + ' #' + order_array[i].asset.tokenId + ' upbid: ' + order_array[i].bid.toFixed(4))// + wallet_orders[wallet])
+      eventbidcount += 1
+      counter += 1 
+      offersMade.innerHTML = 'offers made: ' + counter + ' total: ' + order_array.length
+    }
+
+    catch(ex){
+      console.log(ex.message)
+    }
+
+  }
   console.log('offers made: ' + counter)
   text.innerHTML = 'Finding more offers soon...'
   text1.innerHTML = ''
@@ -391,6 +416,7 @@ async function buy_order(){
     pause()
     text.innerHTML = ''
     text1.innerHTML = ''
+    return 0
   }
   
   if(eventbidcount > 1000){
