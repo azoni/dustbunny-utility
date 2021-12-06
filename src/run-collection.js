@@ -593,8 +593,13 @@ async function run(){
               }
             } 
             else {
-              tokenId_array.push(collection['assets'][asset]['tokenId'])
-              name_array.push(collection['assets'][asset]['name'])
+              if(document.getElementById('multitrait-2').checked === true){
+
+              } else{
+                tokenId_array.push(collection['assets'][asset]['tokenId'])
+                name_array.push(collection['assets'][asset]['name'])
+              }
+              
 
 
 
@@ -762,10 +767,15 @@ async function placeBid(){
     var offset = 0
     if(maxOfferAmount !== 0){
       var username = 'No-User'
-      while(values.default.EVENT === 1){
-        await new Promise(resolve => setTimeout(resolve, 2000))
-      }
+      // while(values.default.EVENT === 1){
+      //   text.innerHTML = 'please wait'
+      //   text1.innerHTML = ''
+      //   await new Promise(resolve => setTimeout(resolve, 5000))
+      // }
       try{
+        while(values.default.EVENT === 1){
+          await new Promise(resolve => setTimeout(resolve, 10000))
+        }
         const order = await seaport.api.getOrders({
           asset_contract_address: NFT_CONTRACT_ADDRESS,
           token_id: tokenId_array[i],
@@ -776,6 +786,7 @@ async function placeBid(){
         })
         if(order['orders'].length !== 0){
           var topBid = order['orders'][0].basePrice / 1000000000000000000
+          var highestBid = order['orders'][0].basePrice / 1000000000000000000
           try{
             username = order['orders'][0].makerAccount.user.username
             console.log(username)
@@ -797,11 +808,29 @@ async function placeBid(){
               }
             }
           }
-          
+
+          if(parseFloat(topBid) > parseFloat(maxOfferAmount)){
+            for(var t in order['orders']){
+              if(parseFloat(order['orders'][t].basePrice / 1000000000000000000) < parseFloat(maxOfferAmount)){
+                try{
+                  username = order['orders'][0].makerAccount.user.username
+                  console.log(username)
+
+                } catch(ex){
+                  username = 'No-User'
+                }
+                if(blacklist.includes(username) === false){
+                  topBid = order['orders'][t].basePrice / 1000000000000000000
+                  break
+                }
+                
+              }
+            }
+          }
 
           if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
             offset = .001 + parseFloat(topBid - offerAmount)
-          }
+          } 
 
           console.log('top bid: ' + topBid + ' #' + name_array[i])
         } else {
@@ -837,10 +866,10 @@ async function placeBid(){
       })
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
-      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(6) + " on " + name_array[i]
+      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(5) + " on " + name_array[i]
       if(maxOfferAmount !== 0){
         text1.style.color = 'black'
-        text1.innerHTML = 'top bid: ' + topBid.toFixed(6) + ' #' + name_array[i]
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ')' +' #' + name_array[i]
       }
     } catch(ex){
       console.log(ex)
@@ -910,10 +939,15 @@ async function placeBid2(){
     var offset = 0
     if(maxOfferAmount !== 0){
       var username = 'No-User'
-      while(values.default.EVENT === 1){
-        await new Promise(resolve => setTimeout(resolve, 2000))
-      }
+      // while(values.default.EVENT === 1){
+      //   text.innerHTML = 'please wait'
+      //   text1.innerHTML = ''
+      //   await new Promise(resolve => setTimeout(resolve, 5000))
+      // }
       try{
+        while(values.default.EVENT === 1){
+          await new Promise(resolve => setTimeout(resolve, 10000))
+        }
         const order = await seaport.api.getOrders({
           asset_contract_address: NFT_CONTRACT_ADDRESS,
           token_id: tokenId_array[i],
@@ -924,6 +958,7 @@ async function placeBid2(){
         })
         if(order['orders'].length !== 0){
           var topBid = order['orders'][0].basePrice / 1000000000000000000
+          var highestBid = order['orders'][0].basePrice / 1000000000000000000
           try{
             username = order['orders'][0].makerAccount.user.username
             console.log(username)
@@ -945,7 +980,24 @@ async function placeBid2(){
               }
             }
           }
-          
+          if(parseFloat(topBid) > parseFloat(maxOfferAmount)){
+            for(var t in order['orders']){
+              if(parseFloat(order['orders'][t].basePrice / 1000000000000000000) < parseFloat(maxOfferAmount)){
+                try{
+                  username = order['orders'][0].makerAccount.user.username
+                  console.log(username)
+
+                } catch(ex){
+                  username = 'No-User'
+                }
+                if(blacklist.includes(username) === false){
+                  topBid = order['orders'][t].basePrice / 1000000000000000000
+                  break
+                }
+                
+              }
+            }
+          }
 
           if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
             offset = .001 + parseFloat(topBid - offerAmount)
@@ -984,10 +1036,10 @@ async function placeBid2(){
       })
       console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
       text.style.color = 'black'
-      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(6) + " on " + name_array[i]
+      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(5) + " on " + name_array[i]
               if(maxOfferAmount !== 0){
         text1.style.color = 'black'
-        text1.innerHTML = 'top bid: ' + topBid.toFixed(6) + ' #' + name_array[i]
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ')' +' #' + name_array[i]
       }
       
     } catch(ex){

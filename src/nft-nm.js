@@ -383,6 +383,9 @@ async function buy_order(){
   values.default.EVENT = 0
   console.log(order_array.length)
   for(var i in order_array){
+    if(event_stop === 1){
+      break
+    }
     console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
     if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
       await new Promise(resolve => setTimeout(resolve, 3000))
