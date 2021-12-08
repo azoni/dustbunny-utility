@@ -244,10 +244,13 @@ document.getElementById('stop-upbid_bot').addEventListener('click', function(){
   text.innerHTML = ''
   text1.innerHTML = ''
 })
-
+var counter = 0
 var event_stop = 0
 var eventbidcount = 0
 var event_window = 0
+var expiration = 1
+var wallet_set = values.default.WALLET_SETS
+var wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', '0xadee30341a9e98ed145ccb02b00da15e74e305b5']
 async function buy_order(){
   if(document.getElementById('event_window').value === ''){
     event_window = 180000
@@ -256,11 +259,11 @@ async function buy_order(){
   }
   var start_time = Math.floor(+new Date() / 1000)
   // kj_8 ['0xd9453e907ac6ea8a276a9534ec39e1550e674848']
-  var wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', '0xadee30341a9e98ed145ccb02b00da15e74e305b5']
+
   if(document.getElementById('event_wallet').value !== ''){
     wallet_orders = [document.getElementById('event_wallet').value]
   }
-  var wallet_set = values.default.WALLET_SETS
+
   if(document.getElementById('event_collection').value !== ''){
     var collect_set = document.getElementById('event_collection').value
     wallet_set = {}
@@ -284,7 +287,7 @@ async function buy_order(){
     
     search_time = new Date(search_time).toISOString();
     console.log(search_time)
-    var counter = 0
+    counter = 0
     var order_array = []
     values.default.EVENT = 1
     for(var wallet in wallet_orders){
@@ -293,7 +296,7 @@ async function buy_order(){
       if(document.getElementById('event-multiplier').value !== ''){
         event_multi = document.getElementById('event-multiplier').value
       }
-      var expiration = 1
+      expiration = 1
       if(document.getElementById('event-expiration').value !== ''){
         expiration = document.getElementById('event-expiration').value
       }
@@ -382,7 +385,8 @@ async function buy_order(){
   }
   values.default.EVENT = 0
   console.log(order_array.length)
-  for(var i in order_array){
+  buy_order_bid(order_array, username)
+  for(var i = 0; i < order_array.length/2; i++){
     if(event_stop === 1){
       break
     }
@@ -411,6 +415,11 @@ async function buy_order(){
     }
 
   }
+  while(values.default.BID !== 1){
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    text.innerHTML = 'Waiting...'
+    text1.innerHTML = ''
+  }
   console.log('offers made: ' + counter)
   text.innerHTML = 'Finding more offers soon...'
   text1.innerHTML = ''
@@ -436,6 +445,37 @@ async function buy_order(){
     buy_order()
   } 
   
+}
+async function buy_order_bid(order_array, username){
+    for(var i = Math.floor(order_array.length/2); i < order_array.length; i++){
+      if(event_stop === 1){
+        break
+      }
+      console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
+      if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
+        await new Promise(resolve => setTimeout(resolve, 3000))
+      }
+      try{
+        await seaport.createBuyOrder({
+          asset: order_array[i].asset,
+          startAmount: order_array[i].bid,
+          accountAddress: wallet_set[order_array[i].collection],
+          expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
+        })
+        text.innerHTML = order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)
+        text1.innerHTML = username + ' #' + order_array[i].asset.tokenId + ' upbid: ' + order_array[i].bid.toFixed(4)
+        console.log(order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
+        console.log(username + ' #' + order_array[i].asset.tokenId + ' upbid: ' + order_array[i].bid.toFixed(4))// + wallet_orders[wallet])
+        eventbidcount += 1
+        counter += 1 
+        offersMade.innerHTML = 'offers made: ' + counter + ' total: ' + order_array.length
+      }
+
+      catch(ex){
+        console.log(ex.message)
+      }
+    }
+    values.default.BID = 1
 }
 
 async function placeBid(){ 
