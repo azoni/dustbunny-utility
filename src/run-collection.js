@@ -594,7 +594,7 @@ async function run(){
             } 
             else {
               if(document.getElementById('multitrait-2').checked === true){
-
+                
               } else{
                 tokenId_array.push(collection['assets'][asset]['tokenId'])
                 name_array.push(collection['assets'][asset]['name'])
@@ -723,6 +723,8 @@ async function run(){
 
 function check_errors(msg){
   if(msg.includes('Insufficient balance.')){
+    beep()
+    beep()
     beep()
     beep()
     return 'Insufficient balance. Please wrap more ETH.'
