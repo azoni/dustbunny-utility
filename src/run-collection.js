@@ -545,7 +545,16 @@ async function run(){
   // assetCount = assetCount/2
   var offset = 0
   if(document.getElementById('secondhalf-2').checked === false){
-    for(offset = 0; offset < assetCount/2; offset+=50){
+    if(document.getElementById('firstquarter-2').checked === true){
+      assetCount = Math.floor(assetCount/2)
+    }
+    if(document.getElementById('secondquarter-2').checked === true){
+      offset += Math.floor(assetCount/4)
+    }
+    for(offset; offset < Math.floor(assetCount/2); offset+=50){
+      if(document.getElementById('thirdquarter-2').checked === true || document.getElementById('fourthquarter-2').checked === true){
+        break
+      }
       if(halt === 1) {
         break
       }
@@ -616,10 +625,21 @@ async function run(){
     }
   }
   direction = 'desc'
+  offset = 0
+  if(document.getElementById('fourthquarter-2').checked === true){
+    assetCount = Math.floor(assetCount/2)
+  }
+  if(document.getElementById('thirdquarter-2').checked === true){
+    offset += Math.floor(assetCount/4)
+  }
 
   if(document.getElementById('firsthalf-2').checked === false){
+
     var temp_offset = offset
-    for(var offset = 0; offset < assetCount/2; offset+=50){
+    for(offset; offset < assetCount/2; offset+=50){
+      if(document.getElementById('firstquarter-2').checked === true || document.getElementById('secondquarter-2').checked === true){
+        break
+      }
       if(halt === 1) {
         break
       }
