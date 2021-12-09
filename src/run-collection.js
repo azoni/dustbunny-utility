@@ -1,3 +1,32 @@
+  // DEFAULT_TRAIT: ['tier','cool_1'],
+  // DEFAULT_EXPIRATION: 1,
+  // DEFAULT_BIDS: [.8, .9],
+  // DEFAULT_DELAY: 150,
+  // COLLECTION_TRAIT: {
+  //   'cool-cats-nft': {
+  //     'tier': {
+  //       'cool_1': .875,
+  //       'cool_2': .9,
+  //       'wild_1': .95,
+  //       'wild_2': 1,
+  //       'classy_1': 1.1,
+  //       'classy_2': 1.15,
+  //       'exotic_1': 1.2,
+  //       'exotic_2': 1.25,
+  //     },
+  //   },
+  //   'doodles-official': {
+  //     'face': {
+  //       'neutral note': .975,
+  //       'mad note': 1.15,
+  //     },
+  //     'head': {
+  //       'balloon': 2,
+  //       'devil': 1.5,
+  //     }
+  //   }
+  // },
+  //'cf86c7bdf70f408da1d871913242202e'
 const values = require('./values.js')
 const secret = require('./secret.js')
 const opensea = require("opensea-js")
@@ -24,6 +53,8 @@ if(values.default.INFURA_KEY.length === 6){
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
 } else if(values.default.INFURA_KEY.length === 4){
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+}else if(values.default.INFURA_KEY.length === 5){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
 }
 var infuraRpcSubprovider = new RPCSubprovider({
   rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
@@ -33,6 +64,10 @@ providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
 providerEngine.start();
 
+if(values.default.DEFAULT_TRAIT !== undefined){
+  document.getElementById('addProperty-2').value = values.default.DEFAULT_TRAIT[0]
+  document.getElementById('addTrait-2').value = values.default.DEFAULT_TRAIT[1]
+}
 var run_count = 0
 // Create seaport object using provider created. 
 var seaport = new OpenSeaPort(
@@ -139,7 +174,9 @@ function create_seaport(){
     INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
   } else if(values.default.INFURA_KEY.length === 4){
     INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-  }
+  }else if(values.default.INFURA_KEY.length === 5){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+}
   console.log('creating seaport ' + INFURA_KEY)
   console.log(run_count)
   infuraRpcSubprovider = new RPCSubprovider({
@@ -169,7 +206,7 @@ function create_seaport(){
 var tokenId_array = []
 var name_array = []
 var asset_array = []
-
+var asset_dict = []
 
 var NFT_CONTRACT_ADDRESS = ''
 var offerAmount = 0
@@ -177,6 +214,13 @@ var maxOfferAmount = 0
 var bidMultiplier = 0
 var maxbidMultiplier = 0
 var expirationHours = 1
+if(values.default.DEFAULT_EXPIRATION !== undefined){
+  expirationHours = values.default.DEFAULT_EXPIRATION
+}
+if(values.default.DEFAULT_BIDS !== undefined){
+  document.getElementById('bidMultiplier-2').value =values.default.DEFAULT_BIDS[0]
+  document.getElementById('maxbidMultiplier-2').value =values.default.DEFAULT_BIDS[1]
+}
 var COLLECTION_NAME = ''
 var offers = 0
 
@@ -473,8 +517,22 @@ confirmButton.addEventListener('click', function(){
     return
   }
   quickButton.disabled = false
-
-  alert(offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration.")
+  if(document.getElementById('multitrait-2').checked === true){
+    var trait_dict = values.default.COLLECTION_TRAIT
+    console.log(COLLECTION_NAME)
+    var output = offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration."
+    
+    for(var i in trait_dict[COLLECTION_NAME]){
+      console.log(i)
+      for(var j in trait_dict[COLLECTION_NAME][i]){
+        output += '\n' + i + ': ' + j + ' - ' + ((trait_dict[COLLECTION_NAME][i][j] - service_fee/10000) * current_floor).toFixed(4)
+      }
+    } 
+    alert(output)
+  } else {
+    alert(offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration.")
+  }
+  
 
   } else {
     alert('Get valid collection first.')
@@ -603,8 +661,28 @@ async function run(){
             } 
             else {
               if(document.getElementById('multitrait-2').checked === true){
-                
-              } else{
+                for(var trait in collection['assets'][asset]['traits']){
+                  for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
+                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase() === p){
+                      for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
+                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase() === t){
+                          tokenId_array.push(collection['assets'][asset]['tokenId'])
+                          name_array.push(collection['assets'][asset]['name'])
+                          asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                        }
+                      }
+                    }
+
+                  }
+                      
+                }
+                // if(document.getElementById('traitsonly-2') === false){
+                //   tokenId_array.push(collection['assets'][asset]['tokenId'])
+                //   name_array.push(collection['assets'][asset]['name'])
+                // }  
+              } 
+
+              else{
                 tokenId_array.push(collection['assets'][asset]['tokenId'])
                 name_array.push(collection['assets'][asset]['name'])
               }
@@ -612,7 +690,7 @@ async function run(){
 
 
 
-              asset_array.push('')
+              
             }
           }
         }
@@ -689,8 +767,37 @@ async function run(){
               }
             } 
             else {
-              tokenId_array.push(collection['assets'][asset]['tokenId'])
-              name_array.push(collection['assets'][asset]['name'])
+              if(document.getElementById('multitrait-2').checked === true){
+                for(var trait in collection['assets'][asset]['traits']){
+                  for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
+                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase() === p){
+                      for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
+                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase() === t){
+                          tokenId_array.push(collection['assets'][asset]['tokenId'])
+                          name_array.push(collection['assets'][asset]['name'])
+                          asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                        }
+                      }
+                    }
+
+                  }
+                      
+                }
+                // if(document.getElementById('traitsonly-2') === false){
+                //   tokenId_array.push(collection['assets'][asset]['tokenId'])
+                //   name_array.push(collection['assets'][asset]['name'])
+                // }  
+              } 
+
+              else{
+                tokenId_array.push(collection['assets'][asset]['tokenId'])
+                name_array.push(collection['assets'][asset]['name'])
+              }
+              
+
+
+
+              
             }
           }
         }
@@ -732,6 +839,7 @@ async function run(){
   stop = 0
   stop2 = 0
   halt = 0
+  console.log(asset_dict)
   //testbundlebid()
   console.log(tokenId_array)
     placeBid()
@@ -879,6 +987,7 @@ async function placeBid(){
         schemaName: WyvernSchemaName.ERC1155
       }      
     }
+
     try{
       await seaport.createBuyOrder({
         asset,

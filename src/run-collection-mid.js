@@ -24,6 +24,8 @@ if(values.default.INFURA_KEY.length === 6){
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
 } else if(values.default.INFURA_KEY.length === 4){
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+}else if(values.default.INFURA_KEY.length === 5){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
 }
 var infuraRpcSubprovider = new RPCSubprovider({
   rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
@@ -74,7 +76,9 @@ function create_seaport(){
     INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
   } else if(values.default.INFURA_KEY.length === 4){
     INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-  }
+  }else if(values.default.INFURA_KEY.length === 5){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+}
   console.log('creating seaport ' + INFURA_KEY)
   console.log(run_count)
   infuraRpcSubprovider = new RPCSubprovider({
