@@ -288,8 +288,9 @@ async function buy_order(){
     console.log(event_window)
     console.log(Math.floor(+new Date()))
     let search_time = Math.floor(+new Date()) - event_window
-    
+    let search_time2 = Math.floor(+new Date())
     search_time = new Date(search_time).toISOString();
+    search_time2 = new Date(search_time2).toISOString();
     console.log(search_time)
     counter = 0
     var order_array = []
@@ -317,6 +318,7 @@ async function buy_order(){
       order_by: 'created_date',
       maker: wallet_orders[wallet],
       listed_after: search_time,
+      listed_before: search_time2,
       limit: 50,
       offset: offset
       })

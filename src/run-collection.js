@@ -793,11 +793,7 @@ async function run(){
                 tokenId_array.push(collection['assets'][asset]['tokenId'])
                 name_array.push(collection['assets'][asset]['name'])
               }
-              
-
-
-
-              
+                
             }
           }
         }
