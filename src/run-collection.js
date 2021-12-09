@@ -218,6 +218,7 @@ var bidMultiplier = 0
 var maxbidMultiplier = 0
 var expirationHours = 1
 if(values.default.DEFAULT_EXPIRATION !== undefined){
+  document.getElementById('expireInput-2').value = values.default.DEFAULT_EXPIRATION
   expirationHours = values.default.DEFAULT_EXPIRATION
 }
 if(values.default.DEFAULT_BIDS !== undefined){
