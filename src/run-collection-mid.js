@@ -33,7 +33,7 @@ var infuraRpcSubprovider = new RPCSubprovider({
 var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
-providerEngine.start();
+//providerEngine.start();
 
 var run_count = 0
 // Create seaport object using provider created. 
@@ -70,6 +70,8 @@ document.getElementById('infurakey').addEventListener('click', function(){
   }
 })
 function create_seaport(){
+  providerEngine.stop();
+
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   if(values.default.INFURA_KEY.length === 6){

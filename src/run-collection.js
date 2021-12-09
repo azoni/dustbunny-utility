@@ -62,7 +62,7 @@ var infuraRpcSubprovider = new RPCSubprovider({
 var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
-providerEngine.start();
+//providerEngine.start();
 
 if(values.default.DEFAULT_TRAIT !== undefined){
   document.getElementById('addProperty-2').value = values.default.DEFAULT_TRAIT[0]
@@ -84,7 +84,9 @@ var seaport = new OpenSeaPort(
 
 // })
 var infura_index = 0
+
 document.getElementById('infurakey').addEventListener('click', function(){
+  providerEngine.stop();
   INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   infuraRpcSubprovider = new RPCSubprovider({
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
@@ -168,6 +170,7 @@ document.getElementById('aggressivemulti-2').addEventListener('click', function(
 })
 
 function create_seaport(){
+  providerEngine.stop();
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   if(values.default.INFURA_KEY.length === 6){
@@ -215,7 +218,6 @@ var bidMultiplier = 0
 var maxbidMultiplier = 0
 var expirationHours = 1
 if(values.default.DEFAULT_EXPIRATION !== undefined){
-  document.getElementById('expireInput-2').value = values.default.DEFAULT_EXPIRATION
   expirationHours = values.default.DEFAULT_EXPIRATION
 }
 if(values.default.DEFAULT_BIDS !== undefined){
@@ -984,7 +986,9 @@ async function placeBid(){
         schemaName: WyvernSchemaName.ERC1155
       }      
     }
+    if(document.getElementById('multitrait-2').checked === true){
 
+    }
     try{
       await seaport.createBuyOrder({
         asset,

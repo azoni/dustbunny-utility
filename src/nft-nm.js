@@ -66,7 +66,7 @@ var infuraRpcSubprovider = new RPCSubprovider({
 var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
-providerEngine.start();
+//providerEngine.start();
 
 //
 // Creating variables needed to make offers.
@@ -90,6 +90,7 @@ var seaport = new OpenSeaPort(
 );
 
 function create_seaport(){
+  providerEngine.stop();
   currentHour = new Date().getHours()
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   if(values.default.INFURA_KEY.length === 6){
@@ -171,6 +172,7 @@ function hide_bottom(){
 var infura_index = 0
 document.getElementById('infurakey').innerHTML = 'Inufra(' + values.default.INFURA_KEY.length + ')'
 document.getElementById('infurakey').addEventListener('click', function(){
+  providerEngine.stop();
   INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   console.log('creating seaport ' + INFURA_KEY)
   infuraRpcSubprovider = new RPCSubprovider({
