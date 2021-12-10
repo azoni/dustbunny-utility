@@ -525,7 +525,7 @@ confirmButton.addEventListener('click', function(){
     var trait_dict = values.default.COLLECTION_TRAIT
     console.log(COLLECTION_NAME)
     var output = offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration."
-    
+    output += '\n' + current_floor
     for(var i in trait_dict[COLLECTION_NAME]){
       console.log(i)
       for(var j in trait_dict[COLLECTION_NAME][i]){
@@ -664,12 +664,14 @@ async function run(){
               }
             } 
             else {
+              var traitfound = false
               if(document.getElementById('multitrait-2').checked === true){
                 for(var trait in collection['assets'][asset]['traits']){
                   for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
                     if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase() === p){
                       for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
                         if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase() === t){
+                          traitfound = true
                           tokenId_array.push(collection['assets'][asset]['tokenId'])
                           name_array.push(collection['assets'][asset]['name'])
                           asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
@@ -678,8 +680,13 @@ async function run(){
                     }
 
                   }
-                      
                 }
+                  if(traitfound === false && document.getElementById('traitsonly-2').checked === false){
+                    tokenId_array.push(collection['assets'][asset]['tokenId'])
+                    name_array.push(collection['assets'][asset]['name'])
+                  }
+                  traitfound = false
+                
                 // if(document.getElementById('traitsonly-2') === false){
                 //   tokenId_array.push(collection['assets'][asset]['tokenId'])
                 //   name_array.push(collection['assets'][asset]['name'])
@@ -707,7 +714,9 @@ async function run(){
     }
   }
   direction = 'desc'
+  var temp_offset = offset
   offset = 0
+
   if(document.getElementById('fourthquarter-2').checked === true){
     assetCount = Math.floor(assetCount/2)
   }
@@ -716,8 +725,7 @@ async function run(){
   }
 
   if(document.getElementById('firsthalf-2').checked === false){
-
-    var temp_offset = offset
+    
     for(offset; offset < assetCount/2; offset+=50){
       if(document.getElementById('firstquarter-2').checked === true || document.getElementById('secondquarter-2').checked === true){
         break
@@ -771,12 +779,14 @@ async function run(){
               }
             } 
             else {
+              var traitfound = false
               if(document.getElementById('multitrait-2').checked === true){
                 for(var trait in collection['assets'][asset]['traits']){
                   for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
                     if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase() === p){
                       for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
                         if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase() === t){
+                          traitfound = true
                           tokenId_array.push(collection['assets'][asset]['tokenId'])
                           name_array.push(collection['assets'][asset]['name'])
                           asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
@@ -787,10 +797,11 @@ async function run(){
                   }
                       
                 }
-                // if(document.getElementById('traitsonly-2') === false){
-                //   tokenId_array.push(collection['assets'][asset]['tokenId'])
-                //   name_array.push(collection['assets'][asset]['name'])
-                // }  
+                  if(traitfound === false && document.getElementById('traitsonly-2').checked === false){
+                    tokenId_array.push(collection['assets'][asset]['tokenId'])
+                    name_array.push(collection['assets'][asset]['name'])
+                  }
+                  traitfound = false
               } 
 
               else{
@@ -987,19 +998,20 @@ async function placeBid(){
         schemaName: WyvernSchemaName.ERC1155
       }      
     }
-    if(document.getElementById('multitrait-2').checked === true){
-
+    var placebidoffer = parseFloat(offset) + parseFloat(offerAmount)
+    if(document.getElementById('multitrait-2').checked === true && Object.keys(asset_dict).includes(tokenId_array[i])){
+     placebidoffer = (asset_dict[tokenId_array[i]] - service_fee/10000) * current_floor
     }
     try{
       await seaport.createBuyOrder({
         asset,
-        startAmount: parseFloat(offset) + parseFloat(offerAmount),
+        startAmount: placebidoffer,
         accountAddress: OWNER_ADDRESS,
         expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
-      console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
+      console.log('Success #' + name_array[i] + ': ' + placebidoffer)
       text.style.color = 'black'
-      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(5) + " on " + name_array[i]
+      text.innerHTML = 'bidding: ' + placebidoffer.toFixed(5) + " on " + name_array[i]
       if(maxOfferAmount !== 0){
         text1.style.color = 'black'
         text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ')' +' #' + name_array[i]
@@ -1160,16 +1172,20 @@ async function placeBid2(){
         schemaName: WyvernSchemaName.ERC1155
       }      
     }
+    var placebid2offer = parseFloat(offset) + parseFloat(offerAmount)
+    if(document.getElementById('multitrait-2').checked === true && Object.keys(asset_dict).includes(tokenId_array[i])){
+     placebid2offer = (asset_dict[tokenId_array[i]] - service_fee/10000) * current_floor
+    }
     try{
       await seaport.createBuyOrder({
         asset,
-        startAmount: parseFloat(offset) + parseFloat(offerAmount),
+        startAmount: placebid2offer,
         accountAddress: OWNER_ADDRESS,
         expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
       })
-      console.log('Success #' + name_array[i] + ': ' + parseFloat(parseFloat(offset) + parseFloat(offerAmount)))
+      console.log('Success #' + name_array[i] + ': ' + placebid2offer)
       text.style.color = 'black'
-      text.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(5) + " on " + name_array[i]
+      text.innerHTML = 'bidding: ' + placebid2offer.toFixed(5) + " on " + name_array[i]
               if(maxOfferAmount !== 0){
         text1.style.color = 'black'
         text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ')' +' #' + name_array[i]
