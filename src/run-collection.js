@@ -475,6 +475,13 @@ document.getElementById('smartStart-2').addEventListener('click', function(){
   run()
 })
 var offersDict = {}
+if(values.default.AUTOSTART === 1){
+  window.onload = function(){
+  document.getElementById('confirmButton-2').click();
+  document.getElementById('quickStart-2').click()
+  }
+}
+
 confirmButton.addEventListener('click', function(){
   if (confirmCollection === 1) {
     var traitsDiv = document.getElementById('traitsDiv-2')
@@ -521,6 +528,7 @@ confirmButton.addEventListener('click', function(){
     return
   }
   quickButton.disabled = false
+
   if(document.getElementById('multitrait-2').checked === true){
     var trait_dict = values.default.COLLECTION_TRAIT
     console.log(COLLECTION_NAME)
@@ -531,9 +539,15 @@ confirmButton.addEventListener('click', function(){
       for(var j in trait_dict[COLLECTION_NAME][i]){
         output += '\n' + i + ': ' + j + ' - ' + ((trait_dict[COLLECTION_NAME][i][j] - service_fee/10000) * current_floor).toFixed(4)
       }
-    } 
+    }
+    if(values.default.AUTOSTART === 1){
+      return 0
+    }
     alert(output)
   } else {
+    if(values.default.AUTOSTART === 1){
+      return 0
+    }
     alert(offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration.")
   }
   
