@@ -79,7 +79,11 @@ var seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
-
+document.getElementById('usepublic').addEventListener('click', function(){
+  delay.value = 1500
+  values.default.API_KEY = '2f6f419a083c46de9d83ce3dbe7db601'
+  create_seaport()
+})
 // document.getElementById('delayStart-2').addEventListener('click', function(){
 
 // })
@@ -181,6 +185,7 @@ function create_seaport(){
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
 }
   console.log('creating seaport ' + INFURA_KEY)
+  console.log('creating seaport ' + values.default.API_KEY)
   console.log(run_count)
   infuraRpcSubprovider = new RPCSubprovider({
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
@@ -902,6 +907,8 @@ function check_errors(msg){
     return 'Too many outstanding orders.'
   } else if(msg.includes('Bid amount is not 5.0% higher than the previous bid')){
     return 'Bid amount is not 5.0% higher than the previous bid'
+  } else if(msg.includes('Cannot read properties of undefined')){
+      return "Cannot read properties of undefined"
   }
   return 0
 }
@@ -909,7 +916,6 @@ function check_errors(msg){
 async function placeBid(){
   create_seaport()
   run_count = run_count + 1
-  console.log(INFURA_KEY)
   if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){// || midrun === true){
     assetCount *= 2
   }
