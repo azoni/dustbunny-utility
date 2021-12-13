@@ -56,12 +56,22 @@ if(values.default.INFURA_KEY.length === 6){
 }else if(values.default.INFURA_KEY.length === 5){
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
 }
+var provider_string = ''
+if(values.default.ALCHEMY_KEY !== undefined){
+  provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
+} else {
+  provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
+}
 var infuraRpcSubprovider = new RPCSubprovider({
-  rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  rpcUrl: 'https://eth-mainnet.alchemyapi.io/v2/k5BcUKCfIWPUBC0X4R8I7o_ZX64-LGUK'//"https://mainnet.infura.io/v3/" + INFURA_KEY
 });
+values.default.BLACK_LIST.push(values.default.OWNER_ADDRESS[0].username)
 var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
+if(values.default.ALCHEMY_KEY !== undefined){
+  providerEngine.start();
+}
 //providerEngine.start();
 
 if(values.default.DEFAULT_TRAIT !== undefined){
@@ -366,6 +376,9 @@ collectionButtonClear.addEventListener('click', function(){
 collectionButton.addEventListener('click', function(){
   getCollection(collectionInput.value)
 })
+if(values.default.DEFAULT_FRACTION !== undefined){
+  document.getElementById(values.default.DEFAULT_FRACTION).checked = true
+}
 // document.getElementById('api3').addEventListener('click', function(){
 //   currentHour = new Date().getHours()
 //   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
@@ -625,15 +638,15 @@ async function run(){
   console.log(assetCount)
   // assetCount = assetCount/2
   var offset = 0
-  if(document.getElementById('secondhalf-2').checked === false){
-    if(document.getElementById('firstquarter-2').checked === true){
+  if(document.getElementById('secondhalf').checked === false){
+    if(document.getElementById('firstquarter').checked === true){
       assetCount = Math.floor(assetCount/2)
     }
-    if(document.getElementById('secondquarter-2').checked === true){
+    if(document.getElementById('secondquarter').checked === true){
       offset += Math.floor(assetCount/4)
     }
     for(offset; offset < Math.floor(assetCount/2); offset+=50){
-      if(document.getElementById('thirdquarter-2').checked === true || document.getElementById('fourthquarter-2').checked === true){
+      if(document.getElementById('thirdquarter').checked === true || document.getElementById('fourthquarter').checked === true){
         break
       }
       if(halt === 1) {
@@ -736,17 +749,17 @@ async function run(){
   var temp_offset = offset
   offset = 0
 
-  if(document.getElementById('fourthquarter-2').checked === true){
+  if(document.getElementById('fourthquarter').checked === true){
     assetCount = Math.floor(assetCount/2)
   }
-  if(document.getElementById('thirdquarter-2').checked === true){
+  if(document.getElementById('thirdquarter').checked === true){
     offset += Math.floor(assetCount/4)
   }
 
-  if(document.getElementById('firsthalf-2').checked === false){
+  if(document.getElementById('firsthalf').checked === false){
     
     for(offset; offset < assetCount/2; offset+=50){
-      if(document.getElementById('firstquarter-2').checked === true || document.getElementById('secondquarter-2').checked === true){
+      if(document.getElementById('firstquarter').checked === true || document.getElementById('secondquarter').checked === true){
         break
       }
       if(halt === 1) {
@@ -914,7 +927,10 @@ function check_errors(msg){
 }
 
 async function placeBid(){
-  create_seaport()
+  if(values.default.ALCHEMY_KEY === undefined){
+    create_seaport()
+  }
+  //create_seaport()
   run_count = run_count + 1
   if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){// || midrun === true){
     assetCount *= 2
