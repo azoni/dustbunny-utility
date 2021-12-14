@@ -47,26 +47,33 @@ console.log('App loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
-var currentHour = new Date().getHours()
-var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
-if(values.default.INFURA_KEY.length === 6){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
-} else if(values.default.INFURA_KEY.length === 4){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-}else if(values.default.INFURA_KEY.length === 5){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
-}
+
 
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
 });
+var provider_string = ''
+if(values.default.ALCHEMY_KEY !== undefined){
+  provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
+} else {
+  var currentHour = new Date().getHours()
+  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }else if(values.default.INFURA_KEY.length === 5){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+  }
+  provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
+}
 var infuraRpcSubprovider = new RPCSubprovider({
-  rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
 });
 var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
-//providerEngine.start();
+providerEngine.start();
 
 //
 // Creating variables needed to make offers.
@@ -144,6 +151,7 @@ var blacklist = values.default.BLACK_LIST
 //   " 'doodles-official': '0x41899a097dac875318bf731e5f4a972544ad002d',\n" +
 //   "},")
 // })
+hide_mid()
 document.getElementById('hidemid').addEventListener('click', function(){
   hide_mid()
 })
@@ -170,7 +178,11 @@ function hide_bottom(){
   }
 }
 var infura_index = 0
-document.getElementById('infurakey').innerHTML = 'Inufra(' + values.default.INFURA_KEY.length + ')'
+try{
+  document.getElementById('infurakey').innerHTML = 'Inufra(' + values.default.INFURA_KEY.length + ')'
+} catch(ex){
+  console.log('no infura keys found')
+}
 document.getElementById('infurakey').addEventListener('click', function(){
   providerEngine.stop();
   INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
@@ -256,7 +268,7 @@ var eventbidcount = 0
 var event_window = 0
 var expiration = 1
 var wallet_set = values.default.WALLET_SETS
-var wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', '0xadee30341a9e98ed145ccb02b00da15e74e305b5']
+var wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', '0xadee30341a9e98ed145ccb02b00da15e74e305b5', '0x483b71d5b5661c2340273dc1219c4f94dacf5cc8', '0x15cba6d3b98d220bc1ecda89afdf07dd0bf06c5d']
 async function buy_order(){
   if(document.getElementById('event_window').value === ''){
     event_window = 180000
@@ -406,7 +418,7 @@ async function buy_order(){
       await seaport.createBuyOrder({
         asset: order_array[i].asset,
         startAmount: order_array[i].bid,
-        accountAddress: wallet_set[order_array[i].collection],
+        accountAddress: values.default.OWNER_ADDRESS[0].address,
         expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
       })
       text.innerHTML = order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)
@@ -440,7 +452,10 @@ async function buy_order(){
   }
   
   if(eventbidcount > 1000){
-    create_seaport()
+    if(values.default.ALCHEMY_KEY === undefined){
+      create_seaport()
+    }
+    
   }
   console.log(start_time)
   console.log(end_time)
@@ -467,7 +482,7 @@ async function buy_order_bid(order_array, username){
         await seaport.createBuyOrder({
           asset: order_array[i].asset,
           startAmount: order_array[i].bid,
-          accountAddress: wallet_set[order_array[i].collection],
+          accountAddress: values.default.OWNER_ADDRESS[0].address,
           expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
         })
         text.innerHTML = order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)
@@ -555,7 +570,12 @@ async function placeBid(){
 
 var Web3 = require('web3');
 var Eth = require('web3-eth');
-const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY)
+var provider = ''
+if(values.default.ALCHEMY_KEY !== undefined){
+  provider = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
+} else {
+  provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY)
+}
 var eth = new Eth(provider)
 
 let tokenAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";

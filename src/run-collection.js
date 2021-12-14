@@ -47,23 +47,24 @@ console.log('Collection loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
-var currentHour = new Date().getHours()
-var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
-if(values.default.INFURA_KEY.length === 6){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
-} else if(values.default.INFURA_KEY.length === 4){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-}else if(values.default.INFURA_KEY.length === 5){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
-}
+
 var provider_string = ''
 if(values.default.ALCHEMY_KEY !== undefined){
   provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
 } else {
+  var currentHour = new Date().getHours()
+  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }else if(values.default.INFURA_KEY.length === 5){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+  }
   provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
 }
 var infuraRpcSubprovider = new RPCSubprovider({
-  rpcUrl: 'https://eth-mainnet.alchemyapi.io/v2/k5BcUKCfIWPUBC0X4R8I7o_ZX64-LGUK'//"https://mainnet.infura.io/v3/" + INFURA_KEY
+  rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
 });
 values.default.BLACK_LIST.push(values.default.OWNER_ADDRESS[0].username)
 var providerEngine = new Web3ProviderEngine();
@@ -642,11 +643,32 @@ async function run(){
     if(document.getElementById('firstquarter').checked === true){
       assetCount = Math.floor(assetCount/2)
     }
+    if(document.getElementById('firsteighth').checked === true){
+      assetCount = Math.floor(assetCount/4)
+    }
+    if(document.getElementById('secondeighth').checked === true){
+      offset += Math.floor(assetCount/8)
+      assetCount = Math.floor(assetCount/2)
+    }
+    if(document.getElementById('thirdeighth').checked === true){
+      offset += Math.floor(assetCount/8)
+      offset += Math.floor(assetCount/8)
+      assetCount = Math.floor(assetCount/2) + Math.floor(assetCount/4)
+    }
+    if(document.getElementById('fourtheighth').checked === true){
+      offset += Math.floor(assetCount/8)
+      offset += Math.floor(assetCount/8)
+      offset += Math.floor(assetCount/8)
+      //assetCount = Math.floor(assetCount/2) + Math.floor(assetCount/4) + Math.floor(assetCount/4)
+    }
     if(document.getElementById('secondquarter').checked === true){
       offset += Math.floor(assetCount/4)
     }
     for(offset; offset < Math.floor(assetCount/2); offset+=50){
-      if(document.getElementById('thirdquarter').checked === true || document.getElementById('fourthquarter').checked === true){
+      if(document.getElementById('thirdquarter').checked === true || document.getElementById('fourthquarter').checked === true 
+        || document.getElementById('fiftheighth').checked === true || document.getElementById('sixtheighth').checked === true
+        || document.getElementById('seventheighth').checked === true || document.getElementById('eightheighth').checked === true
+        ){
         break
       }
       if(halt === 1) {
@@ -755,11 +777,30 @@ async function run(){
   if(document.getElementById('thirdquarter').checked === true){
     offset += Math.floor(assetCount/4)
   }
-
+    if(document.getElementById('eightheighth').checked === true){
+      assetCount = Math.floor(assetCount/4)
+    }
+    if(document.getElementById('seventheighth').checked === true){
+      offset += Math.floor(assetCount/8)
+      assetCount = Math.floor(assetCount/2)
+    }
+    if(document.getElementById('sixtheighth').checked === true){
+      offset += Math.floor(assetCount/8)
+      offset += Math.floor(assetCount/8)
+      assetCount = Math.floor(assetCount/2) + Math.floor(assetCount/4)
+    }
+    if(document.getElementById('fiftheighth').checked === true){
+      offset += Math.floor(assetCount/8)
+      offset += Math.floor(assetCount/8)
+      offset += Math.floor(assetCount/8)
+      //assetCount = Math.floor(assetCount/2) + Math.floor(assetCount/4) + Math.floor(assetCount/4)
+    }
   if(document.getElementById('firsthalf').checked === false){
     
     for(offset; offset < assetCount/2; offset+=50){
-      if(document.getElementById('firstquarter').checked === true || document.getElementById('secondquarter').checked === true){
+      if(document.getElementById('firstquarter').checked === true || document.getElementById('secondquarter').checked === true
+        || document.getElementById('firsteighth').checked === true || document.getElementById('secondeighth').checked === true
+        || document.getElementById('thirdeighth').checked === true || document.getElementById('fourtheighth').checked === true){
         break
       }
       if(halt === 1) {

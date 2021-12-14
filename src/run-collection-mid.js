@@ -18,17 +18,23 @@ console.log('Collection loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
-var currentHour = new Date().getHours()
-var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
-if(values.default.INFURA_KEY.length === 6){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
-} else if(values.default.INFURA_KEY.length === 4){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-}else if(values.default.INFURA_KEY.length === 5){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+var provider_string = ''
+if(values.default.ALCHEMY_KEY !== undefined){
+  provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
+} else {
+  var currentHour = new Date().getHours()
+  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }else if(values.default.INFURA_KEY.length === 5){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+  }
+  provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
 }
 var infuraRpcSubprovider = new RPCSubprovider({
-  rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
 });
 var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
