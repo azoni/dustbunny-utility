@@ -661,51 +661,98 @@ document.getElementById('nextAccount-1').addEventListener('click', function(){
 
 var total_weth = 0
 var total_eth = 0
-if(values.default.OWNER_ADDRESS[0].username==='Sad002d'){
-getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(function (result) {
-    console.log('DustBunny: ' + (result/1000000000000000000).toFixed(4))
-    eth.getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(res => total_eth += parseInt(res))
+var account_array = ['']
+if(values.default.OWNER_ADDRESS[0].username==='ShoulderPress'){
+  //getBalance for weth, eth.getBalance for eth
+getBalance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25').then(function (result) {
+    if(result > 0){
+      console.log('DeadLift: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
-getBalance('0x4beac303c8fdf1f3cd34509b344067e86dcbc506').then(function (result) {
-    console.log('balloonanimal: ' + (result/1000000000000000000).toFixed(4))
-    eth.getBalance('0x4beac303c8fdf1f3cd34509b344067e86dcbc506').then(res => total_eth += parseInt(res))
+getBalance('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF').then(function (result) {
+    if(result > 0){
+      console.log('PowerClean: ' + (result/1000000000000000000).toFixed(4))
+    }    
+    eth.getBalance('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
-getBalance('0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65').then(function (result) {
-    console.log('cakebatter: ' + (result/1000000000000000000).toFixed(4))
-    eth.getBalance('0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65').then(res => total_eth += parseInt(res))
+getBalance('0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A').then(function (result) {
+    if(result > 0){
+      console.log('FrontSquat: ' + (result/1000000000000000000).toFixed(4))
+    }    
+    eth.getBalance('0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
-getBalance('0x60bf609e0e8b724dc61ffee24737af15a6f6d905').then(function (result) {
-    console.log('doughnuthole: ' + (result/1000000000000000000).toFixed(4))
-    eth.getBalance('0x60bf609e0e8b724dc61ffee24737af15a6f6d905').then(res => total_eth += parseInt(res))
+getBalance('0x18a73AaEe970AF9A797D944A7B982502E1e71556').then(function (result) {
+    if(result > 0){
+      console.log('ShoulderPress: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x18a73AaEe970AF9A797D944A7B982502E1e71556').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
-getBalance('0x774a4a3c3130e4850a84dc8c80945dee4de2e017').then(function (result) {
-    console.log('DE2E017: ' + (result/1000000000000000000).toFixed(4))
-    eth.getBalance('0x774a4a3c3130e4850a84dc8c80945dee4de2e017').then(res => total_eth += parseInt(res))
+getBalance('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628').then(function (result) {
+    if(result > 0){
+      console.log('BoxJump: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
-getBalance('0x1484d9ae6d590d6b0981e802f555a8dd74b93017').then(function (result) {
-    console.log('T74b93017: ' + (result/1000000000000000000).toFixed(4))
-    eth.getBalance('0x1484d9ae6d590d6b0981e802f555a8dd74b93017').then(res => total_eth += parseInt(res))
+getBalance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb').then(function (result) {
+    if(result > 0){
+      console.log('LegRaise: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
-getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(function (result) {
-    console.log('Sad002d: ' + (result/1000000000000000000).toFixed(4))
-    eth.getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(res => total_eth += parseInt(res))
+getBalance('0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c').then(function (result) {
+    if(result > 0){
+      console.log('VerticalRow: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
-
-getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(function (result) {
-    console.log('T801703: ' + (result/1000000000000000000).toFixed(4))
-    eth.getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(res => total_eth += parseInt(res))
+getBalance('0x8F2D0aFD7a8e444f7e905DE5F09E04e6c382362e').then(function (result) {
+    if(result > 0){
+      console.log('BicepCurl: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x8F2D0aFD7a8e444f7e905DE5F09E04e6c382362e').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
-getBalance('0xd76654102c5f3c27886d5b3ec47b3111e18d8126').then(function (result) {
-    console.log('nftd00d: ' + (result/1000000000000000000).toFixed(4))
-    eth.getBalance('0xd76654102c5f3c27886d5b3ec47b3111e18d8126').then(res => total_eth += parseInt(res))
+getBalance('0x036910a9621218447C95805C2dCBc9B3bD1D39d4').then(function (result) {
+    if(result > 0){
+      console.log('TricepExtension: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x036910a9621218447C95805C2dCBc9B3bD1D39d4').then(res => total_eth += parseInt(res))
+    total_weth += parseInt(result)
+});
+getBalance('0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6').then(function (result) {
+    if(result > 0){
+      console.log('DustBunny_1: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6').then(res => total_eth += parseInt(res))
+    total_weth += parseInt(result)
+});
+getBalance('0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25').then(function (result) {
+    if(result > 0){
+      console.log('DustBunny_2: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25').then(res => total_eth += parseInt(res))
+    total_weth += parseInt(result)
+});
+getBalance('0xfB27E7B963982FB3a955c401F93a0Db8042e679e').then(function (result) {
+    if(result > 0){
+      console.log('DustBunny_3: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0xfB27E7B963982FB3a955c401F93a0Db8042e679e').then(res => total_eth += parseInt(res))
+    total_weth += parseInt(result)
+});
+getBalance('0xE143d6306C1743280D40e968F48cae36F56fC7d1').then(function (result) {
+    if(result > 0){
+      console.log('DustBunny_4: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0xE143d6306C1743280D40e968F48cae36F56fC7d1').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 //
