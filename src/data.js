@@ -2,14 +2,14 @@ const data = {
 	COLLECTION_TRAIT: {
 		'cool-cats-nft': {
 			'tier': {
-				'cool_1': .875,
-				'cool_2': .9,
-				'wild_1': .95,
-				'wild_2': 1,
-				'classy_1': 1.1,
-				'classy_2': 1.15,
-				'exotic_1': 1.2,
-				'exotic_2': 1.25,
+				'cool_1': [.7,.8],
+				'cool_2': [.7, .825],
+				'wild_1': [.8,.85],
+				'wild_2': [.8,.875],
+				'classy_1': [.85,.9],
+				'classy_2': [.9,.91],
+				'exotic_1': [,].
+				'exotic_2': [,]
 			},
 		},
 		'doodles-official': {
