@@ -556,7 +556,8 @@ confirmButton.addEventListener('click', function(){
     for(var i in trait_dict[COLLECTION_NAME]){
       console.log(i)
       for(var j in trait_dict[COLLECTION_NAME][i]){
-        output += '\n' + i + ': ' + j + ' - ' + ((trait_dict[COLLECTION_NAME][i][j] - service_fee/10000) * current_floor).toFixed(4)
+        output += '\n' + i + ': ' + j + ' - ' + ((trait_dict[COLLECTION_NAME][i][j][0] - service_fee/10000) * current_floor).toFixed(4) + ' - ' + 
+        ((trait_dict[COLLECTION_NAME][i][j][1] - service_fee/10000) * current_floor).toFixed(4)
       }
     }
     if(values.default.AUTOSTART === 1){
@@ -728,7 +729,14 @@ async function run(){
                           traitfound = true
                           tokenId_array.push(collection['assets'][asset]['tokenId'])
                           name_array.push(collection['assets'][asset]['name'])
-                          asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                          if(Object.keys(asset_dict).includes(collection['assets'][asset]['tokenId'])){
+                            if(asset_dict[collection['assets'][asset]['tokenId']][0] < values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t][0]){
+                              asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                            }
+                          } else {
+                            asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                          }
+                          
                         }
                       }
                     }
@@ -862,7 +870,13 @@ async function run(){
                           traitfound = true
                           tokenId_array.push(collection['assets'][asset]['tokenId'])
                           name_array.push(collection['assets'][asset]['name'])
-                          asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                          if(Object.keys(asset_dict).includes(collection['assets'][asset]['tokenId'])){
+                            if(asset_dict[collection['assets'][asset]['tokenId']][0] < values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t][0]){
+                              asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                            }
+                          } else {
+                            asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                          }
                         }
                       }
                     }
@@ -1077,7 +1091,12 @@ async function placeBid(){
     }
     var placebidoffer = parseFloat(offset) + parseFloat(offerAmount)
     if(document.getElementById('multitrait-2').checked === true && Object.keys(asset_dict).includes(tokenId_array[i])){
-     placebidoffer = (asset_dict[tokenId_array[i]] - service_fee/10000) * current_floor
+     placebidoffer = (asset_dict[tokenId_array[i]][0] - service_fee/10000) * current_floor
+     if(placebidoffer < highestBid) {
+      if(highestBid < (asset_dict[tokenId_array[i]][1] - service_fee/10000) * current_floor){
+        placebidoffer = .001 + parseFloat(highestBid)
+      }
+     }
     }
     try{
       await seaport.createBuyOrder({
@@ -1251,7 +1270,12 @@ async function placeBid2(){
     }
     var placebid2offer = parseFloat(offset) + parseFloat(offerAmount)
     if(document.getElementById('multitrait-2').checked === true && Object.keys(asset_dict).includes(tokenId_array[i])){
-     placebid2offer = (asset_dict[tokenId_array[i]] - service_fee/10000) * current_floor
+     placebid2offer = (asset_dict[tokenId_array[i]][0] - service_fee/10000) * current_floor
+     if(placebid2offer < highestBid) {
+      if(highestBid < (asset_dict[tokenId_array[i]][1] - service_fee/10000) * current_floor){
+        placebid2offer = .001 + parseFloat(highestBid)
+      }
+     }
     }
     try{
       await seaport.createBuyOrder({
