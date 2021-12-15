@@ -1082,7 +1082,7 @@ async function placeBid(){
       tokenAddress: NFT_CONTRACT_ADDRESS,
       //schemaName: WyvernSchemaName.ERC1155
     }
-    if (COLLECTION_NAME === 'bears-deluxe' || COLLECTION_NAME === 'guttercatgang'){
+    if (COLLECTION_NAME === 'bears-deluxe' || COLLECTION_NAME === 'guttercatgang' || COLLECTION_NAME === 'clonex-mintvial'){
       asset = {
         tokenId: tokenId_array[i],
         tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -1261,7 +1261,7 @@ async function placeBid2(){
       tokenAddress: NFT_CONTRACT_ADDRESS,
       //schemaName: WyvernSchemaName.ERC1155
     }
-    if (COLLECTION_NAME === 'bears-deluxe' || COLLECTION_NAME === 'guttercatgang'){
+    if (COLLECTION_NAME === 'bears-deluxe' || COLLECTION_NAME === 'guttercatgang' || COLLECTION_NAME === 'clonex-mintvial'){
       asset = {
         tokenId: tokenId_array[i],
         tokenAddress: NFT_CONTRACT_ADDRESS,
