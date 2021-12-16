@@ -238,6 +238,8 @@ if(values.default.DEFAULT_EXPIRATION !== undefined){
   expirationHours = values.default.DEFAULT_EXPIRATION
 }
 if(values.default.DEFAULT_BIDS !== undefined){
+  bidMultiplier = values.default.DEFAULT_BIDS[0]
+  maxbidMultiplier = values.default.DEFAULT_BIDS[1]
   document.getElementById('bidMultiplier-2').value =values.default.DEFAULT_BIDS[0]
   document.getElementById('maxbidMultiplier-2').value =values.default.DEFAULT_BIDS[1]
 }
@@ -342,7 +344,7 @@ async function getCollection(collectionName){
     quickButton.disabled = true
     increaseBid.disabled = true
     increaseBid1.disabled = true
-      if(document.getElementById('bidMultiplier-2').value !== ''){
+  if(document.getElementById('bidMultiplier-2').value !== ''){
     offerAmount = current_floor*(bidMultiplier - service_fee/10000)
     document.getElementById('offerAmount-2').value = offerAmount
   }
@@ -723,9 +725,9 @@ async function run(){
               if(document.getElementById('multitrait-2').checked === true){
                 for(var trait in collection['assets'][asset]['traits']){
                   for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
-                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase() === p){
+                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
                       for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
-                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase() === t){
+                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(t)){
                           traitfound = true
                           tokenId_array.push(collection['assets'][asset]['tokenId'])
                           name_array.push(collection['assets'][asset]['name'])
@@ -864,9 +866,9 @@ async function run(){
               if(document.getElementById('multitrait-2').checked === true){
                 for(var trait in collection['assets'][asset]['traits']){
                   for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
-                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase() === p){
+                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
                       for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
-                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase() === t){
+                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(t)){
                           traitfound = true
                           tokenId_array.push(collection['assets'][asset]['tokenId'])
                           name_array.push(collection['assets'][asset]['name'])
