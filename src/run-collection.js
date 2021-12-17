@@ -974,6 +974,10 @@ function check_errors(msg){
       create_seaport()
     return 'Out of Infura requests.. swappinp keys.'
   } else if(msg.includes('has too many outstanding orders.') || msg.includes('Outstanding order to wallet balance')){
+      beep()
+      beep()
+      beep()
+
     return 'Too many outstanding orders.'
   } else if(msg.includes('Bid amount is not 5.0% higher than the previous bid')){
     return 'Bid amount is not 5.0% higher than the previous bid'
