@@ -1,5 +1,6 @@
 const values = {
 	DEFAULT_DELAY: 150,
+	//TITLE: '',
 	//DEFAULT_FRACTION: 'thirdeighth',
 	//DEFAULT_BIDS: [],
 	//DEFAULT_EXPIRATION: ,

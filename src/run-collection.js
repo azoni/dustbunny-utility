@@ -47,6 +47,12 @@ console.log('Collection loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
+if(values.default.TITLE !== undefined){
+  document.getElementById('title').innerHTML = values.default.TITLE
+}
+if(values.default.MULTI_TRAIT !== undefined){
+  document.getElementById('multitrait-2').checked = true
+}
 
 var provider_string = ''
 if(values.default.ALCHEMY_KEY !== undefined){
