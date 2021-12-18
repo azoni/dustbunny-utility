@@ -1119,7 +1119,7 @@ async function placeBid(){
       console.log('Success #' + name_array[i] + ': ' + placebidoffer)
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + placebidoffer.toFixed(5) + " on " + name_array[i]
-      if(maxOfferAmount !== 0){
+      if(maxOfferAmount !== 0 && topBid !== undefined){
         text1.style.color = 'black'
         text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ')' +' #' + name_array[i]
       }
@@ -1297,7 +1297,7 @@ async function placeBid2(){
       console.log('Success #' + name_array[i] + ': ' + placebid2offer)
       text.style.color = 'black'
       text.innerHTML = 'bidding: ' + placebid2offer.toFixed(5) + " on " + name_array[i]
-              if(maxOfferAmount !== 0){
+      if(maxOfferAmount !== 0 && topBid !== undefined){
         text1.style.color = 'black'
         text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ')' +' #' + name_array[i]
       }
