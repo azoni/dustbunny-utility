@@ -570,6 +570,7 @@ confirmButton.addEventListener('click', function(){
     if(values.default.AUTOSTART === 1){
       return 0
     }
+
     alert(offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration.")
   }
   
@@ -975,8 +976,6 @@ function check_errors(msg){
     return 'Out of Infura requests.. swappinp keys.'
   } else if(msg.includes('has too many outstanding orders.') || msg.includes('Outstanding order to wallet balance')){
       beep()
-      beep()
-      beep()
 
     return 'Too many outstanding orders.'
   } else if(msg.includes('Bid amount is not 5.0% higher than the previous bid')){
@@ -1159,7 +1158,6 @@ async function placeBid(){
   if(stop === 1 && stop2 === 1){
     pause()
     document.getElementById('body').style.background = "#E6FBFF"
-    beep()
     if(document.getElementById('repeat-2').checked){
       document.getElementById('body').style.background = '#90EE90'
       stop = 0
@@ -1339,7 +1337,6 @@ async function placeBid2(){
   if(stop === 1 && stop2 === 1){
     pause()
     document.getElementById('body').style.background = "#E6FBFF"
-    beep()
     if(document.getElementById('repeat-2').checked){
       document.getElementById('body').style.background = '#90EE90'
       stop2 = 0

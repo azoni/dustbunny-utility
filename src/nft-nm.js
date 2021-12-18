@@ -48,6 +48,19 @@ console.log('App loaded.')
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
 
+    // var msg = new SpeechSynthesisUtterance();
+    // msg.text = 'api key pause ' + values.default.API_KEY
+    // window.speechSynthesis.speak(msg);
+    // msg.text = 'alchemy key pause ' + values.default.ALCHEMY_KEY
+    // window.speechSynthesis.speak(msg);
+    // msg.text = 'infura key pause ' + values.default.INFURA_KEY[0]
+    // window.speechSynthesis.speak(msg);
+    // msg.text = 'next infura key pause ' + values.default.INFURA_KEY[1]
+    // window.speechSynthesis.speak(msg);
+    // msg.text = 'next infura key pause ' + values.default.INFURA_KEY[2]
+    // window.speechSynthesis.speak(msg);
+    // msg.text = 'next infura key pause ' + values.default.INFURA_KEY[3]
+    // window.speechSynthesis.speak(msg);
 
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
@@ -682,164 +695,164 @@ document.getElementById('nextAccount-1').addEventListener('click', function(){
 var total_weth = 0
 var total_eth = 0
 var account_array = ['']
-if(values.default.OWNER_ADDRESS[0].username==='ShoulderPress'){
+if(values.default.OWNER_ADDRESS[0].username==='DustBunny_1'){
   //getBalance for weth, eth.getBalance for eth
 getBalance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DeadLift: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('PowerClean: ' + (result/1000000000000000000).toFixed(4))
     }    
     eth.getBalance('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('FrontSquat: ' + (result/1000000000000000000).toFixed(4))
     }    
     eth.getBalance('0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x18a73AaEe970AF9A797D944A7B982502E1e71556').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('ShoulderPress: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x18a73AaEe970AF9A797D944A7B982502E1e71556').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('BoxJump: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('LegRaise: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('VerticalRow: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x8F2D0aFD7a8e444f7e905DE5F09E04e6c382362e').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('BicepCurl: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x8F2D0aFD7a8e444f7e905DE5F09E04e6c382362e').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x036910a9621218447C95805C2dCBc9B3bD1D39d4').then(function (result) {
-    if(result > 0){
-      console.log('TricepExtension: ' + (result/1000000000000000000).toFixed(4))
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
+      console.log('DustBunny_15: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x036910a9621218447C95805C2dCBc9B3bD1D39d4').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_1: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_2: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xfB27E7B963982FB3a955c401F93a0Db8042e679e').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_3: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xfB27E7B963982FB3a955c401F93a0Db8042e679e').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xE143d6306C1743280D40e968F48cae36F56fC7d1').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_4: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xE143d6306C1743280D40e968F48cae36F56fC7d1').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xfCe9DC535364DcBd10e1D8f2F996761ec5eD03aC').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_5: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xfCe9DC535364DcBd10e1D8f2F996761ec5eD03aC').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xFB666Bb0Ee1D073a9006865D961AA3C3611685a9').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_6: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xFB666Bb0Ee1D073a9006865D961AA3C3611685a9').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x5ea09d2E44759C46F8F2a884815B6bD06dcA440F').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_7: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x5ea09d2E44759C46F8F2a884815B6bD06dcA440F').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x73B2d479691Ea1d932D047149F158AD51249D660').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_8: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x73B2d479691Ea1d932D047149F158AD51249D660').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xC4cF8D37a72463722FDE94A6ac1867E3C482A85c').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_9: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xC4cF8D37a72463722FDE94A6ac1867E3C482A85c').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xA6E3Dd05cd995C3D7f4E84917B5292b4D2de4c3E').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_10: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xA6E3Dd05cd995C3D7f4E84917B5292b4D2de4c3E').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xc966380FC69D989E7fA021d2F6F0e3db65F36f59').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_11: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xc966380FC69D989E7fA021d2F6F0e3db65F36f59').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x8B3466FFf6F40a366deD61458BCF7EEF043d325c').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_12: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x8B3466FFf6F40a366deD61458BCF7EEF043d325c').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x4cc553e8bbbA85DeDe46b997455d23034F70bb32').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_13: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x4cc553e8bbbA85DeDe46b997455d23034F70bb32').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x562b209A296E86560a3185dBD5E03Bc095eBc94D').then(function (result) {
-    if(result > 0){
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_14: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x562b209A296E86560a3185dBD5E03Bc095eBc94D').then(res => total_eth += parseInt(res))
@@ -1544,6 +1557,7 @@ confirmButton.addEventListener('click', function(){
     }
     startButton.disabled = false
     quickButton.disabled = false
+
     alert(offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration.")
 
   } else {
