@@ -1,46 +1,118 @@
 const values = {
 	DEFAULT_DELAY: 150,
-	//TITLE: '',
 	//DEFAULT_FRACTION: 'thirdeighth',
 	//DEFAULT_BIDS: [],
 	//DEFAULT_EXPIRATION: ,
 	//DEFAULT_TRAIT: ,
 	INFURA_KEY: ['deb8c4096c784171b97a21f7a5b7ba98', '4f3eb54f7bf74889898db355ca586eb1', '7e5d8e2034a840b9b8e6093dca13aa4f', '17c3fb8ed16c4ebe890ca3d22ad6998a'],
-	ALCHEMY_KEY: 'KwOeJc6S2vvKtLXEpmo2-SFXOws3uZC3',
+	//ALCHEMY_KEY: 'KwOeJc6S2vvKtLXEpmo2-SFXOws3uZC3',
 	COLLECTION_TRAIT: {
 		'cool-cats-nft': {
 			'tier': {
-				'cool_1': [.7,.8],
-				'cool_2': [.7, .825],
-				'wild_1': [.8,.85],
-				'wild_2': [.8,.875],
-				'classy_1': [.85,.9],
-				'classy_2': [.9,.91],
-				// 'exotic_1': [1,1.1],
-				// 'exotic_2': [1.1,1.2],
+				// 'cool_1': [.7,.8],
+				// 'cool_2': [.7, .825],
+				'wild_1': [.9,.925],
+				'wild_2': [1,1.05],
+				'classy_1': [1.05 ,1.1],
+				'classy_2': [1.1, 1.2],
+				'exotic_1': [1.2,1.3],
+				'exotic_2': [1.5,1.6],
+			},
+			'face': {
+				'tvface': [1.5, 2],
+			},
+			'hat': {
+				'tvhead': [1.1, 1.2],
+				'unicorn': [.925, .93],
+				'Knight': [1.1, 1.2],
+				'prince': [1.05, 1.1],
+				'halo': [1.1, 1.2],
+				'horn': [1.1, 1.2],
+				'astro': [1, 1.1],
+				'admiral': [1.1, 1.2],
+				'tvhead': [1.1, 1.2],
+				'astro cheeks': [1.2, 1.3],
+				'tvhead': [1.1, 1.2],
+				'visor purple': [1.2, 1.3],
+				'costume gorilla': [1.1, 1.2],
+				'dutch': [1.1, 1.2],
+				'admiral pink': [1.2, 1.3],
+				'crown black': [1.2, 1.3],
+				'crown gold': [1.1, 1.2],
+				'afro rainbow unicorn': [1.4, 1.6],
+				'crown fire': [1.4, 1.6],
+				'costume dragon': [1.1, 1.2],
+				'costume frog': [1.75, 1.8],
+				'tvhead': [1.1, 1.2],
+				'astro fishbowl': [1.4, 1.75],
+			},
+			'shirt': {
+				'epaulette': [1.1, 1.2],
+				'costume hotdog': [1.05, 1.1],
+				'combat': [1.1, 1.15],
+				'costume frog': [1.1, 1.2],
+				'tiger': [1.2, 1.3],
+				'astro black': [1.1, 1.15],
+				'astro orange': [1.1, 1.15],
+				'mononoke': [1.05, 1.1],
+				'deepsea orange': [1.15, 1.2],
+				'costume gorilla': [1.2, 1.3],
 			},
 		},
 		'doodles-official': {
 			'face': {
 				'neutral note': [.8, .925],
-				'mad note': [.8, .95],
+				'mad note': [.85, .95],
+				'sad note': [.775, .95],
 				'skelton': [.8, 1],
-				'rainbow puke': [1.2, 2],
-				'cat': [2, 4],
+				'rainbow puke': [1.5, 2.1],
+				'puffer up': [2.5, 3.1],
+				'ape': [2.5, 3.1],
+				'shark': [2.5, 3],
+				'duck': [2.5, 3],
+				'skelly cig': [4, 5.1],
+				'alien': [4, 5.1],
+				'dino': [4, 5.1],
+				'cat': [5, 6.1],
+				'holographic visor': [5, 5.1],
+				'whale': [4.1, 5.2],
+			},
+			'body': {
+				'blazer': [.9, .95],
+				'leopard hoodie': [1.1, 1.2],
+				'rainbow striped sweater': [1, 1.1],
+				'spotted': [1, 1.1],
+				'holographic sweater': [1, 1.1],
 			},
 			'head': {
-				'balloon': [1.5, 2],
-				'devil': [1.1, 1.5],
+				'balloon': [2.25, 2.6],
+				'devil': [1.75, 2],
+				'pickle': [2, 2.1],
+				'flower': [2, 2.1],
+				'coffee': [2.75, 3.1],
+				'lit': [2, 2.1],
+				'rainbow': [2.5, 3.1],
+				'popsicle': [2.75, 3.1],
+				'icecream': [2.75, 3.1],
+
 			},
-			'background': {
-				'space': [.8,.925],
-				'sky': [.8,.925],
-				'fire': [.8,.925],
-				'holographic': [.8,.925],
-				'iridescent': [.8,.925],
-			},
+			// 'background': {
+			// 	'space': [.8,.925],
+			// 	'sky': [.8,.925],
+			// 	'fire': [.8,.925],
+			// 	'holographic': [.8,.925],
+			// 	'iridescent': [.8,.925],
+			// },
 			'hair': {
+				'sailor': [1.1, 1.2],
+				'poopie': [1, 1.1],
+				'crown': [1.1, 1.2],
+				'wizard': [1.1, 1.2],
+				'helmet': [.925, .95],
 				'holographic crown': [1.2, 2],
+			},
+			'piercing': {
+				'airpod': [.925, .95],
 			},
 			
 		},
@@ -48,35 +120,34 @@ const values = {
 			'accessory': {
 				'explorer': [1, 1.05],
 				'hoodie': [1.5, 2],
-				'skelton': [.8, 1],
-				'rainbow puke': [1.2, 2],
-				'cat': [2, 4],
 			},
 			'clothes': {
-				'hoodie': [1.1, 1.5],
+				'hoodie': [1.5, 1.6],
 			},
 			'background': {
-				'bloood': [.95, 1],
-				'ghost crash': [2, 3],
-				'matrix': [2,3],
+				'bloood': [1.2, 1.5],
+				'ghost crash': [4.5, 6],
+				'matrix': [4.5,6],
 			},
 			'body': {
 				'bones': [ 1.05, 1.1],
-				'toadenza': [2, 3],
-				'blood bones': [1.25,1.3],
+				'toadenza': [2.5, 3],
+				'blood bones': [1.5,1.6],
 			},
 			'eyes': {
-				'nounish': [1, 1.5],
+				'nounish': [1.1, 1.5],
 				'3d': [.85, .925],
 			},
 			'head': {
 				'wizard': [.925, 1.5],
 				'fez': [.9, .95],
+				'aqua shave': [ 1.05, 1.1],
+				'swept teal': [ 1.2, 1.3],
 
 			},
 			'custom': {
-				'1/1': [2, 3],
-				'licked': [2,4],
+				'1/1': [4, 5],
+				'licked': [3.5,4],
 				'murdered': [2,4],
 				'legendary': [3,5],
 			},
@@ -93,8 +164,8 @@ const values = {
 			address: '0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25'
 		}, 
 		{
-			username: '0xfB27E7B963982FB3a955c401F93a0Db8042e679e',
-			address: '0x13b451d77b87361d376ae211f640ed1a4491181d'
+			username: 'DustBunny_3',
+			address: '0xfb27e7b963982fb3a955c401f93a0db8042e679e'
 		}, 
 		{
 			username: 'DustBunny_4',
@@ -146,23 +217,31 @@ const values = {
 		},
 		{
 			username: 'DustBunny_16',
-			address: '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25'
+			address: '0x8F2D0aFD7a8e444f7e905DE5F09E04e6c382362e'
 		}, 
 		{
 			username: 'DustBunny_17',
-			address: '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25'
+			address: '0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c'
 		},
 		{
 			username: 'DustBunny_18',
-			address: '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25'
+			address: '0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb'
 		}, 
 		{
 			username: 'DustBunny_19',
-			address: '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25'
+			address: '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628'
 		},
 		{
 			username: 'DustBunny_20',
-			address: '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25'
+			address: '0x18a73AaEe970AF9A797D944A7B982502E1e71556'
+		}, 
+				{
+			username: 'DustBunny_21',
+			address: '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A'
+		}, 
+				{
+			username: 'DustBunny_22',
+			address: '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'
 		}, 
 
 	],

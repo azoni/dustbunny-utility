@@ -706,49 +706,49 @@ getBalance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25').then(function (result) 
 });
 getBalance('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
-      console.log('PowerClean: ' + (result/1000000000000000000).toFixed(4))
+      console.log('DustBunny_22: ' + (result/1000000000000000000).toFixed(4))
     }    
     eth.getBalance('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
-      console.log('FrontSquat: ' + (result/1000000000000000000).toFixed(4))
+      console.log('DustBunny_21: ' + (result/1000000000000000000).toFixed(4))
     }    
     eth.getBalance('0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x18a73AaEe970AF9A797D944A7B982502E1e71556').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
-      console.log('ShoulderPress: ' + (result/1000000000000000000).toFixed(4))
+      console.log('DustBunny_20: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x18a73AaEe970AF9A797D944A7B982502E1e71556').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
-      console.log('BoxJump: ' + (result/1000000000000000000).toFixed(4))
+      console.log('DustBunny_19: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
-      console.log('LegRaise: ' + (result/1000000000000000000).toFixed(4))
+      console.log('DustBunny_18: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
-      console.log('VerticalRow: ' + (result/1000000000000000000).toFixed(4))
+      console.log('DustBunny_17: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0x8F2D0aFD7a8e444f7e905DE5F09E04e6c382362e').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
-      console.log('BicepCurl: ' + (result/1000000000000000000).toFixed(4))
+      console.log('DustBunny_16: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x8F2D0aFD7a8e444f7e905DE5F09E04e6c382362e').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
@@ -774,11 +774,11 @@ getBalance('0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25').then(function (result) 
     eth.getBalance('0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
-getBalance('0xfB27E7B963982FB3a955c401F93a0Db8042e679e').then(function (result) {
+getBalance('0xfb27e7b963982fb3a955c401f93a0db8042e679e').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
       console.log('DustBunny_3: ' + (result/1000000000000000000).toFixed(4))
     }
-    eth.getBalance('0xfB27E7B963982FB3a955c401F93a0Db8042e679e').then(res => total_eth += parseInt(res))
+    eth.getBalance('0xfb27e7b963982fb3a955c401f93a0db8042e679e').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 getBalance('0xE143d6306C1743280D40e968F48cae36F56fC7d1').then(function (result) {

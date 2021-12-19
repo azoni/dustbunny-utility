@@ -489,26 +489,36 @@ quickButton.addEventListener('click', function(){
   // }
 })
 document.getElementById('smartStart-2').addEventListener('click', function(){
-  document.getElementById('body').style.background = '#90EE90'
-  reset()
-  start()
-  progressBar.value =  0
-  document.getElementById('nextCollection-2').disabled = true
-  quickButton.disabled = true
-  progressBar.hidden = false
-  increaseBid.disabled = false
-  increaseBid1.disabled = false
-  progressBar.max = assetCount
-  run()
+  test_bid()
 })
-var offersDict = {}
-if(values.default.AUTOSTART === 1){
-  window.onload = function(){
-  document.getElementById('confirmButton-2').click();
-  document.getElementById('quickStart-2').click()
-  }
-}
+async function test_bid(){
+    
+    var asset = {
+      tokenId: '1690',
+      tokenAddress: '0x1cb1a5e65610aeff2551a50f76a87a7d3fb649c6',
+      //schemaName: WyvernSchemaName.ERC1155
+    }
+  try{
+    text.innerHTML = 'Testing bid...'
+    providerEngine.start()
+    await seaport.createBuyOrder({
+      asset,
+      startAmount: .001,
+      accountAddress: OWNER_ADDRESS,
+      expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .01),
+    })
+    text.style.color = 'black'
+    text.innerHTML = 'Bid Successful'
 
+  } catch(ex){
+    console.log(ex)
+    console.log(ex.message)
+    text.style.color = 'red'
+    text.innerHTML = ex.message
+  }
+  providerEngine.stop()
+}
+var offersDict = {}
 confirmButton.addEventListener('click', function(){
   if (confirmCollection === 1) {
     var traitsDiv = document.getElementById('traitsDiv-2')
@@ -736,8 +746,7 @@ async function run(){
                       for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
                         if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(t)){
                           traitfound = true
-                          tokenId_array.push(collection['assets'][asset]['tokenId'])
-                          name_array.push(collection['assets'][asset]['name'])
+                          
                           if(Object.keys(asset_dict).includes(collection['assets'][asset]['tokenId'])){
                             if(asset_dict[collection['assets'][asset]['tokenId']][0] < values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t][0]){
                               asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
@@ -751,7 +760,11 @@ async function run(){
                     }
 
                   }
-                }
+                } 
+                  if (traitfound === true){
+                      tokenId_array.push(collection['assets'][asset]['tokenId'])
+                      name_array.push(collection['assets'][asset]['name'])
+                  }
                   if(traitfound === false && document.getElementById('traitsonly-2').checked === false){
                     tokenId_array.push(collection['assets'][asset]['tokenId'])
                     name_array.push(collection['assets'][asset]['name'])
@@ -877,8 +890,6 @@ async function run(){
                       for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
                         if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(t)){
                           traitfound = true
-                          tokenId_array.push(collection['assets'][asset]['tokenId'])
-                          name_array.push(collection['assets'][asset]['name'])
                           if(Object.keys(asset_dict).includes(collection['assets'][asset]['tokenId'])){
                             if(asset_dict[collection['assets'][asset]['tokenId']][0] < values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t][0]){
                               asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
@@ -893,6 +904,10 @@ async function run(){
                   }
                       
                 }
+                  if (traitfound === true){
+                      tokenId_array.push(collection['assets'][asset]['tokenId'])
+                      name_array.push(collection['assets'][asset]['name'])
+                  }
                   if(traitfound === false && document.getElementById('traitsonly-2').checked === false){
                     tokenId_array.push(collection['assets'][asset]['tokenId'])
                     name_array.push(collection['assets'][asset]['name'])
@@ -1000,6 +1015,7 @@ async function placeBid(){
   run_count = run_count + 1
   if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){// || midrun === true){
     assetCount *= 2
+    stop2 = 1
   }
   await new Promise(resolve => setTimeout(resolve, 2000))
   // if(maxOfferAmount !== 0 && values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601' ) {
