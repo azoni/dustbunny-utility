@@ -1,9 +1,11 @@
 const values = {
+	TITLE: 'Home',
 	DEFAULT_DELAY: 150,
 	//DEFAULT_FRACTION: 'thirdeighth',
 	//DEFAULT_BIDS: [],
 	//DEFAULT_EXPIRATION: ,
 	//DEFAULT_TRAIT: ,
+	//USE_DATA: 1,
 	INFURA_KEY: ['deb8c4096c784171b97a21f7a5b7ba98', '4f3eb54f7bf74889898db355ca586eb1', '7e5d8e2034a840b9b8e6093dca13aa4f', '17c3fb8ed16c4ebe890ca3d22ad6998a'],
 	//ALCHEMY_KEY: 'KwOeJc6S2vvKtLXEpmo2-SFXOws3uZC3',
 	COLLECTION_TRAIT: {
@@ -30,9 +32,7 @@ const values = {
 				'horn': [1.1, 1.2],
 				'astro': [1, 1.1],
 				'admiral': [1.1, 1.2],
-				'tvhead': [1.1, 1.2],
 				'astro cheeks': [1.2, 1.3],
-				'tvhead': [1.1, 1.2],
 				'visor purple': [1.2, 1.3],
 				'costume gorilla': [1.1, 1.2],
 				'dutch': [1.1, 1.2],
@@ -43,7 +43,6 @@ const values = {
 				'crown fire': [1.4, 1.6],
 				'costume dragon': [1.1, 1.2],
 				'costume frog': [1.75, 1.8],
-				'tvhead': [1.1, 1.2],
 				'astro fishbowl': [1.4, 1.75],
 			},
 			'shirt': {
@@ -152,7 +151,13 @@ const values = {
 				'legendary': [3,5],
 			},
 			
-		}
+		},
+		'cyberkongz': {
+			'type': {
+				'genesis': [1.5, 5],
+				'incubator': [1.05, 1.1],
+			},
+		},
 	},
 	OWNER_ADDRESS: [
 		{
@@ -245,34 +250,6 @@ const values = {
 		}, 
 
 	],
-	//API_KEY: '2f6f419a083c46de9d83ce3dbe7db601',
-	API_KEY: 'bb554633d8a54b8297e34565f64091fe',
-	API_KEY2: '',
-	//API_KEY2: 'bb554633d8a54b8297e34565f64091fe',
-	BLACK_LIST: ['ShoulderPress','OtterPop','nftd00d', 'DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'Sad002d', '801703', 'forbayc'],
-	FAVORITES: ['cool-cats-nft','doodles-official'],
-	favorites: {
-		'bears-deluxe': [6900],
-		'galacticapes': [9999],
-		'theshiboshis': [9999],
-		'kaiju-kingz': [3333],
-		'cyberkongz': [4052],
-		'treeverse': [10420],
-		'metahero-generative': [5754],
-		'cool-cats-nft': [9932],
-		'world-of-women-nft': [9999],
-		'cryptoadz-by-gremplin': [6969],
-		'supducks': [9999],
-		'spaceapes': [2000],
-		////
-		'creature-world-collection': [9999],
-
-		//Cheaper
-		'mutant-ape-yacht-club': [15671],
-		'bored-ape-kennel-club': [9999],	
-
-		//tropical-turtles
-	}
 }
 export default values
 

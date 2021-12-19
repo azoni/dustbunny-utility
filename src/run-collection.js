@@ -1,33 +1,5 @@
-  // DEFAULT_TRAIT: ['tier','cool_1'],
-  // DEFAULT_EXPIRATION: 1,
-  // DEFAULT_BIDS: [.8, .9],
-  // DEFAULT_DELAY: 150,
-  // COLLECTION_TRAIT: {
-  //   'cool-cats-nft': {
-  //     'tier': {
-  //       'cool_1': .875,
-  //       'cool_2': .9,
-  //       'wild_1': .95,
-  //       'wild_2': 1,
-  //       'classy_1': 1.1,
-  //       'classy_2': 1.15,
-  //       'exotic_1': 1.2,
-  //       'exotic_2': 1.25,
-  //     },
-  //   },
-  //   'doodles-official': {
-  //     'face': {
-  //       'neutral note': .975,
-  //       'mad note': 1.15,
-  //     },
-  //     'head': {
-  //       'balloon': 2,
-  //       'devil': 1.5,
-  //     }
-  //   }
-  // },
-  //'cf86c7bdf70f408da1d871913242202e'
 const values = require('./values.js')
+const data = require('./data.js')
 const secret = require('./secret.js')
 const opensea = require("opensea-js")
 const OpenSeaPort = opensea.OpenSeaPort;
@@ -230,7 +202,6 @@ function create_seaport(){
 // );
 var tokenId_array = []
 var name_array = []
-var asset_array = []
 var asset_dict = []
 
 var NFT_CONTRACT_ADDRESS = ''
@@ -388,69 +359,7 @@ collectionButton.addEventListener('click', function(){
 if(values.default.DEFAULT_FRACTION !== undefined){
   document.getElementById(values.default.DEFAULT_FRACTION).checked = true
 }
-// document.getElementById('api3').addEventListener('click', function(){
-//   currentHour = new Date().getHours()
-//   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-//   delay.value = 3000
-//   infuraRpcSubprovider = new RPCSubprovider({
-//     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-//   });
-//   providerEngine = new Web3ProviderEngine();
-//   providerEngine.addProvider(mnemonicWalletSubprovider);
-//   providerEngine.addProvider(infuraRpcSubprovider);
-//   providerEngine.start();
-//   seaport = new OpenSeaPort(
-//     providerEngine,
-//     {
-//       networkName: Network.Main,
-//       apiKey: '2f6f419a083c46de9d83ce3dbe7db601'
-//     },
-//     (arg) => console.log(arg)
-//   );
-//   console.log('swapping to public api key')
-// })
-// document.getElementById('api2').addEventListener('click', function(){
-//   currentHour = new Date().getHours()
-//   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-//   delay.value = 250
-//   infuraRpcSubprovider = new RPCSubprovider({
-//     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-//   });
-//   providerEngine = new Web3ProviderEngine();
-//   providerEngine.addProvider(mnemonicWalletSubprovider);
-//   providerEngine.addProvider(infuraRpcSubprovider);
-//   providerEngine.start();
-//   seaport = new OpenSeaPort(
-//     providerEngine,
-//     {
-//       networkName: Network.Main,
-//       apiKey: values.default.API_KEY2
-//     },
-//     (arg) => console.log(arg)
-//   );
-//   console.log('swapping to non-public api key')
-// })
-// document.getElementById('api1').addEventListener('click', function(){
-//   currentHour = new Date().getHours()
-//   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-//   delay.value = 250
-//   infuraRpcSubprovider = new RPCSubprovider({
-//     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-//   });
-//   providerEngine = new Web3ProviderEngine();
-//   providerEngine.addProvider(mnemonicWalletSubprovider);
-//   providerEngine.addProvider(infuraRpcSubprovider);
-//   providerEngine.start();
-//   seaport = new OpenSeaPort(
-//     providerEngine,
-//     {
-//       networkName: Network.Main,
-//       apiKey: values.default.API_KEY
-//     },
-//     (arg) => console.log(arg)
-//   );
-//   console.log('swapping to non-public api key')
-// })
+
 increaseBid.addEventListener('click', function(){
   offerAmount = .01 + parseFloat(offerAmount)
   document.getElementById('offerAmount-2').value = offerAmount
@@ -481,12 +390,6 @@ quickButton.addEventListener('click', function(){
   increaseBid1.disabled = false
   progressBar.max = assetCount
   run()
-  // if(tokenId_array.length !== 0){
-  //   placeBid()
-  //   placeBid2()
-  // } else {
-  //   run()
-  // }
 })
 document.getElementById('smartStart-2').addEventListener('click', function(){
   test_bid()
@@ -499,11 +402,12 @@ async function test_bid(){
       //schemaName: WyvernSchemaName.ERC1155
     }
   try{
+    text.style.color = 'black'
     text.innerHTML = 'Testing bid...'
     providerEngine.start()
     await seaport.createBuyOrder({
       asset,
-      startAmount: .001,
+      startAmount: .0001,
       accountAddress: OWNER_ADDRESS,
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .01),
     })
@@ -518,6 +422,7 @@ async function test_bid(){
   }
   providerEngine.stop()
 }
+
 var offersDict = {}
 confirmButton.addEventListener('click', function(){
   if (confirmCollection === 1) {
@@ -567,7 +472,13 @@ confirmButton.addEventListener('click', function(){
   quickButton.disabled = false
 
   if(document.getElementById('multitrait-2').checked === true){
+
     var trait_dict = values.default.COLLECTION_TRAIT
+    if (values.default.USE_DATA !== undefined){
+      trait_dict = data.default.COLLECTION_TRAIT
+      values.default.COLLECTION_TRAIT = data.default.COLLECTION_TRAIT
+      console.log(values.default.COLLECTION_TRAIT)
+    }
     console.log(COLLECTION_NAME)
     var output = offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration."
     output += '\n' + current_floor
@@ -595,10 +506,6 @@ confirmButton.addEventListener('click', function(){
     alert('Get valid collection first.')
   }
 })
-
-function test_run(){
-
-}
 
 async function getCollectionDetails(collectionName){
   try{
@@ -643,8 +550,6 @@ text1.style.fontSize = '20px'
 
 
 async function run(){
-  // document.getElementById('toprun').checked = true
-  // midrun = document.getElementById('midrun').checked 
   if(document.getElementById('delayStart-2').value !== ''){
     text.innerHTML = 'Starting in ' + document.getElementById('delayStart-2').value + ' minutes.'
     await new Promise(resolve => setTimeout(resolve, document.getElementById('delayStart-2').value * 60000));
@@ -740,7 +645,7 @@ async function run(){
             else {
               var traitfound = false
               if(document.getElementById('multitrait-2').checked === true){
-                for(var trait in collection['assets'][asset]['traits']){
+                for(trait in collection['assets'][asset]['traits']){
                   for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
                     if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
                       for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
@@ -776,16 +681,10 @@ async function run(){
                 //   name_array.push(collection['assets'][asset]['name'])
                 // }  
               } 
-
               else{
                 tokenId_array.push(collection['assets'][asset]['tokenId'])
                 name_array.push(collection['assets'][asset]['name'])
-              }
-              
-
-
-
-              
+              } 
             }
           }
         }
@@ -838,14 +737,14 @@ async function run(){
       }
       //await new Promise(resolve => setTimeout(resolve, 5000))
       try{
-        var collection = await seaport.api.getAssets({
+        collection = await seaport.api.getAssets({
           'collection': collectionName,
           'offset': offset,
           'limit': '50',
           'order_direction': direction
         })
         console.log(collection)
-        for(var asset in collection['assets']){
+        for(asset in collection['assets']){
           if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
             
             if(collection['assets'][asset]['sellOrders'] !== null){
@@ -864,7 +763,7 @@ async function run(){
             }
           } else {
             if(document.getElementById('addProperty-2').value !== ''){
-              for(var trait in collection['assets'][asset]['traits']){
+              for(trait in collection['assets'][asset]['traits']){
                 if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
                   if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
                     if(document.getElementById('sellOrder-2').checked){
@@ -882,12 +781,12 @@ async function run(){
               }
             } 
             else {
-              var traitfound = false
+              traitfound = false
               if(document.getElementById('multitrait-2').checked === true){
-                for(var trait in collection['assets'][asset]['traits']){
-                  for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
+                for(trait in collection['assets'][asset]['traits']){
+                  for(p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
                     if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
-                      for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
+                      for(t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
                         if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(t)){
                           traitfound = true
                           if(Object.keys(asset_dict).includes(collection['assets'][asset]['tokenId'])){
@@ -1137,7 +1036,7 @@ async function placeBid(){
       text.innerHTML = 'bidding: ' + placebidoffer.toFixed(5) + " on " + name_array[i]
       if(maxOfferAmount !== 0 && topBid !== undefined){
         text1.style.color = 'black'
-        text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ')' +' #' + name_array[i]
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ') #' + name_array[i]
       }
     } catch(ex){
       console.log(ex)
@@ -1315,7 +1214,7 @@ async function placeBid2(){
       text.innerHTML = 'bidding: ' + placebid2offer.toFixed(5) + " on " + name_array[i]
       if(maxOfferAmount !== 0 && topBid !== undefined){
         text1.style.color = 'black'
-        text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ')' +' #' + name_array[i]
+        text1.innerHTML = 'top bid: ' + topBid.toFixed(5) + '(' + highestBid.toFixed(5) + ') #' + name_array[i]
       }
       
     } catch(ex){
@@ -1370,65 +1269,10 @@ async function placeBid2(){
       placeBid()
       placeBid2()
     } 
-    // else {
-    //   document.getElementById('toprun').checked = false
-    // }
   }
   
 }
-// async function buy_order(){
-//   const collection_orders = []
-//   const wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5']
-  
-//   try{
-//     //0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea 0-flash
-//     //0x701c1a9d3fc47f7949178c99b141c86fac72a1c4 1-flash
-//     //0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5 flash
-//     let search_time = Math.floor(+new Date() / 1000) - 180
-//     search_time = new Date(search_time).toISOString();
-//     const order = await seaport.api.getOrders({
-//       side: 0,
-//       //order_by: 'created_date',
-//       maker: '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
-//       listed_after: search_time,
-//       limit: 50
-//     })
 
-//     var username = 'Null'
-//     console.log(order.length)
-//     for(var o in order['orders']){
-//           try{
-//           username = order['orders'][o].makerAccount.user.username
-//           console.log(username)
-
-//         } catch(ex){
-//           username = 'Null'
-//         }
-//       if (blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < maxOfferAmount && parseFloat(order['orders'][o].basePrice/1000000000000000000) > offerAmount){
-//         var asset = {
-//           tokenId: order['orders'][o]['asset']['tokenId'],
-//           tokenAddress: NFT_CONTRACT_ADDRESS,
-//           //schemaName: WyvernSchemaName.ERC1155
-//         }
-//         try{
-//           await seaport.createBuyOrder({
-//             asset,
-//             startAmount: parseFloat(parseFloat(order['orders'][o].basePrice/1000000000000000000) + .001),
-//             accountAddress: OWNER_ADDRESS,
-//             expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
-//           })
-//           console.log(order['orders'][o]['asset']['collection']['name'] + ' ' + order['orders'][o]['asset']['tokenId'] + ' ' + order['orders'][o].basePrice/1000000000000000000)
-//           console.log("upbidding flash-prpatel05 ")// + wallet_orders[wallet])
-//         } catch(ex){
-//           console.log(ex)
-//         }
-
-//       }
-//     }
-//   } catch(ex) {
-//     console.log('error with buy orders')
-//   }
-// }
 document.getElementById('reset-2').addEventListener('click', function(){ 
   reset()
   document.getElementById('assetCount').value = ''
@@ -1451,26 +1295,6 @@ document.getElementById('reset-2').addEventListener('click', function(){
   name_array = []
 })
 
-// async function testbundlebid() {
-//   for(var i in tokenId_array){
-//     var a = {
-//       tokenId:tokenId_array[i],
-//       tokenAddress: NFT_CONTRACT_ADDRESS,
-//     }
-//     asset_array.push(a)
-//   }
-//   try{
-//     await seaport.createBuyOrder({
-//       asset_array,
-//       startAmount: offerAmount,
-//       accountAddress: OWNER_ADDRESS,
-//       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
-//     })
-//     console.log('bids made?')
-//   } catch(ex){
-//     console.log(ex)
-//   }
-// }
 // Convert time to a format of hours, minutes, seconds, and milliseconds
 
 function timeToString(time) {

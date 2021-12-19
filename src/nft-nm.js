@@ -385,8 +385,8 @@ async function buy_order(){
           var flooroffer = floor_price * (event_multi - collect['collection']['dev_seller_fee_basis_points']/10000)
         } catch (ex) {
           console.log("couldn't get floor")
-          var floor_price = 0
-          var flooroffer = 0
+          floor_price = 0
+          flooroffer = 0
           continue
         } 
         if (Object.keys(wallet_set).includes(order['orders'][o]['asset']['collection']['slug']) && blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
@@ -470,8 +470,6 @@ async function buy_order(){
     }
     
   }
-  console.log(start_time)
-  console.log(end_time)
   var end_time = Math.floor(+new Date() / 1000)
   if (end_time - start_time < event_window/1000){
     await new Promise(resolve => setTimeout(resolve, (event_window/1000 - (end_time - start_time)) * 1000))
@@ -694,12 +692,11 @@ document.getElementById('nextAccount-1').addEventListener('click', function(){
 
 var total_weth = 0
 var total_eth = 0
-var account_array = ['']
 if(values.default.OWNER_ADDRESS[0].username==='DustBunny_1'){
   //getBalance for weth, eth.getBalance for eth
 getBalance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
-      console.log('DeadLift: ' + (result/1000000000000000000).toFixed(4))
+      console.log('DustBunny: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
@@ -1518,7 +1515,6 @@ var offersDict = {}
 //OFFER AMOUNT SHOULD ONLY CHANGE HERE EVER
 //OFFER AMOUNT SHOULD ONLY CHANGE HERE EVER
 //OFFER AMOUNT SHOULD ONLY CHANGE HERE EVER
-console.log(cool_cat_traits.default.traits)
 confirmButton.addEventListener('click', function(){
   if (confirmCollection === 1) {
       var traitsDiv = document.getElementById('traitsDiv')

@@ -514,20 +514,20 @@ async function run(){
     direction = 'asc'
   }
   var temp_offset = offset
-  for(var offset = 0; offset < assetCount/2; offset+=50){
+  for(offset = 0; offset < assetCount/2; offset+=50){
         if(halt === 1) {
       break
     }
     //await new Promise(resolve => setTimeout(resolve, 5000))
     try{
-      var collection = await seaport.api.getAssets({
+      collection = await seaport.api.getAssets({
         'collection': collectionName,
         'offset': offset,
         'limit': '50',
         'order_direction': direction
       })
       console.log(collection)
-      for(var asset in collection['assets']){
+      for(asset in collection['assets']){
         if(document.getElementById('sellOrder-1').checked && document.getElementById('addProperty-1').value === ''){
           
           if(collection['assets'][asset]['sellOrders'] !== null){
@@ -546,7 +546,7 @@ async function run(){
           }
         } else {
           if(document.getElementById('addProperty-1').value !== ''){
-            for(var trait in collection['assets'][asset]['traits']){
+            for(trait in collection['assets'][asset]['traits']){
               if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-1').value)){
                 if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-1').value)){
                   if(document.getElementById('sellOrder-1').checked){
@@ -932,21 +932,21 @@ async function placeBid2(){
   }
   
 }
-async function test_buy(){
-  try{
-    const order = await seaport.api.getOrders({
-      asset_contract_address: NFT_CONTRACT_ADDRESS,
-      token_ids: tokenId_array.slice(1,30),
-      side: 0,
-      order_by: 'eth_price',
-      order_direction: 'desc',
-      limit: 50
-    })
-    console.log(order)
-  } catch(ex){
-    console.log(ex)
-  }
-}
+// async function test_buy(){
+//   try{
+//     const order = await seaport.api.getOrders({
+//       asset_contract_address: NFT_CONTRACT_ADDRESS,
+//       token_ids: tokenId_array.slice(1,30),
+//       side: 0,
+//       order_by: 'eth_price',
+//       order_direction: 'desc',
+//       limit: 50
+//     })
+//     console.log(order)
+//   } catch(ex){
+//     console.log(ex)
+//   }
+// }
 
 // async function buy_order(){
 //   const collection_orders = []
