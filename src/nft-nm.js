@@ -369,8 +369,11 @@ async function buy_order(){
         var order_length = 0
       try{
       if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
-        await new Promise(resolve => setTimeout(resolve, 3000))
+        
         values.default.BID = 1
+        values.default.API_KEY = values.default.API_KEY2
+        create_seaport()
+        await new Promise(resolve => setTimeout(resolve, 3000))
       }
       
       const order = await seaport.api.getOrders({
@@ -421,7 +424,7 @@ async function buy_order(){
           flooroffer = 0
           continue
         } //Object.keys(wallet_set).includes(order['orders'][o]['asset']['collection']['slug']) && 
-        if (Object.keys(wallet_set).includes(order['orders'][o]['asset']['collection']['slug']) && parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
+        if (wallet_set.includes(order['orders'][o]['asset']['collection']['slug']) && parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
           //console.log('bid: ' + parseFloat(order['orders'][o].basePrice/1000000000000000000))
           //console.log('floor: ' + floor_price)
           var asset = {
@@ -455,6 +458,10 @@ async function buy_order(){
     offset += 50
     } while(order_length === 50)
   }
+  if(values.default.API_KEY === values.default.API_KEY2 ){
+    values.default.API_KEY = '2f6f419a083c46de9d83ce3dbe7db601'
+  }
+  
   create_seaport()
   values.default.EVENT = 0
   console.log(order_array.length)

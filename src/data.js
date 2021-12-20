@@ -29,6 +29,7 @@ const values = {
 				'Knight': [1.1, 1.2],
 				'prince': [1.05, 1.1],
 				'halo': [1.1, 1.2],
+				'halo fire': [1.05, 1.2],
 				'horn': [1.1, 1.2],
 				'astro': [1, 1.1],
 				'admiral': [1.1, 1.2],
@@ -63,16 +64,16 @@ const values = {
 				'neutral note': [.8, .925],
 				'mad note': [.85, .95],
 				'sad note': [.775, .95],
-				'skelton': [.8, 1],
+				'skelton': [.95, 1],
 				'rainbow puke': [1.5, 2.1],
 				'puffer up': [2.5, 3.1],
 				'ape': [2.5, 3.1],
 				'shark': [2.5, 3],
 				'duck': [2.5, 3],
 				'skelly cig': [4, 5.1],
-				'alien': [4, 5.1],
-				'dino': [4, 5.1],
-				'cat': [5, 6.1],
+				'alien': [3.5, 5.1],
+				'dino': [3.5, 5.1],
+				'cat': [4, 6.1],
 				'holographic visor': [5, 5.1],
 				'whale': [4.1, 5.2],
 			},
@@ -140,7 +141,7 @@ const values = {
 			'head': {
 				'wizard': [.925, 1.5],
 				'fez': [.9, .95],
-				'aqua shave': [ 1.05, 1.1],
+				'aqua shave': [ .91, 1.1],
 				'swept teal': [ 1.2, 1.3],
 
 			},
@@ -263,13 +264,8 @@ const values = {
 }
 export default values
 
-//dustbunny123@protonmail.com
-//1bac20c89d97488491bad84f22d7a15b
-///charlonuw
-//9e30b32ca14a408c99ae890ac2c8e8dc
-//dustbunny124@protonmail.com
-//55b37dd4e48b49cb8c5f9e90445088a1
-//dustuw
-//231011f146004bd1927eaf77c8b69aac
-
-//"0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5"
+//9e72715b3e504813ac3ebc0512d473bf
+//3e994eb084474893abe7842014dbd66c
+//01f5e748ef324524a49ea0bfaecbc3e8
+//183e20b9d8f24da3a3bfdc9bcc384ec3
+//4b7d65a561134155970501edaa04b5d2
