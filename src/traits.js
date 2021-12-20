@@ -13,7 +13,6 @@
 // 	return collect
 // }
 // export default traits
-console.log('Traits loaded')
 var traits = 0
 document.getElementById('addTrait').addEventListener('click', function(){
 	var traitDiv = document.getElementById('traitsDiv')

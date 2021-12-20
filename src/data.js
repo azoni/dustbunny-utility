@@ -159,6 +159,13 @@ const values = {
 			},
 		},
 	},
+	WALLET_SETS: {
+
+	},
+	COMP_WALLETS: ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', 
+	'0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', 
+	'0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', '0xadee30341a9e98ed145ccb02b00da15e74e305b5', 
+	'0x483b71d5b5661c2340273dc1219c4f94dacf5cc8', '0x15cba6d3b98d220bc1ecda89afdf07dd0bf06c5d'],
 	OWNER_ADDRESS: [
 		{
 			username: 'DustBunny_1',
@@ -248,7 +255,10 @@ const values = {
 			username: 'DustBunny_22',
 			address: '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'
 		}, 
-
+		{
+			username: 'DustBunny_23',
+			address: '0x67707b8E56b843099d5eF656Bc840D46d1c0e6d4'
+		}, 
 	],
 }
 export default values

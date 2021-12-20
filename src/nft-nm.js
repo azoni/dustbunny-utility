@@ -1,4 +1,5 @@
 const values = require('./values.js')
+const data = require('./data.js')
 const secret = require('./secret.js')
 require('./traits.js')
 const cool_cat_traits = require('./coolcats.js')
@@ -6,6 +7,7 @@ var utils = require('./utils.js')
 require('./run-collection.js')
 require('./run-collection-mid.js')
 const opensea = require("opensea-js");
+const { WyvernSchemaName } = require('opensea-js/lib/types')
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const MnemonicWalletSubprovider = require("@0x/subproviders")
@@ -43,7 +45,6 @@ document.getElementById('myAccountbottom').innerHTML = values.default.OWNER_ADDR
 // Provider
 var stop = 0
 var stop2 = 0
-console.log('App loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
@@ -104,7 +105,7 @@ var seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: values.default.API_KEY2
+    apiKey: values.default.API_KEY
   },
   (arg) => console.log(arg)
 );
@@ -120,7 +121,7 @@ function create_seaport(){
   }else if(values.default.INFURA_KEY.length === 5){
   INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
 }
-  console.log('creating seaport ' + INFURA_KEY)
+  console.log('creating seaport ' + values.default.API_KEY)
   infuraRpcSubprovider = new RPCSubprovider({
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
   });
@@ -132,11 +133,42 @@ function create_seaport(){
     providerEngine,
     {
       networkName: Network.Main,
-      apiKey: values.default.API_KEY2
+      apiKey: values.default.API_KEY
     },
     (arg) => console.log(arg)
   );
 }
+if(values.default.TITLE === 'Home'){
+  current_running()
+}
+
+async function current_running(){
+  let search_time = Math.floor(+new Date()) - 180
+  search_time = new Date(search_time).toISOString();
+  await new Promise(resolve => setTimeout(resolve, 3000))
+  console.log('Current running accounts...')
+  for(var address in values.default.OWNER_ADDRESS){
+    await new Promise(resolve => setTimeout(resolve, 1000))
+   //console.log(address) 
+    try{
+      const order = await seaport.api.getOrders({
+        side: 0,
+        order_by: 'created_date',
+        maker: values.default.OWNER_ADDRESS[address].address,
+        listed_after: search_time,
+        limit: 1,
+      })
+      if(order.orders.length > 0){
+        console.log(values.default.OWNER_ADDRESS[address].username + ' ' + order.orders[0].asset.collection.slug)
+      }
+    }
+    catch(ex) {
+      console.log(ex.message)
+    }
+  }
+  console.log('Complete') 
+}
+
 var eventDict = {}
 var blacklist = values.default.BLACK_LIST
 ////////UPBIDBOT
@@ -211,7 +243,7 @@ document.getElementById('infurakey').addEventListener('click', function(){
     providerEngine,
     {
       networkName: Network.Main,
-      apiKey: values.default.API_KEY2
+      apiKey: values.default.API_KEY
     },
     (arg) => console.log(arg)
   );
@@ -281,7 +313,7 @@ var eventbidcount = 0
 var event_window = 0
 var expiration = 1
 var wallet_set = values.default.WALLET_SETS
-var wallet_orders = ['0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5', '0xfdb32c8ddda21172a031d928056e19725a0836c5', '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', '0xadee30341a9e98ed145ccb02b00da15e74e305b5', '0x483b71d5b5661c2340273dc1219c4f94dacf5cc8', '0x15cba6d3b98d220bc1ecda89afdf07dd0bf06c5d']
+var wallet_orders = data.default.COMP_WALLETS
 async function buy_order(){
   if(document.getElementById('event_window').value === ''){
     event_window = 180000
@@ -303,10 +335,10 @@ async function buy_order(){
   }
   reset()
   start()
-        text.style.fontSize = '20px'
+    text.style.fontSize = '20px'
     text.innerHTML = 'Starting.....'
     offersMade.style.fontSize = '20px'
-        text1.style.fontSize = '20px'
+    text1.style.fontSize = '20px'
     //0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea 0-flash
     //0x701c1a9d3fc47f7949178c99b141c86fac72a1c4 1-flash
     //0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5 flash
@@ -336,21 +368,21 @@ async function buy_order(){
         
         var order_length = 0
       try{
-      if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
+      if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
         await new Promise(resolve => setTimeout(resolve, 3000))
+        values.default.BID = 1
       }
       
       const order = await seaport.api.getOrders({
-      side: 0,
-      order_by: 'created_date',
-      maker: wallet_orders[wallet],
-      listed_after: search_time,
-      listed_before: search_time2,
-      limit: 50,
-      offset: offset
+        side: 0,
+        order_by: 'created_date',
+        maker: wallet_orders[wallet],
+        listed_after: search_time,
+        listed_before: search_time2,
+        limit: 50,
+        offset: offset
       })
       
-
       text.innerHTML = 'Getting wallet: ' + (parseInt(wallet) + 1) + '(' + wallet_orders.length + ') ' + wallet_orders[wallet]
       text1.innerHTML = counter + ' bids made'
       var username = 'Null'
@@ -388,14 +420,21 @@ async function buy_order(){
           floor_price = 0
           flooroffer = 0
           continue
-        } 
-        if (Object.keys(wallet_set).includes(order['orders'][o]['asset']['collection']['slug']) && blacklist.includes(username) !== true && parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
+        } //Object.keys(wallet_set).includes(order['orders'][o]['asset']['collection']['slug']) && 
+        if (Object.keys(wallet_set).includes(order['orders'][o]['asset']['collection']['slug']) && parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
           //console.log('bid: ' + parseFloat(order['orders'][o].basePrice/1000000000000000000))
           //console.log('floor: ' + floor_price)
           var asset = {
             tokenId: order['orders'][o]['asset']['tokenId'],
             tokenAddress: order['orders'][o]['asset']['tokenAddress'],
             //schemaName: WyvernSchemaName.ERC1155
+          }
+          if (order['orders'][o]['asset']['collection']['slug'] === 'bears-deluxe' || order['orders'][o]['asset']['collection']['slug'] === 'guttercatgang' || order['orders'][o]['asset']['collection']['slug'] === 'clonex-mintvial'){
+            asset = {
+              tokenId: order['orders'][o]['asset']['tokenId'],
+              tokenAddress: order['orders'][o]['asset']['tokenAddress'],
+              schemaName: WyvernSchemaName.ERC1155
+            }      
           }
           var order_dict = {}
           order_dict['collection'] = order['orders'][o]['asset']['collection']['slug']
@@ -416,22 +455,29 @@ async function buy_order(){
     offset += 50
     } while(order_length === 50)
   }
+  create_seaport()
   values.default.EVENT = 0
   console.log(order_array.length)
-  buy_order_bid(order_array, username)
-  for(var i = 0; i < order_array.length/2; i++){
+  var order_array_length = order_array.length
+  if(values.default.API_KEY !== '2f6f419a083c46de9d83ce3dbe7db601'){
+    order_array_length = order_array_length/2
+    buy_order_bid(order_array, username)
+  } 
+  for(var i = 0; i < order_array_length; i++){
     if(event_stop === 1){
       break
     }
-    console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
-    if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
-      await new Promise(resolve => setTimeout(resolve, 3000))
-    }
+    console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)) 
+
     try{
+      if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
+        await new Promise(resolve => setTimeout(resolve, delay.value))
+        
+      } 
       await seaport.createBuyOrder({
         asset: order_array[i].asset,
         startAmount: order_array[i].bid,
-        accountAddress: values.default.OWNER_ADDRESS[0].address,
+        accountAddress: values.default.EVENT_WALLET,
         expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
       })
       text.innerHTML = order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)
@@ -444,10 +490,12 @@ async function buy_order(){
     }
 
     catch(ex){
+      console.log(ex)
       console.log(ex.message)
+      await new Promise(resolve => setTimeout(resolve, 30000))
     }
 
-  }
+  } 
   while(values.default.BID !== 1){
     await new Promise(resolve => setTimeout(resolve, 3000))
     text.innerHTML = 'Waiting...'
@@ -486,14 +534,12 @@ async function buy_order_bid(order_array, username){
         break
       }
       console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
-      if(values.default.API_KEY2 === ' 2f6f419a083c46de9d83ce3dbe7db601'){
-        await new Promise(resolve => setTimeout(resolve, 3000))
-      }
+      //await new Promise(resolve => setTimeout(resolve, delay.value))
       try{
         await seaport.createBuyOrder({
           asset: order_array[i].asset,
           startAmount: order_array[i].bid,
-          accountAddress: values.default.OWNER_ADDRESS[0].address,
+          accountAddress: values.default.EVENT_WALLET,
           expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
         })
         text.innerHTML = order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)
@@ -506,7 +552,9 @@ async function buy_order_bid(order_array, username){
       }
 
       catch(ex){
+        console.log(ex)
         console.log(ex.message)
+        await new Promise(resolve => setTimeout(resolve, 30000))
       }
     }
     values.default.BID = 1
@@ -662,7 +710,6 @@ getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
 });
 var accountIndex = 0
 document.getElementById('nextAccount-2').addEventListener('click', function(){
-  console.log('nft-nm')
   accountIndex += 1
   if(accountIndex === values.default.OWNER_ADDRESS.length){
     accountIndex = 0
@@ -692,7 +739,8 @@ document.getElementById('nextAccount-1').addEventListener('click', function(){
 
 var total_weth = 0
 var total_eth = 0
-if(values.default.OWNER_ADDRESS[0].username==='DustBunny_1'){
+if(values.default.TITLE ==='Home'){
+  console.log('Account balances (WETH)...')
   //getBalance for weth, eth.getBalance for eth
 getBalance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25').then(function (result) {
     if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
@@ -855,6 +903,13 @@ getBalance('0x562b209A296E86560a3185dBD5E03Bc095eBc94D').then(function (result) 
     eth.getBalance('0x562b209A296E86560a3185dBD5E03Bc095eBc94D').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
+getBalance('0x67707b8E56b843099d5eF656Bc840D46d1c0e6d4').then(function (result) {
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
+      console.log('DustBunny_23: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x67707b8E56b843099d5eF656Bc840D46d1c0e6d4').then(res => total_eth += parseInt(res))
+    total_weth += parseInt(result)
+});
 //
 // Flags for threads, total offers attempted.
 //
@@ -886,7 +941,7 @@ var confirmCollection = 0
 var progressBar = document.getElementById('progressBar')
 
 var delay = document.getElementById('delay')
-delay.value = 250
+
 try{
   delay.value = values.default.DEFAULT_DELAY
 } catch(ex){

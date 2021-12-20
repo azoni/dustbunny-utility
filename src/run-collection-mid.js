@@ -14,7 +14,6 @@ const MNEMONIC = secret.default.MNEMONIC
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
 });
-console.log('Collection loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //

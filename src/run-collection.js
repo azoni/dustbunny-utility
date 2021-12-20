@@ -6,6 +6,7 @@ const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
+values.default.EVENT_WALLET = OWNER_ADDRESS
 // Provider
 const MnemonicWalletSubprovider = require("@0x/subproviders")
 .MnemonicWalletSubprovider;
@@ -15,7 +16,6 @@ const MNEMONIC = secret.default.MNEMONIC
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
 });
-console.log('Collection loaded.')
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
@@ -101,9 +101,8 @@ document.getElementById('infurakey').addEventListener('click', function(){
     infura_index = 0
   }
 })
-document.getElementById('increaseBid1multi-2').addEventListener('click', function(){
-  
 
+document.getElementById('increaseBid1multi-2').addEventListener('click', function(){
   if(document.getElementById('bidMultiplier-2').value !== ''){
     bidMultiplier = .005 + parseFloat(bidMultiplier)
     document.getElementById('bidMultiplier-2').value = bidMultiplier
@@ -118,8 +117,6 @@ document.getElementById('increaseBid1multi-2').addEventListener('click', functio
   }
 })
 document.getElementById('decreaseBidmulti-2').addEventListener('click', function(){
-  
-  
   if(document.getElementById('bidMultiplier-2').value !== ''){
     bidMultiplier = parseFloat(bidMultiplier) - .005
     document.getElementById('bidMultiplier-2').value = bidMultiplier
@@ -162,6 +159,7 @@ document.getElementById('aggressivemulti-2').addEventListener('click', function(
   }
 })
 
+
 function create_seaport(){
   providerEngine.stop();
   currentHour = new Date().getHours()
@@ -192,14 +190,7 @@ function create_seaport(){
     (arg) => console.log(arg)
   );
 }
-// const seaport2 = new OpenSeaPort(
-//   providerEngine,
-//   {
-//     networkName: Network.Main,
-//     apiKey: '1a0882610c8d48bd8751b67cc7991f21'
-//   },
-//   (arg) => console.log(arg)
-// );
+
 var tokenId_array = []
 var name_array = []
 var asset_dict = []
@@ -260,6 +251,7 @@ document.getElementById('nextAccount-2').addEventListener('click', function(){
     accountIndex = 0
   }
   OWNER_ADDRESS = values.default.OWNER_ADDRESS[accountIndex].address
+  values.default.EVENT_WALLET = OWNER_ADDRESS
 })
 var fav_index = 0
 getCollection(values.default.FAVORITES[fav_index])
@@ -275,7 +267,6 @@ document.getElementById('nextCollection-2').addEventListener('click', function()
 async function getCollection(collectionName){
   progressBar.value = 0
   collectionName = collectionName.trim()
-  console.log(collectionName)
   var collect = getCollectionDetails(collectionName)
   collect.then(function(collect){
     try { 
@@ -289,7 +280,6 @@ async function getCollection(collectionName){
       } else {
         NFT_CONTRACT_ADDRESS = collect['collection']['primary_asset_contracts'][0]['address']
       }
-      console.log(collect)
       assetCount = collect['collection']['stats']['count']
       //window.open('https://opensea.io/collection/' + COLLECTION_NAME,'name','width=this.width,height=this.height')
       document.getElementById('collectionName-2').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price'].toFixed(3)
@@ -395,12 +385,11 @@ document.getElementById('smartStart-2').addEventListener('click', function(){
   test_bid()
 })
 async function test_bid(){
-    
-    var asset = {
-      tokenId: '1690',
-      tokenAddress: '0x1cb1a5e65610aeff2551a50f76a87a7d3fb649c6',
-      //schemaName: WyvernSchemaName.ERC1155
-    }
+  var asset = {
+    tokenId: '1690',
+    tokenAddress: '0x1cb1a5e65610aeff2551a50f76a87a7d3fb649c6',
+    //schemaName: WyvernSchemaName.ERC1155
+  }
   try{
     text.style.color = 'black'
     text.innerHTML = 'Testing bid...'
@@ -548,7 +537,10 @@ text.style.fontSize = '20px'
 text1.style.fontSize = '20px'
 // var midrun = false
 
-
+///////////////////////////////////////////////////////////////////////////////////
+///********************************************************************************
+///This function is responsible for generating the assets to be bid on. 
+///Ex. multi trait bidding, fractional runs on set.
 async function run(){
   if(document.getElementById('delayStart-2').value !== ''){
     text.innerHTML = 'Starting in ' + document.getElementById('delayStart-2').value + ' minutes.'
@@ -675,7 +667,6 @@ async function run(){
                     name_array.push(collection['assets'][asset]['name'])
                   }
                   traitfound = false
-                
                 // if(document.getElementById('traitsonly-2') === false){
                 //   tokenId_array.push(collection['assets'][asset]['tokenId'])
                 //   name_array.push(collection['assets'][asset]['name'])
@@ -724,8 +715,11 @@ async function run(){
       offset += Math.floor(assetCount/8)
       //assetCount = Math.floor(assetCount/2) + Math.floor(assetCount/4) + Math.floor(assetCount/4)
     }
+
+///////////////////////////////////////////////////////////////////////////////////
+///********************************************************************************
+///Run through second half of collection in decending order
   if(document.getElementById('firsthalf').checked === false){
-    
     for(offset; offset < assetCount/2; offset+=50){
       if(document.getElementById('firstquarter').checked === true || document.getElementById('secondquarter').checked === true
         || document.getElementById('firsteighth').checked === true || document.getElementById('secondeighth').checked === true
@@ -869,7 +863,6 @@ async function run(){
   
   }
 }
-
 function check_errors(msg){
   if(msg.includes('Insufficient balance.')){
     beep()
@@ -910,7 +903,6 @@ async function placeBid(){
   if(values.default.ALCHEMY_KEY === undefined){
     create_seaport()
   }
-  //create_seaport()
   run_count = run_count + 1
   if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){// || midrun === true){
     assetCount *= 2
@@ -925,11 +917,6 @@ async function placeBid(){
     var offset = 0
     if(maxOfferAmount !== 0){
       var username = 'No-User'
-      // while(values.default.EVENT === 1){
-      //   text.innerHTML = 'please wait'
-      //   text1.innerHTML = ''
-      //   await new Promise(resolve => setTimeout(resolve, 5000))
-      // }
       try{
         while(values.default.EVENT === 1){
           await new Promise(resolve => setTimeout(resolve, 10000))
@@ -966,7 +953,6 @@ async function placeBid(){
               }
             }
           }
-
           if(parseFloat(topBid) > parseFloat(maxOfferAmount)){
             for(var t in order['orders']){
               if(parseFloat(order['orders'][t].basePrice / 1000000000000000000) < parseFloat(maxOfferAmount)){
@@ -985,17 +971,14 @@ async function placeBid(){
               }
             }
           }
-
           if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
             offset = .001 + parseFloat(topBid - offerAmount)
           } 
-
           console.log('top bid: ' + topBid + ' #' + name_array[i])
         } else {
           console.log('No bids found.')
           text1.innerHTML = 'No bids found.'
         }
-        
       }
       catch(ex){
         console.log(ex.message)
@@ -1090,9 +1073,6 @@ async function placeBid(){
       placeBid()
       placeBid2()
     } 
-    // else {
-    //   document.getElementById('toprun').checked = false
-    // }
   }
 }
 async function placeBid2(){
@@ -1105,11 +1085,6 @@ async function placeBid2(){
     var offset = 0
     if(maxOfferAmount !== 0){
       var username = 'No-User'
-      // while(values.default.EVENT === 1){
-      //   text.innerHTML = 'please wait'
-      //   text1.innerHTML = ''
-      //   await new Promise(resolve => setTimeout(resolve, 5000))
-      // }
       try{
         while(values.default.EVENT === 1){
           await new Promise(resolve => setTimeout(resolve, 10000))
@@ -1164,11 +1139,9 @@ async function placeBid2(){
               }
             }
           }
-
           if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
             offset = .001 + parseFloat(topBid - offerAmount)
           }
-
           console.log('top bid: ' + topBid + ' #' + name_array[i])
         } else {
           console.log('No bids found.')
@@ -1270,9 +1243,10 @@ async function placeBid2(){
       placeBid2()
     } 
   }
-  
 }
-
+///////////////////////////////////////////////////////////////////////////////////
+///********************************************************************************
+///Doesn't work. 
 document.getElementById('reset-2').addEventListener('click', function(){ 
   reset()
   document.getElementById('assetCount').value = ''
@@ -1296,7 +1270,6 @@ document.getElementById('reset-2').addEventListener('click', function(){
 })
 
 // Convert time to a format of hours, minutes, seconds, and milliseconds
-
 function timeToString(time) {
   let diffInHrs = time / 3600000;
   let hh = Math.floor(diffInHrs);
@@ -1317,19 +1290,15 @@ function timeToString(time) {
 
   return `${formattedHH}:${formattedMM}:${formattedSS}:${formattedMS}`;
 }
-
 // Declare variables to use in our functions below
-
 let startTime;
 let elapsedTime = 0;
 let timerInterval;
 
 // Create function to modify innerHTML
-
 function print(txt) {
   document.getElementById("display-2").innerHTML = txt;
 }
-
 // Create "start", "pause" and "reset" functions
 function start() {
   startTime = Date.now() - elapsedTime;
