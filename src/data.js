@@ -30,7 +30,7 @@ const values = {
 				'prince': [1.05, 1.1],
 				'halo': [1.1, 1.2],
 				'halo fire': [1.05, 1.2],
-				'horn': [1.1, 1.2],
+				//'horn': [1.1, 1.2],
 				'astro': [1, 1.1],
 				'admiral': [1.1, 1.2],
 				'astro cheeks': [1.2, 1.3],
