@@ -477,10 +477,10 @@ async function buy_order(){
     console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)) 
 
     try{
-      if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
-        await new Promise(resolve => setTimeout(resolve, delay.value))
-        
-      } 
+
+      await new Promise(resolve => setTimeout(resolve, delay.value))
+
+
       await seaport.createBuyOrder({
         asset: order_array[i].asset,
         startAmount: order_array[i].bid,
@@ -541,7 +541,7 @@ async function buy_order_bid(order_array, username){
         break
       }
       console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
-      //await new Promise(resolve => setTimeout(resolve, delay.value))
+      await new Promise(resolve => setTimeout(resolve, delay.value))
       try{
         await seaport.createBuyOrder({
           asset: order_array[i].asset,
