@@ -424,7 +424,7 @@ async function buy_order(){
           flooroffer = 0
           continue
         } //Object.keys(wallet_set).includes(order['orders'][o]['asset']['collection']['slug']) && 
-        if (wallet_set.includes(order['orders'][o]['asset']['collection']['slug']) && parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
+        if (parseFloat(order['orders'][o].basePrice/1000000000000000000) < flooroffer){
           //console.log('bid: ' + parseFloat(order['orders'][o].basePrice/1000000000000000000))
           //console.log('floor: ' + floor_price)
           var asset = {
