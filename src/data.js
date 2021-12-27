@@ -30,7 +30,7 @@ const values = {
 				'prince': [1.05, 1.1],
 				'halo': [1.1, 1.2],
 				'halo fire': [1.05, 1.2],
-				//'horn': [1.1, 1.2],
+				'horns': [1.1, 1.2],
 				'astro': [1, 1.1],
 				'admiral': [1.1, 1.2],
 				'astro cheeks': [1.2, 1.3],
@@ -96,13 +96,13 @@ const values = {
 				'icecream': [2.75, 3.1],
 
 			},
-			// 'background': {
-			// 	'space': [.8,.925],
-			// 	'sky': [.8,.925],
-			// 	'fire': [.8,.925],
-			// 	'holographic': [.8,.925],
-			// 	'iridescent': [.8,.925],
-			// },
+			'background': {
+				'space': [.9,.925],
+				'sky': [.9,.925],
+				'fire': [.9,.925],
+				// 'holographic': [.8,.925],
+				// 'iridescent': [.8,.925],
+			},
 			'hair': {
 				'sailor': [1.1, 1.2],
 				'poopie': [1, 1.1],

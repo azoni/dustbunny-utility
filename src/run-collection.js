@@ -636,7 +636,7 @@ async function run(){
             } 
             else {
               var traitfound = false
-              if(document.getElementById('multitrait-2').checked === true){
+              if(document.getElementById('multitrait-2').checked === true || document.getElementById('traitskip-2').checked === true){
                 for(trait in collection['assets'][asset]['traits']){
                   for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
                     if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
@@ -658,7 +658,7 @@ async function run(){
 
                   }
                 } 
-                  if (traitfound === true){
+                  if (traitfound === true && document.getElementById('traitskip-2').checked === false){
                       tokenId_array.push(collection['assets'][asset]['tokenId'])
                       name_array.push(collection['assets'][asset]['name'])
                   }
@@ -776,7 +776,7 @@ async function run(){
             } 
             else {
               traitfound = false
-              if(document.getElementById('multitrait-2').checked === true){
+              if(document.getElementById('multitrait-2').checked === true || document.getElementById('traitskip-2').checked === true){
                 for(trait in collection['assets'][asset]['traits']){
                   for(p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
                     if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
@@ -793,11 +793,9 @@ async function run(){
                         }
                       }
                     }
-
-                  }
-                      
+                  }   
                 }
-                  if (traitfound === true){
+                  if (traitfound === true && document.getElementById('traitskip-2').checked === false){
                       tokenId_array.push(collection['assets'][asset]['tokenId'])
                       name_array.push(collection['assets'][asset]['name'])
                   }
@@ -807,7 +805,6 @@ async function run(){
                   }
                   traitfound = false
               } 
-
               else{
                 tokenId_array.push(collection['assets'][asset]['tokenId'])
                 name_array.push(collection['assets'][asset]['name'])
@@ -1008,6 +1005,27 @@ async function placeBid(){
      }
     }
     try{
+      if(parseFloat(placebidoffer) > parseFloat(values.default.ABSOLUTE_MAX)){
+        document.getElementById('repeat-2').checked = false
+        text.style.color = 'red'
+        text.innerHTML = 'Something went horribly wrong.. ' + name_array[i] + ' ' + placebidoffer
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        break
+      }
       await seaport.createBuyOrder({
         asset,
         startAmount: placebidoffer,
@@ -1176,6 +1194,27 @@ async function placeBid2(){
      }
     }
     try{
+      if(parseFloat(placebid2offer) > parseFloat(values.default.ABSOLUTE_MAX)){
+        document.getElementById('repeat-2').checked = false
+        text.style.color = 'red'
+        text.innerHTML = 'Something went horribly wrong.. ' + name_array[i] + ' ' + placebid2offer
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        beep()
+        break
+      }
       await seaport.createBuyOrder({
         asset,
         startAmount: placebid2offer,
