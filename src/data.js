@@ -179,6 +179,11 @@ const values = {
 				'ape': [10,2]
 			},
 		},
+		'mutant-ape-yacht-club': {
+			'background': {
+				'm2': [1.2, 1.3],
+			}
+		},
 	},
 	WALLET_SETS: [
 		'cool-cats-nft',
@@ -188,15 +193,24 @@ const values = {
 		'clonex',
 		'cryptoadz-by-gremplin',
 	],
+	WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
+	 'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 
+	 'bored-ape-kennel-club', 'desperate-ape-wives', 'bears-deluxe-new',
+	 'clonex', 'decentraland', 'sandbox', 'collectvox', 'creatureworld',
+	 'meebits', 'guttercatgang', 'veefriends', 'rumble-kong-league',
+	 'deadfellaz', 'lazy-lions', 'pudgypenguins', 'forgottenruneswizardscult',
+	 'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject'
+	 ],
+	WATCH_LIST_LOW: ['meebits', 'lootproject'],
 	COMP_WALLETS: [//'0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
 	'0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', ],
-	// '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4', 
-	// '0xfdb32c8ddda21172a031d928056e19725a0836c5', 
-	// '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', 
-	// '0xadee30341a9e98ed145ccb02b00da15e74e305b5', 
-	// '0x483b71d5b5661c2340273dc1219c4f94dacf5cc8', 
-	// '0x15cba6d3b98d220bc1ecda89afdf07dd0bf06c5d', 
-	// '0xbb2cd2434ca0881bcdcce88f6e77c607fc71c128', 
+	// '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4',], 
+	// '0xfdb32c8ddda21172a031d928056e19725a0836c5', ],
+	// '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669', ],
+	// '0xadee30341a9e98ed145ccb02b00da15e74e305b5', ],
+	// '0x483b71d5b5661c2340273dc1219c4f94dacf5cc8', ],
+	// '0x15cba6d3b98d220bc1ecda89afdf07dd0bf06c5d', ],
+	// '0xbb2cd2434ca0881bcdcce88f6e77c607fc71c128', ],
 	// '0x07b52eac4361f6aa840237e20afe89fe5eb8d031'],
 	OWNER_ADDRESS: [
 		{
