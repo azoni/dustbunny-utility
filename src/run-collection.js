@@ -91,7 +91,7 @@ document.getElementById('infurakey').addEventListener('click', function(){
   seaport = new OpenSeaPort(
     providerEngine,
     {
-      networkName: Network.Main,
+    networkName: Network.Main,
       apiKey: values.default.API_KEY
     },
     (arg) => console.log(arg)

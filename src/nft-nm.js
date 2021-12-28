@@ -291,6 +291,165 @@ function event_bid(){
   .catch(err => console.log(err))
   //console.log(eventDict)
 }
+document.getElementById('listed_bot').addEventListener('click', function(){
+  //event_bid()
+  console.log('Listed started')
+  listed_bid()
+  offersMade.innerHTML = ''
+  document.getElementById('topui').hidden = true
+  document.getElementById('favorites').hidden = true
+})
+
+async function listed_bid(){
+  reset()
+  start()
+  text.style.float = 'left'
+  text.style.align = 'left'
+  document.getElementById('body').style.background = '#90EE90'
+  if(document.getElementById('event_window').value === ''){
+    event_window = 180000
+  } else {
+    event_window = document.getElementById('event_window').value * 1000
+  }
+  var start_time = Math.floor(+new Date() / 1000)
+  expiration = .5
+  if(document.getElementById('event-expiration').value !== ''){
+    expiration = document.getElementById('event-expiration').value
+  }
+  var event_multi = .9
+  if(document.getElementById('event-multiplier').value !== ''){
+    event_multi = document.getElementById('event-multiplier').value
+  }
+  let search_time = Math.floor(+new Date()) - event_window
+  let search_time2 = Math.floor(+new Date())
+  search_time = new Date(search_time).toISOString();
+  search_time2 = new Date(search_time2).toISOString();
+  var offset = 0
+  var counter = 0
+  var watch_list = values.default.WATCH_LIST//, 'boredapeyachtclub']
+  var watch_list_low = values.default.WATCH_LIST_LOW
+  do {
+    try{
+      await new Promise(resolve => setTimeout(resolve, 500))
+      const order = await seaport.api.getOrders({
+        side: 1,
+        order_by: 'created_date', 
+        limit: 50,
+        listed_after: search_time,
+        listed_before: search_time2,
+        offset: offset
+      })
+      var order_length = order['orders'].length
+      
+      //console.log(order)
+      for(var o in order.orders){
+        try{
+          var extra_minus = 0
+          if(watch_list_low.includes(order.orders[o].asset.collection.slug)){
+            extra_minus = .05
+          }
+          if(watch_list.includes(order.orders[o].asset.collection.slug)){
+            counter += 1
+            console.log(order.orders[o].asset.collection.slug + ' ' + order.orders[o].asset.tokenId + ' ' + order.orders[o].currentPrice/1000000000000000000)
+            //console.log(order.orders[o].currentPrice/1000000000000000000)
+            //console.log('---bids')
+            const asset = await seaport.api.getAsset({
+              tokenAddress: order.orders[o].asset.tokenAddress,
+              tokenId: order.orders[o].asset.tokenId,
+            })
+            
+            const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
+            var floor_price = collect['collection']['stats']['floor_price']
+            var min_flooroffer = floor_price * ((event_multi - .05 - extra_minus) - collect['collection']['dev_seller_fee_basis_points']/10000)
+            var flooroffer = floor_price * ((event_multi - extra_minus) - collect['collection']['dev_seller_fee_basis_points']/10000)
+            var top_bid = asset.buyOrders[0].basePrice/1000000000000000000
+            var curr_bid = 0
+            if(asset.buyOrders.length === 0){
+              flooroffer = min_flooroffer
+            }
+            for(var bid in asset.buyOrders){
+              try{
+                if(asset.buyOrders[bid].makerAccount.user.username === 'DrBurry'){
+                  continue
+                } 
+              }catch(e) {
+
+                }
+              
+              
+              curr_bid = asset.buyOrders[bid].basePrice/1000000000000000000
+              if(curr_bid > top_bid){
+                top_bid = curr_bid
+              }
+              // if(asset.buyOrders[bid].basePrice/1000000000000000000 > flooroffer){
+              //   console.log(asset.buyOrders[bid].basePrice/1000000000000000000)
+              // }
+              
+            }
+            // for(var trait in asset.traits){
+            //   console.log(asset.traits[trait].trait_type + ' ' + asset.traits[trait].value)
+            // }
+            console.log('Top Bid: ' + top_bid)
+            if(top_bid < flooroffer){
+              flooroffer = parseFloat(top_bid) + parseFloat(.001)
+            }
+            if(flooroffer < min_flooroffer || top_bid < min_flooroffer){
+              flooroffer = min_flooroffer
+            }
+            var ass = {
+              tokenId: order.orders[o].asset.tokenId,
+              tokenAddress: order.orders[o].asset.tokenAddress,
+              //schemaName: WyvernSchemaName.ERC1155
+            }
+            if (order['orders'][o]['asset']['collection']['slug'] === 'bears-deluxe' || order['orders'][o]['asset']['collection']['slug'] === 'guttercatgang' || order['orders'][o]['asset']['collection']['slug'] === 'clonex-mintvial'){
+              ass = {
+                tokenId: order['orders'][o]['asset']['tokenId'],
+                tokenAddress: order['orders'][o]['asset']['tokenAddress'],
+                schemaName: WyvernSchemaName.ERC1155
+              }      
+            }
+            await seaport.createBuyOrder({
+              asset: ass,
+              startAmount: flooroffer,
+              accountAddress: values.default.EVENT_WALLET,
+              expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
+            })
+            console.log('Bid: ' + flooroffer + ' on ' + order.orders[o].asset.name)
+            
+            text.innerHTML += 'Bid: ' + flooroffer.toFixed(4) + ' on <a target=_blank href=https://opensea.io/assets/' + order.orders[o].asset.tokenAddress + '/' + order.orders[o].asset.tokenId + '>' + order.orders[o].asset.collection.slug + ' ' + order.orders[o].asset.tokenId + "<a>"
+            text.innerHTML += '<img width=50px height=50px src=' + order.orders[o].asset.imageUrl + '><img><br>'
+            //console.log(asset.buyOrders)
+            //console.log(asset.traits)
+          }
+        } catch(e){
+          if(e.message.includes('Cannot read properties of undefined')){
+            console.log('pass')
+          }else{
+            console.log(e.message)
+          }
+        }
+      }
+      
+    } catch(e){
+      if(e.message.includes('Cannot read properties of undefined')){
+        console.log('pass')
+      }else{
+        console.log(e.message)
+      }
+      
+    }
+
+    offset += 50
+  } while(order_length === 50)
+  console.log(parseInt(offset) + order_length)
+  console.log(counter)
+  var end_time = Math.floor(+new Date() / 1000)
+  if (end_time - start_time < event_window/1000){
+    await new Promise(resolve => setTimeout(resolve, (event_window/1000 - (end_time - start_time)) * 1000))
+  }
+  listed_bid()
+}
+
 //  BLACK_LIST: ['nftd00d', 'DustBunny', 'BalloonAnimal', 'E2E017', 'CakeBatter', '74b93017', 'DoughnutHole', 'ad002d', '801703', 'forbayc'],
 // document.getElementById('api1').innerHTML = values.default.API_KEY.substring(0, 5)
 // document.getElementById('api2').innerHTML = values.default.API_KEY2.substring(0, 5)
