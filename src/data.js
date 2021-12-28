@@ -155,7 +155,6 @@ const values = {
 			'head': {
 				'wizard': [.925, 1.5],
 				'fez': [.9, .95],
-				'aqua shave': [ .91, 1.1],
 				'swept teal': [ 1.2, 1.3],
 
 			},
@@ -171,6 +170,13 @@ const values = {
 			'type': {
 				'genesis': [1.5, 5],
 				'incubator': [1.05, 1.1],
+			},
+		},
+		'larva-lads': {
+			'type': {
+				'alien': [22.5, 2, .2],
+				'zombie': [7.5, 1.1, .1],
+				'ape': [10,2]
 			},
 		},
 	},
