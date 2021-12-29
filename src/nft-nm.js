@@ -138,7 +138,7 @@ function create_seaport(){
     (arg) => console.log(arg)
   );
 }
-if(values.default.TITLE === 'Home'){
+if(values.default.TITLE === 'Home1'){
   current_running()
 }
 
@@ -305,7 +305,9 @@ async function listed_bid(){
   start()
   text.innerHTML = ''
   text1.innerHTML = ''
-  document.getElementById('body').style.background = '#90EE90'
+  text.style = 'text-align: left; font-size: 30px; padding-left: 5%'
+  text1.style = 'text-align: left; font-size: 30px; padding-left: 5%'
+  document.getElementById('body').style.background = '#ffc1cc'
   if(document.getElementById('event_window').value === ''){
     event_window = 180000
   } else {
@@ -326,9 +328,14 @@ async function listed_bid(){
   search_time2 = new Date(search_time2).toISOString();
   var offset = 0
   var counter = 0
+  var skip = 0
   var watch_list = values.default.WATCH_LIST//, 'boredapeyachtclub']
   var watch_list_low = values.default.WATCH_LIST_LOW
+  var watch_list_high = values.default.WATCH_LIST_HIGH
   do {
+    if(event_stop === 1){
+          break
+      }
     try{
       await new Promise(resolve => setTimeout(resolve, 750))
       const order = await seaport.api.getOrders({
@@ -344,11 +351,21 @@ async function listed_bid(){
       //console.log(order)
       for(var o in order.orders){
         try{
+          if(order.orders[o].makerAccount.user.username === 'veemaster42069'){
+            continue
+          }
           var extra_minus = 0
+          var extra_plus = 0
           if(watch_list_low.includes(order.orders[o].asset.collection.slug)){
             extra_minus = .05
           }
-          if(watch_list.includes(order.orders[o].asset.collection.slug)){
+          if(watch_list_high.includes(order.orders[o].asset.collection.slug)){
+            extra_plus = .05
+          }
+          if(watch_list.includes(order.orders[o].asset.collection.slug) 
+            || watch_list_low.includes(order.orders[o].asset.collection.slug)
+            || watch_list_high.includes(order.orders[o].asset.collection.slug)){
+
             counter += 1
             console.log(order.orders[o].asset.collection.slug + ' ' + order.orders[o].asset.tokenId + ' ' + order.orders[o].currentPrice/1000000000000000000)
             //console.log(order.orders[o].currentPrice/1000000000000000000)
@@ -360,13 +377,29 @@ async function listed_bid(){
             
             const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
             var floor_price = collect['collection']['stats']['floor_price']
-            var min_flooroffer = floor_price * ((event_multi - .05 - extra_minus) - collect['collection']['dev_seller_fee_basis_points']/10000)
-            var flooroffer = floor_price * ((event_multi - extra_minus) - collect['collection']['dev_seller_fee_basis_points']/10000)
+            var min_flooroffer = floor_price * ((event_multi - .05 - extra_minus + extra_plus) - collect['collection']['dev_seller_fee_basis_points']/10000)
+            var flooroffer = floor_price * ((event_multi - extra_minus + extra_plus) - collect['collection']['dev_seller_fee_basis_points']/10000)
             var top_bid = asset.buyOrders[0].basePrice/1000000000000000000
             var curr_bid = 0
-            if(asset.buyOrders.length === 0){
-              flooroffer = min_flooroffer
+
+            // account for currency type
+            // check for auction
+            if(order.orders[o].currentPrice/1000000000000000000 < floor_price*.8 && order.orders[o].paymentTokenContract.name === "Ether"){
+              beep()
+              beep()
+              beep()
+              beep()
+              beep()
+              await new Promise(resolve => setTimeout(resolve, 1000))
+              beep()
+              beep()
+              beep()
+              beep()
+              text1.innerHTML = 'BUY ALERT ' + order.orders[o].asset.name
+              window.open("https://opensea.io/assets/' + order.orders[o].asset.tokenAddress + '/' + order.orders[o].asset.tokenId");
             }
+
+           
             for(var bid in asset.buyOrders){
               try{
                 if(asset.buyOrders[bid].makerAccount.user.username === 'DrBurry'){
@@ -375,7 +408,6 @@ async function listed_bid(){
               }catch(e) {
 
                 }
-              
               
               curr_bid = asset.buyOrders[bid].basePrice/1000000000000000000
               if(curr_bid > top_bid){
@@ -386,20 +418,35 @@ async function listed_bid(){
               // }
               
             }
-            // for(var trait in asset.traits){
-            //   console.log(asset.traits[trait].trait_type + ' ' + asset.traits[trait].value)
-            // }
-            console.log('Top Bid: ' + top_bid)
+            for(var trait in asset.traits){
+              console.log(asset.traits[trait].trait_type + ' ' + asset.traits[trait].value)
+
+            }
+
+            console.log('Top Bid: ' + top_bid + ' Offer: ' + flooroffer)
+            console.log(order.orders[o])
+            console.log(asset)
+            console.log(collect)
+
+
             if(top_bid < flooroffer){
               flooroffer = parseFloat(top_bid) + parseFloat(.01)
+            } else {
+              text.innerHTML += '<br><img width=200px height=200px src=' + order.orders[o].asset.imageUrl + '><img> '
+              text.innerHTML += ' Floor: ' + floor_price  + ' Price: ' + order.orders[o].currentPrice/1000000000000000000 + ' <span style="color:#8510d8">SKIPPED</span> (' + top_bid.toFixed(3) + ') <a target=_blank href=https://opensea.io/assets/' + order.orders[o].asset.tokenAddress + '/' + order.orders[o].asset.tokenId + '>' + order.orders[o].asset.collection.slug + ' ' + order.orders[o].asset.tokenId + "<a> "
+              window.scrollTo(0,document.body.scrollHeight);
+              skip += 1
+              continue
             }
             if(flooroffer < min_flooroffer || top_bid < min_flooroffer){
+              flooroffer = min_flooroffer
+            }
+           if(asset.buyOrders.length === 0){
               flooroffer = min_flooroffer
             }
             var ass = {
               tokenId: order.orders[o].asset.tokenId,
               tokenAddress: order.orders[o].asset.tokenAddress,
-              //schemaName: WyvernSchemaName.ERC1155
             }
             if (order['orders'][o]['asset']['collection']['slug'] === 'bears-deluxe' || order['orders'][o]['asset']['collection']['slug'] === 'guttercatgang' || order['orders'][o]['asset']['collection']['slug'] === 'clonex-mintvial'){
               ass = {
@@ -408,21 +455,25 @@ async function listed_bid(){
                 schemaName: WyvernSchemaName.ERC1155
               }      
             }
+            var bid_address = values.default.EVENT_WALLET
+            if(order.orders[o].asset.collection.slug === 'boredapeyachtclub'){
+              bid_address = values.default.BAYC
+            }
             await seaport.createBuyOrder({
               asset: ass,
               startAmount: flooroffer,
-              accountAddress: values.default.EVENT_WALLET,
+              accountAddress: bid_address,
               expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
             })
             console.log('Price: ' + order.orders[o].currentPrice/1000000000000000000 + ' Bid: ' + flooroffer + ' on ' + order.orders[o].asset.name)
-            text.innerHTML += '<br><img width=200px height=200px src=' + order.orders[o].asset.imageUrl + '><img>'
-            text.innerHTML += 'Floor: ' + floor_price  + ' Price: ' + order.orders[o].currentPrice/1000000000000000000 + ' Bid: ' + flooroffer.toFixed(4) + ' on <a target=_blank href=https://opensea.io/assets/' + order.orders[o].asset.tokenAddress + '/' + order.orders[o].asset.tokenId + '>' + order.orders[o].asset.collection.slug + ' ' + order.orders[o].asset.tokenId + "<a> "
+            text.innerHTML += '<br><img width=200px height=200px src=' + order.orders[o].asset.imageUrl + '><img> '
+            text.innerHTML += ' Floor: ' + floor_price  + ' Price: ' + order.orders[o].currentPrice/1000000000000000000 + ' Bid: ' + flooroffer.toFixed(4) + ' on <a target=_blank href=https://opensea.io/assets/' + order.orders[o].asset.tokenAddress + '/' + order.orders[o].asset.tokenId + '>' + order.orders[o].asset.collection.slug + ' ' + order.orders[o].asset.tokenId + "<a> "
             window.scrollTo(0,document.body.scrollHeight);
             //console.log(asset.buyOrders)
             //console.log(asset.traits)
           }
         } catch(e){
-          if(e.message.includes('Cannot read properties of undefined')){
+          if(e.message.includes('Cannot read properties of')){
             console.log('pass')
           }else{
             console.log(e.message)
@@ -441,10 +492,13 @@ async function listed_bid(){
     
     offset += 50
   } while(order_length === 50)
-  text1.innerHTML = 'Complete - ' + counter + ' bids made'
+  text1.innerHTML = 'Complete - ' + (counter - skip) + ' bids made ' + skip + ' skipped'
   console.log(parseInt(offset) + order_length)
   console.log(counter)
   var end_time = Math.floor(+new Date() / 1000)
+
+  //check for being upbid here
+
   if (end_time - start_time < event_window/1000){
     await new Promise(resolve => setTimeout(resolve, (event_window/1000 - (end_time - start_time)) * 1000))
   }
@@ -525,7 +579,7 @@ async function buy_order(){
         expiration = document.getElementById('event-expiration').value
       }
       do{
-        
+        await new Promise(resolve => setTimeout(resolve, 500))
         var order_length = 0
       try{
       if(values.default.API_KEY === '2f6f419a083c46de9d83ce3dbe7db601'){
@@ -881,6 +935,7 @@ document.getElementById('nextAccount-2').addEventListener('click', function(){
   if(accountIndex === values.default.OWNER_ADDRESS.length){
     accountIndex = 0
   }
+  values.default.EVENT_USER = values.default.OWNER_ADDRESS[accountIndex].username
   myAccount2.innerHTML = values.default.OWNER_ADDRESS[accountIndex].username
   getBalance(values.default.OWNER_ADDRESS[accountIndex].address).then(function (result) {
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
