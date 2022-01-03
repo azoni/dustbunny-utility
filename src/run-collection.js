@@ -435,7 +435,7 @@ confirmButton.addEventListener('click', function(){
     expirationHours = document.getElementById('expireInput-2').value
     if(expirationHours === '') {
      expirationHours = 1
-   }
+    }
    if(document.getElementById('bidMultiplier-2').value !== ''){
     bidMultiplier = document.getElementById('bidMultiplier-2').value
     
@@ -591,12 +591,16 @@ async function run(){
       if(halt === 1) {
         break
       }
+      var limit = 50
+      if((Math.floor(assetCount/2) - offset) < 50){
+        limit = (Math.floor(assetCount/2) - offset)
+      }
       //await new Promise(resolve => setTimeout(resolve, 5000))
       try{
         var collection = await seaport.api.getAssets({
           'collection': collectionName,
           'offset': offset,
-          'limit': '50',
+          'limit': limit,
           'order_direction': direction
         })
         console.log(collection)
@@ -720,7 +724,7 @@ async function run(){
 ///********************************************************************************
 ///Run through second half of collection in decending order
   if(document.getElementById('firsthalf').checked === false){
-    for(offset; offset < assetCount/2; offset+=50){
+    for(offset; offset < Math.ceil(assetCount/2); offset+=50){
       if(document.getElementById('firstquarter').checked === true || document.getElementById('secondquarter').checked === true
         || document.getElementById('firsteighth').checked === true || document.getElementById('secondeighth').checked === true
         || document.getElementById('thirdeighth').checked === true || document.getElementById('fourtheighth').checked === true){
@@ -729,12 +733,16 @@ async function run(){
       if(halt === 1) {
         break
       }
+      limit = 50
+      if((Math.floor(assetCount/2) - offset) < 50){
+        limit = (Math.floor(assetCount/2) - offset)
+      }
       //await new Promise(resolve => setTimeout(resolve, 5000))
       try{
         collection = await seaport.api.getAssets({
           'collection': collectionName,
           'offset': offset,
-          'limit': '50',
+          'limit': limit,
           'order_direction': direction
         })
         console.log(collection)
@@ -824,6 +832,17 @@ async function run(){
   if(document.getElementById('reverse-2').checked){
     tokenId_array.reverse()
     name_array.reverse()
+  }
+  var half_length = 0
+  if(document.getElementById('firsthalfhalf').checked === true) {
+    half_length = Math.ceil(tokenId_array.length / 2); 
+    tokenId_array = tokenId_array.splice(0,half_length);
+    name_array = name_array.splice(0,half_length);
+  }
+  if(document.getElementById('secondhalfhalf').checked === true) {
+    half_length = Math.ceil(tokenId_array.length / 2); 
+    tokenId_array = tokenId_array.splice(0,half_length);
+    name_array = name_array.splice(0,half_length);
   }
   if(halt === 1) {
     offers = 0

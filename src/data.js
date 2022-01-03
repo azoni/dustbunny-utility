@@ -79,17 +79,17 @@ const values = {
 				// 'mad note': [.85, .95],
 				// 'sad note': [.775, .95],
 				// 'skelton': [.95, 1],
-				// 'rainbow puke': [1.5, 2.1],
+				'rainbow puke': [2.5, 2.6],
 				'puffer up': [3, 3.5],
-				'ape': [4, 4.1],
-				'shark': [4, 5],
+				'ape': [4.25, 4.1],
+				'shark': [4.5, 5],
 				'duck': [4.5, 5],
-				'skelly cig': [5, 5.1],
-				'alien': [6, 6.1],
-				'dino': [5, 5.1],
-				'cat': [6, 6.1],
+				'skelly cig': [5.5, 5.6],
+				'alien': [7, 6.1],
+				'dino': [6, 6.1],
+				'cat': [7, 7.1],
 				'holographic visor': [5, 5.1],
-				'whale': [7, 7.2],
+				'whale': [8, 8.2],
 			},
 			// 'body': {
 			// 	'blazer': [.9, .95],
@@ -100,14 +100,14 @@ const values = {
 			// },
 			'head': {
 				'balloon': [2.75, 3],
-				'devil': [1.85, 2],
+				'devil': [1.85, 1.9],
 				'pickle': [2.5, 2.75],
 				'flower': [2.25, 2.5],
-				'coffee': [3, 3.1],
+				'coffee': [3.25, 3.3],
 				'lit': [2.5, 2.75],
 				'rainbow': [2.5, 3.1],
-				'popsicle': [2.75, 3.1],
-				'icecream': [2.75, 3.1],
+				'popsicle': [2.75, 2.9],
+				'icecream': [3.25, 3.3],
 
 			},
 			// 'background': {
@@ -174,9 +174,9 @@ const values = {
 		},
 		'larva-lads': {
 			'type': {
-				'alien': [22.5, 2, .2],
-				'zombie': [7.5, 1.1, .1],
-				'ape': [10,2]
+				'alien': [10, 2, .2],
+				'zombie': [4, 1.1, .1],
+				'ape': [5,2]
 			},
 		},
 		'mutant-ape-yacht-club': {

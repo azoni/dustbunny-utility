@@ -351,7 +351,7 @@ async function listed_bid(){
       //console.log(order)
       for(var o in order.orders){
         try{
-          if(order.orders[o].makerAccount.user.username === 'veemaster42069'){
+          if(order.orders[o].makerAccount.user.username === 'veemaster42069' || order.orders[o].makerAccount.user.username === 'KJ1AA'){
             continue
           }
           var extra_minus = 0
@@ -374,7 +374,10 @@ async function listed_bid(){
               tokenAddress: order.orders[o].asset.tokenAddress,
               tokenId: order.orders[o].asset.tokenId,
             })
-            
+             for(var trait in asset.traits){
+              console.log(asset.traits[trait].trait_type + ' ' + asset.traits[trait].value)
+              
+            }
             const collect = await seaport.api.get('/api/v1/collection/' + order['orders'][o]['asset']['collection']['slug'])
             var floor_price = collect['collection']['stats']['floor_price']
             var min_flooroffer = floor_price * ((event_multi - .05 - extra_minus + extra_plus) - collect['collection']['dev_seller_fee_basis_points']/10000)
@@ -396,7 +399,7 @@ async function listed_bid(){
               beep()
               beep()
               text1.innerHTML = 'BUY ALERT ' + order.orders[o].asset.name
-              window.open("https://opensea.io/assets/' + order.orders[o].asset.tokenAddress + '/' + order.orders[o].asset.tokenId");
+              window.open("https://opensea.io/assets/" + order.orders[o].asset.tokenAddress + '/' + order.orders[o].asset.tokenId);
             }
 
            
@@ -418,15 +421,12 @@ async function listed_bid(){
               // }
               
             }
-            for(var trait in asset.traits){
-              console.log(asset.traits[trait].trait_type + ' ' + asset.traits[trait].value)
 
-            }
 
             console.log('Top Bid: ' + top_bid + ' Offer: ' + flooroffer)
             console.log(order.orders[o])
             console.log(asset)
-            console.log(collect)
+            console.log(collect.collection.stats.count)
 
 
             if(top_bid < flooroffer){
@@ -459,6 +459,7 @@ async function listed_bid(){
             if(order.orders[o].asset.collection.slug === 'boredapeyachtclub'){
               bid_address = values.default.BAYC
             }
+
             await seaport.createBuyOrder({
               asset: ass,
               startAmount: flooroffer,
