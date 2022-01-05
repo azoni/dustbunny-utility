@@ -781,6 +781,65 @@ async function buy_order_bid(order_array, username){
     }
     values.default.BID = 1
 }
+document.getElementById('private_sales').addEventListener('click', function(){
+  privateSale()
+})
+async function privateSale(){
+  reset()
+  start()
+  var offset = 0
+  let search_time = Math.floor(+new Date()) - 900000
+  let search_time2 = Math.floor(+new Date()) 
+  search_time = new Date(search_time).toISOString();
+  search_time2 = new Date(search_time2).toISOString();
+  do{
+    await new Promise(resolve => setTimeout(resolve, 500))
+    var order_length = 0
+    try{   
+      const order = await seaport.api.getOrders({
+        side: 1,
+        order_by: 'created_date',
+        listed_after: search_time,
+        listed_before: search_time2,
+        limit: 50,
+        offset: offset
+    })
+    text.innerHTML = "Pulling event history..."
+    var username = 'Null'
+    if(order['orders'].length === 0){
+      await new Promise(resolve => setTimeout(resolve, 500))
+    }
+    order_length = order['orders'].length
+    for(var o in order['orders']){
+      if(order['orders'][o].taker !== '0x0000000000000000000000000000000000000000' && order['orders'][0].makerAccount.user.username.includes('DustBunny')){
+          console.log('Private sale found.')
+          try{
+            console.log(order['orders'][0].makerAccount.user.username)
+          } catch(e){
+            if(e.message.includes('Cannot read properties')){
+
+            } else{
+              console.log(e)
+            }
+          }
+          console.log(order.orders[o])
+          console.log(order['orders'][o].basePrice/1000000000000000000)
+      }
+    }
+  }
+  catch(ex) {
+    if(ex.message.includes('Cannot read properties')){
+
+    } else{
+      console.log(ex)
+    }
+  }
+  offset += 50
+  console.log(offset)
+  } while(order_length === 50)
+  console.log('Complete ' + (parseInt(offset) + parseInt(order_length) - 50))
+  pause()
+}
 
 async function placeBid(){ 
   console.log('Number to upbid: ' + Object.keys(eventDict).length)
