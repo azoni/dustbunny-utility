@@ -189,6 +189,29 @@ const values = {
 				'dress': [.6, .75],
 			}
 		},
+		'noodlesnft-official': {
+			'head': {
+				'devil': [1, 1.1],
+				'spicy': [1, 1.1],
+				'rainbow': [1, 1.1],
+				'balloon': [1.5, 1.6],
+				'pickle': [1.2, 1.3],
+				'coffee': [2, 2.1],
+				'popsicle': [2, 2.1],
+				'flower': [2, 2.1],
+				'ice cream': [2, 2.1],
+				'skelly': [3, 3.1],
+				'ape': [3, 3.1],
+				'cat': [4, 4.1],
+				'dino': [4, 4.1],
+			},
+			'face': {
+				'alien': [4, 4.1],
+				'skelly cig': [4, 4.1],
+				'cat': [4, 4.1],
+				'ape': [3, 3.1],
+			}
+		},
 	},
 	WALLET_SETS: [
 		'cool-cats-nft',

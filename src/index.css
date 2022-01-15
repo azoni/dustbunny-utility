@@ -22,4 +22,32 @@ code {
   display: table;
   clear: both;
 }
+.flex-container {
+           display: -webkit-flex;
+           display: flex;
+           -webkit-flex-direction: row;
+           flex-direction: row;
+           -webkit-align-items: center;
+           align-items: center;
 
+           flex-wrap: wrap;
+           min-width: 320px;
+           max-width: 2440px;
+        }
+        .flex-item {
+            display:flex;
+        align-items: center;
+        height: 150px;
+        width: 275px;
+        background-color: #e46119;
+        border: 1px solid #626262;
+        margin: 3px;
+        padding: 10px 0 0 10px;
+        }
+.flex-item img{
+    flex-grow:0;
+    flex-shrink:0;
+}
+        span {
+            padding-left: 5px;
+        }
