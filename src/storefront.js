@@ -84,42 +84,44 @@ async function get_nfts(){
 	const hidden = ['theapesonsnft', 'babydeluxe', 'doodlebearsdeluxe', 'neneneko-labs', 'larva-lads', 'pandaparadise', 
 	'frosty-snowbois', "baycforpeople", 'zoogangnft', 'dirtybird-flight-club', 'ens', 'metaverse-cool-cats', 'larva-eggs', 
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
-	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial']
+	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos']
 	for(var account in values.default.OWNER_ADDRESS){
 		get_weth_balance(values.default.OWNER_ADDRESS[account].address)
 		await new Promise(resolve => setTimeout(resolve, 500))
 		get_balance(values.default.OWNER_ADDRESS[account].address)
 		await new Promise(resolve => setTimeout(resolve, 500))
 		console.log(account)
-		if(account === 8){
-			console.log('waiting')
-			await new Promise(resolve => setTimeout(resolve, 60000))
-		}
 		try {
+			await new Promise(resolve => setTimeout(resolve, 500))
 			const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&address=" + values.default.OWNER_ADDRESS[account].address + "&startblock=0&endblock=999999999&sort=asc&apikey=" + API_KEY);
 			const data = await response.json()
 			console.log(data)
 			console.log(data.result.length)
 			for(var i in data.result){
-				//token_ids.push(data.result[i].tokenID)
-				const asset = await seaport.api.getAsset({
-					tokenAddress: data.result[i].contractAddress,
-					tokenId: data.result[i].tokenID,
-				})
-				if(asset.owner.address.toLowerCase() === values.default.OWNER_ADDRESS[account].address.toLowerCase() && hidden.includes(asset.collection.slug) === false){
-					// if(Object.keys(collections).includes(asset.collection.slug)){
-					// 	collections[asset.collection.slug].push(asset)
-					// } else {
-					// 	collections[asset.collection.slug] = [asset]
-					// }
-					if(collections[asset.collection.slug] === undefined){
-						collections[asset.collection.slug] = {}
-						collections[asset.collection.slug][asset.tokenId] = asset
-					} else {
-						if(!(asset.tokenId in collections[asset.collection.slug])){
+				try {
+					//token_ids.push(data.result[i].tokenID)
+					const asset = await seaport.api.getAsset({
+						tokenAddress: data.result[i].contractAddress,
+						tokenId: data.result[i].tokenID,
+					})
+					if(asset.owner.address.toLowerCase() === values.default.OWNER_ADDRESS[account].address.toLowerCase() && hidden.includes(asset.collection.slug) === false){
+						// if(Object.keys(collections).includes(asset.collection.slug)){
+						// 	collections[asset.collection.slug].push(asset)
+						// } else {
+						// 	collections[asset.collection.slug] = [asset]
+						// }
+						if(collections[asset.collection.slug] === undefined){
+							collections[asset.collection.slug] = {}
 							collections[asset.collection.slug][asset.tokenId] = asset
+						} else {
+							if(!(asset.tokenId in collections[asset.collection.slug])){
+								collections[asset.collection.slug][asset.tokenId] = asset
+							}
 						}
 					}
+				} catch(ex){
+					console.log(ex)
+					await new Promise(resolve => setTimeout(resolve, 5000))
 				}
 			}
 			
@@ -139,7 +141,7 @@ async function display(){
     }
 	for(const collection in collections){
 		try{
-			await new Promise(resolve => setTimeout(resolve, 250))
+			await new Promise(resolve => setTimeout(resolve, 500))
 			const collect = await seaport.api.get('/api/v1/collection/' + collection)
 			console.log(collect)
 			var floor_price = collect['collection']['stats']['floor_price']
