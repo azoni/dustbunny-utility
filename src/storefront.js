@@ -20,7 +20,7 @@ var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
 
-const seaport = new OpenSeaPort(
+var seaport = new OpenSeaPort(
 
   providerEngine,
   {
@@ -30,6 +30,42 @@ const seaport = new OpenSeaPort(
   (arg) => console.log(arg)
 );
 
+providerEngine.start()
+function change_seaport(MNEMONIC){
+	providerEngine.stop()
+	const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
+	  mnemonic: MNEMONIC,
+	});
+	providerEngine = new Web3ProviderEngine();
+	providerEngine.addProvider(mnemonicWalletSubprovider);
+	providerEngine.addProvider(infuraRpcSubprovider);
+	seaport = new OpenSeaPort(
+	  providerEngine,
+	  {
+	    networkName: Network.Main,
+	    apiKey: values.default.API_KEY
+	  },
+	  (arg) => console.log(arg)
+	);
+	providerEngine.start()
+}
+
+document.getElementById('swap').addEventListener('click', swap)
+
+function swap(){
+	if(document.getElementById('account_name').innerHTML === 'Azoni'){
+		document.getElementById('account_name').innerHTML = 'DustBunny'
+		const MNEMONIC = secret.default.MNEMONIC2
+		change_seaport(MNEMONIC)
+		ADDRESS = '0xb1cbed4ab864e9215206cc88c5f758fda4e01e25'
+	} else {
+		document.getElementById('account_name').innerHTML = 'Azoni'
+		const MNEMONIC = secret.default.MNEMONIC
+		change_seaport(MNEMONIC)
+		ADDRESS = '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
+	}
+	
+}
 // async function transfer(){
 // 	const transactionHash = await seaport.transfer({
 // 		asset: {
@@ -45,7 +81,7 @@ const seaport = new OpenSeaPort(
 // })
 //AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ - etherscan apikey
 const API_KEY = 'AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ'
-const ADDRESS = '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
+var ADDRESS = '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
 
 
 var balance = 0
@@ -84,7 +120,8 @@ async function get_nfts(){
 	const hidden = ['theapesonsnft', 'babydeluxe', 'doodlebearsdeluxe', 'neneneko-labs', 'larva-lads', 'pandaparadise', 
 	'frosty-snowbois', "baycforpeople", 'zoogangnft', 'dirtybird-flight-club', 'ens', 'metaverse-cool-cats', 'larva-eggs', 
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
-	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos']
+	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos',
+	'radioactiveapesofficial', 'blockverse-mc']
 	for(var account in values.default.OWNER_ADDRESS){
 		get_weth_balance(values.default.OWNER_ADDRESS[account].address)
 		await new Promise(resolve => setTimeout(resolve, 500))
@@ -189,7 +226,9 @@ async function display(){
 
 				for(var bid in asset.buyOrders){
 	              try{
-	                if(asset.buyOrders[bid].makerAccount.user.username === 'DrBurry'){
+	              	console.log('buy order')
+	              	console.log(asset.buyOrders[bid])
+	                if(asset.buyOrders[bid].makerAccount.user.username === 'DrBurry' || asset.buyOrders[bid].paymentTokenContract.symbol !== 'WETH'){
 	                  continue
 	                } 
 	              }catch(e) {
@@ -235,7 +274,8 @@ async function display(){
 	}
 	console.log(eth_value)
 	console.log(count)
-	providerEngine.start()
+	document.getElementById('account').innerHTML = 'Total ' + balance.toFixed(4) + ' ETH ' + weth_balance.toFixed(4) + ' WETH NFTs: ' + count + ' Value(Based on Floor): ' + eth_value
+	
 }
 document.getElementById('refresh').addEventListener('click', display)
 document.getElementById('search').addEventListener('input', search)
