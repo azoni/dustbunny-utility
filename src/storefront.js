@@ -121,7 +121,7 @@ async function get_nfts(){
 	'frosty-snowbois', "baycforpeople", 'zoogangnft', 'dirtybird-flight-club', 'ens', 'metaverse-cool-cats', 'larva-eggs', 
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
 	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos',
-	'radioactiveapesofficial', 'blockverse-mc']
+	'radioactiveapesofficial', 'blockverse-mc', 'hollydao']
 	for(var account in values.default.OWNER_ADDRESS){
 		get_weth_balance(values.default.OWNER_ADDRESS[account].address)
 		await new Promise(resolve => setTimeout(resolve, 500))
