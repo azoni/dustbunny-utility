@@ -243,6 +243,14 @@ const values = {
 	// '0x07b52eac4361f6aa840237e20afe89fe5eb8d031'],
 	OWNER_ADDRESS: [
 		{
+			username: 'Azoni',
+			address: '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
+		}, 
+		{
+			username: 'DustBunny',
+			address: '0xb1cbed4ab864e9215206cc88c5f758fda4e01e25'
+		}, 
+		{
 			username: 'DustBunny_1',
 			address: '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
 		}, 
@@ -288,7 +296,7 @@ const values = {
 		}, 
 		{
 			username: 'DustBunny_12',
-			address: '0x8B3466FFf6F40a366deD61458BCF7EEF043d325c'
+			address: '0x8b3466fff6f40a366ded61458bcf7eef043d325c'
 		}, 
 		{
 			username: 'DustBunny_13',
@@ -333,6 +341,22 @@ const values = {
 		{
 			username: 'DustBunny_23',
 			address: '0x67707b8E56b843099d5eF656Bc840D46d1c0e6d4'
+		}, 
+		{
+			username: 'DustBunny_24',
+			address: '0x83e64Da4EC8dF884024b99BEB4f2bD80eeF7c4B4'
+		}, 
+		{
+			username: 'DustBunny_25',
+			address: '0x9208D24917eaE55C79e90255ED79b79C292109a3'
+		}, 
+		{
+			username: 'DustBunny_26',
+			address: '0x899c762C3500AcC6b1d8CF14e2f492fa5B798052'
+		}, 
+		{
+			username: 'DustBunny_27',
+			address: '0x0a6Ae359E2dB55ACa4537f950BE13A73F461cEAA'
 		}, 
 	],
 }

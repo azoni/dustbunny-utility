@@ -122,15 +122,15 @@ async function get_nfts(){
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
 	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos',
 	'radioactiveapesofficial', 'blockverse-mc', 'hollydao']
-	for(var account in values.default.OWNER_ADDRESS){
-		get_weth_balance(values.default.OWNER_ADDRESS[account].address)
+	for(var account in data.default.OWNER_ADDRESS){
+		get_weth_balance(data.default.OWNER_ADDRESS[account].address)
 		await new Promise(resolve => setTimeout(resolve, 500))
-		get_balance(values.default.OWNER_ADDRESS[account].address)
+		get_balance(data.default.OWNER_ADDRESS[account].address)
 		await new Promise(resolve => setTimeout(resolve, 500))
 		console.log(account)
 		try {
 			await new Promise(resolve => setTimeout(resolve, 500))
-			const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&address=" + values.default.OWNER_ADDRESS[account].address + "&startblock=0&endblock=999999999&sort=asc&apikey=" + API_KEY);
+			const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&address=" + data.default.OWNER_ADDRESS[account].address + "&startblock=0&endblock=999999999&sort=asc&apikey=" + API_KEY);
 			const data = await response.json()
 			console.log(data)
 			console.log(data.result.length)
@@ -141,7 +141,7 @@ async function get_nfts(){
 						tokenAddress: data.result[i].contractAddress,
 						tokenId: data.result[i].tokenID,
 					})
-					if(asset.owner.address.toLowerCase() === values.default.OWNER_ADDRESS[account].address.toLowerCase() && hidden.includes(asset.collection.slug) === false){
+					if(asset.owner.address.toLowerCase() === data.default.OWNER_ADDRESS[account].address.toLowerCase() && hidden.includes(asset.collection.slug) === false){
 						// if(Object.keys(collections).includes(asset.collection.slug)){
 						// 	collections[asset.collection.slug].push(asset)
 						// } else {
