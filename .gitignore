@@ -22,5 +22,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+/src/collections/*.js
 /src/secret.js
+/src/secret_node.js
 /src/values.js

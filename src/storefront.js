@@ -8,7 +8,7 @@ const MnemonicWalletSubprovider = require("@0x/subproviders")
 .MnemonicWalletSubprovider;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
-const MNEMONIC = secret.default.MNEMONIC
+const MNEMONIC = secret.default.MNEMONIC2
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
 });
@@ -58,63 +58,96 @@ document.getElementById('swap').addEventListener('click', swap)
 function swap(){
 	if(document.getElementById('account_name').innerHTML === 'Azoni'){
 		document.getElementById('account_name').innerHTML = 'DustBunny'
-		const MNEMONIC = secret.default.MNEMONIC2
+		const MNEMONIC = secret.default.MNEMONIC
 		change_seaport(MNEMONIC)
 		ADDRESS = '0xb1cbed4ab864e9215206cc88c5f758fda4e01e25'
 	} else {
 		document.getElementById('account_name').innerHTML = 'Azoni'
-		const MNEMONIC = secret.default.MNEMONIC
+		const MNEMONIC = secret.default.MNEMONIC2
 		change_seaport(MNEMONIC)
 		ADDRESS = '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
 	}
-	
 }
-// async function transfer(){
-// 	const transactionHash = await seaport.transfer({
-// 		asset: {
-// 			tokenAddress: '0xc6ec80029cd2aa4b0021ceb11248c07b25d2de34', // CryptoKitties
-// 			tokenId: '892', // Token ID
-// 	    },
-// 		fromAddress: '0xc4cf8d37a72463722fde94a6ac1867e3c482a85c', // Must own the asset
-// 		toAddress:  '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
-// 	})
-// }
-// document.getElementById('transfer').addEventListener('click', function(){	
-// 	transfer()
-// })
+
+document.getElementById('refresh').addEventListener('click', function(){	
+	display()
+})
+document.getElementById('display').addEventListener('click', function(){	
+	get_nfts()
+})
+document.getElementById('running').addEventListener('click', function(){	
+	current_running()
+})
+async function current_running(){
+	let search_time = Math.floor(+new Date()) - 180
+	search_time = new Date(search_time).toISOString();
+	await new Promise(resolve => setTimeout(resolve, 3000))
+	console.log('Current running accounts...')
+	for(var address in values.default.OWNER_ADDRESS){
+	  await new Promise(resolve => setTimeout(resolve, 1000))
+	 //console.log(address) 
+	  try{
+		const order = await seaport.api.getOrders({
+		  side: 0,
+		  order_by: 'created_date',
+		  maker: values.default.OWNER_ADDRESS[address].address,
+		  listed_after: search_time,
+		  limit: 1,
+		})
+		if(order.orders.length > 0){
+		  console.log(values.default.OWNER_ADDRESS[address].username + ' ' + order.orders[0].asset.collection.slug)
+		}
+	  }
+	  catch(ex) {
+		console.log(ex.message)
+	  }
+	}
+	console.log('Complete') 
+  }
 //AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ - etherscan apikey
 const API_KEY = 'AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ'
 var ADDRESS = '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
-
 
 var balance = 0
 var weth_balance = 0
 async function get_balance(address){
 	try {
-	  const response = await fetch('https://api.etherscan.io/api?module=account&action=balance&address=' + address + '&tag=latest&apikey=' + API_KEY);
-	  const data = await response.json()
-	  console.log(data.result)
-	  balance = parseFloat(balance) + parseFloat(data.result/1000000000000000000)
-	  console.log(balance)
-	  document.getElementById('account').innerHTML = 'Total ' + balance.toFixed(4) + ' ETH ' + weth_balance.toFixed(4) + ' WETH'
-
+		const response = await fetch('https://api.etherscan.io/api?module=account&action=balance&address=' + address + '&tag=latest&apikey=' + API_KEY);
+		const data = await response.json()
+		balance = parseFloat(balance) + parseFloat(data.result/1000000000000000000)
+		//   console.log(balance)
+		document.getElementById('account').innerHTML = 'Total ' + balance.toFixed(4) + ' ETH ' + weth_balance.toFixed(4) + ' WETH'
+		return parseFloat(data.result/1000000000000000000)
 	} catch (error) {
 	  console.log('Looks like there was a problem: ', error);
 	}
 }
 async function get_weth_balance(address){
 	try {
-	  const response = await fetch('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&address=' + address + '&tag=latest&apikey=' + API_KEY)
-	  const data = await response.json()
-	  console.log('weth--')
-	  weth_balance = parseFloat(weth_balance) + parseFloat(data.result/1000000000000000000)
-	  console.log(weth_balance)
+		const response = await fetch('https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2&address=' + address + '&tag=latest&apikey=' + API_KEY)
+		const data = await response.json()
+		weth_balance = parseFloat(weth_balance) + parseFloat(data.result/1000000000000000000)
+		//   console.log(weth_balance)
+		return parseFloat(data.result/1000000000000000000)
 	} catch (error) {
 	  console.log('Looks like there was a problem: ', error);
 	}	
 }
-
-get_nfts()
+// display_balances()
+async function display_balances(){
+	for(var account of values.default.OWNER_ADDRESS){
+		console.log(account.username)
+		// var bal = await get_balance(account.address)
+		// console.log('Eth')
+		// console.log(bal)
+		await new Promise(resolve => setTimeout(resolve, 1000))
+		var weth_bal = await get_weth_balance(account.address)
+		console.log('Weth')
+		console.log(weth_bal)
+	}
+	console.log(balance)
+	console.log(weth_balance)
+}
 
 var collections = {}
 async function get_nfts(){
@@ -176,8 +209,8 @@ async function display(){
 	var count = 0
 	var eth_value = 0
 	var divNode = document.getElementById('page')
-	while(divNode.firstChild) {
-        divNode.removeChild(divNode.firstChild);
+	while(divNode.hasChildNodes()) {
+        divNode.removeChild(divNode.lastChild);
     }
 	for(const collection in collections){
 		try{
@@ -189,7 +222,7 @@ async function display(){
 			nodeh3.innerHTML = '<a target=_blank href="https://opensea.io/collection/' + collection + '">' + collection + '</a> FLOOR: ' + floor_price.toFixed(4) + ' ' + collect['collection']['dev_seller_fee_basis_points']/100 + '% One day sales: ' + collect.collection.stats.one_day_sales + ' | average price: ' + collect.collection.stats.one_day_average_price.toFixed(4) + ' '
 			nodeh3.style = 'text-align: center'
 			divNode.appendChild(nodeh3)
-			var hide_button = document.createElement('button')
+			let hide_button = document.createElement('button')
 			hide_button.id = collection + ' button' 
 			hide_button.innerHTML = 'Hide'
 			hide_button.addEventListener('click', function(){
@@ -207,7 +240,7 @@ async function display(){
 			nodeflexcontainer.id = collection
 			for(var asset in collections[collection]){
 				eth_value += floor_price
-				var asset = collections[collection][asset]
+				asset = collections[collection][asset]
 				count += 1
 				console.log(asset)
 
@@ -252,9 +285,12 @@ async function display(){
 	            } catch(e){
 	            	last_sale = ' (--)'
 	            }
+				//asset.owner.address
 	            var username = asset.owner.user.username
-				nodedivtxt.innerHTML = username + '<br>' + '<a target=_blank href=' + asset.openseaLink +'>#' + asset.tokenId + '</a>' + '<br>' + listed_price + last_sale + '<br><span style="color:purple">' + top_bid.toFixed(3) + '<br></span>'
+				nodedivtxt.innerHTML = username + '<br><a target=_blank href=' + asset.openseaLink +'>#' + asset.tokenId + '</a><br>' + listed_price + last_sale + '<br><span style="color:purple">' + top_bid.toFixed(3) + '<br></span>'
 				var input = document.createElement('input')
+
+				//Button to list
 				var button = document.createElement('button')
 				button.id = asset.collection.slug + ' ' + asset.tokenId + ' ' + asset.tokenAddress
 				input.id = asset.collection.slug + '' + asset.tokenId
@@ -262,9 +298,28 @@ async function display(){
 					sell_order(this.id.split(' '))
 				})
 				button.innerHTML = '>'
+
+				//Button to transfer
+				var transfer_button = document.createElement('button')
+				transfer_button.id = asset.collection.slug + ' ' + asset.tokenId + ' ' + asset.tokenAddress + ' ' + asset.owner.address
+				input.id = asset.collection.slug + '' + asset.tokenId
+				transfer_button.addEventListener('click', function(){	
+					var confirm_transfer = window.confirm('Confirm Transfer.')
+					if(confirm_transfer === true){
+						console.log('transfer complete')
+						console.log(this.id.split(' '))
+						transfer(this.id.split(' '))
+					} else {
+						console.log('No')
+					}
+					//sell_order(this.id.split(' '))
+				})
+				transfer_button.innerHTML = 'X'
+
 				input.style.width = '50px'
 				nodedivtxt.appendChild(input)
 				nodedivtxt.appendChild(button)
+				nodedivtxt.appendChild(transfer_button)
 				nodediv.appendChild(nodeimg)
 				nodediv.appendChild(nodedivtxt)
 
@@ -289,16 +344,16 @@ function search(){
 		document.getElementById(document.getElementById('search').value).scrollIntoView();
 	} 
 }
-function hide_all(){
-	for(var collection in collections){
-		document.getElementById(collection).style.visibility = "hidden"
-	}
-}
-function show_all(){
-	for(var collection in collections){
-		document.getElementById(collection).style.visibility = "hidden"
-	}
-}
+// function hide_all(){
+// 	for(var collection in collections){
+// 		document.getElementById(collection).style.visibility = "hidden"
+// 	}
+// }
+// function show_all(){
+// 	for(var collection in collections){
+// 		document.getElementById(collection).style.visibility = "hidden"
+// 	}
+// }
 
 async function sell_order(item){
 	console.log(document.getElementById(item[0]+item[1]).value)
@@ -319,8 +374,19 @@ async function sell_order(item){
 		}
 	} else {
 		alert('No')
-	}
-
-	
+	}	
+}
+async function transfer(item){
+	swap()
+	const transactionHash = await seaport.transfer({
+		asset: {
+			tokenAddress: item[2], // CryptoKitties
+			tokenId: item[1], // Token ID
+	    },
+		fromAddress: item[3], // Must own the asset
+		toAddress:  '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
+	})
+	console.log(transactionHash)
+	swap()
 }
 
