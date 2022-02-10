@@ -2,6 +2,7 @@ const values = require('./values.js')
 const data = require('./data.js')
 const secret = require('./secret.js')
 const opensea = require("opensea-js")
+
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const MnemonicWalletSubprovider = require("@0x/subproviders")
@@ -32,6 +33,18 @@ var seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
+var Web3 = require('web3')
+var Eth = require('web3-eth');
+
+var eth = new Eth(providerEngine)
+get_gas()
+
+async function get_gas(){
+	let gas = await eth.getGasPrice()
+	document.getElementById('gas').innerHTML = ' gwei: ' + (gas/1000000000).toFixed(0)
+}
+
+
 
 providerEngine.start()
 function change_seaport(MNEMONIC){
@@ -68,6 +81,42 @@ function swap(){
 		ADDRESS = '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
 	}
 }
+var acct_dict = {}
+document.getElementById('test').addEventListener('click', async function(){
+	for(var address of values.default.OWNER_ADDRESS){
+		if(address.username === 'DustBunny'){
+			swap()
+		}
+		var success = await test_bid(address.address)
+		if(success === 'success'){
+			acct_dict['can_run'] = true 
+		} else{
+			acct_dict['can_run'] = false
+		}
+		console.log(address.username + ' ' + success) 
+	}	
+	swap()
+	console.log(acct_dict)
+})
+async function test_bid(address){
+	var asset = {
+	  tokenId: '8573',
+	  tokenAddress: '0x24998f0a028d197413ef57c7810f7a5ef8b9fa55',
+	  //schemaName: WyvernSchemaName.ERC1155
+	}
+	try{
+	  await seaport.createBuyOrder({
+		asset,
+		startAmount: 0,
+		accountAddress: address,
+		expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .01),
+	  })
+	  return 'success'
+	} catch(ex){
+		//console.log(ex)
+	}
+	return 'fail'
+}
 
 document.getElementById('refresh').addEventListener('click', function(){	
 	display()
@@ -95,7 +144,10 @@ async function current_running(){
 		  limit: 1,
 		})
 		if(order.orders.length > 0){
-		  console.log(values.default.OWNER_ADDRESS[address].username + ' ' + order.orders[0].asset.collection.slug)
+			acct_dict[values.default.OWNER_ADDRESS[address].username]['running'] = order.orders[0].asset.collection.slug
+			console.log(values.default.OWNER_ADDRESS[address].username + ' ' + order.orders[0].asset.collection.slug)
+		} else {
+			acct_dict[values.default.OWNER_ADDRESS[address].username]['running'] = false
 		}
 	  }
 	  catch(ex) {
@@ -103,7 +155,10 @@ async function current_running(){
 	  }
 	}
 	console.log('Complete') 
-  }
+}
+function get_available_accounts(){
+
+}
 //AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ - etherscan apikey
 const API_KEY = 'AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ'
 var ADDRESS = '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
@@ -116,7 +171,7 @@ async function get_balance(address){
 		const data = await response.json()
 		balance = parseFloat(balance) + parseFloat(data.result/1000000000000000000)
 		//   console.log(balance)
-		document.getElementById('account').innerHTML = 'Total ' + balance.toFixed(4) + ' ETH ' + weth_balance.toFixed(4) + ' WETH'
+		document.getElementById('account').innerHTML = balance.toFixed(4) + ' ETH ' + weth_balance.toFixed(4) + ' WETH'
 		return parseFloat(data.result/1000000000000000000)
 	} catch (error) {
 	  console.log('Looks like there was a problem: ', error);
@@ -133,21 +188,33 @@ async function get_weth_balance(address){
 	  console.log('Looks like there was a problem: ', error);
 	}	
 }
-// display_balances()
-async function display_balances(){
+document.getElementById('balances').addEventListener('click', async function(){
+	
 	for(var account of values.default.OWNER_ADDRESS){
-		console.log(account.username)
-		// var bal = await get_balance(account.address)
-		// console.log('Eth')
-		// console.log(bal)
-		await new Promise(resolve => setTimeout(resolve, 1000))
+		var acct = {}
+		var success = await test_bid(account.address)
+		if(success === 'success'){
+			acct['can_run'] = true 
+		} else{
+			acct['can_run'] = false
+		}
+		var bal = await get_balance(account.address)
+		await new Promise(resolve => setTimeout(resolve, 500))
 		var weth_bal = await get_weth_balance(account.address)
-		console.log('Weth')
-		console.log(weth_bal)
+		acct['username'] = account.username
+		acct['weth_balance'] = weth_bal.toFixed(4)
+		acct['eth_balance'] = bal.toFixed(4)
+		acct_dict[account.username] = acct
+		console.log(account.username + ' WETH: ' + weth_bal.toFixed(4) + ' ETH: ' + bal.toFixed(4))
 	}
-	console.log(balance)
-	console.log(weth_balance)
-}
+	await current_running()
+	console.log("Eth: " + balance)
+	console.log("Weth: " + weth_balance)
+	console.log(acct_dict)
+	for(var a in acct_dict){
+		console.log(acct_dict[a])
+	}
+})
 
 var collections = {}
 async function get_nfts(){
@@ -157,13 +224,8 @@ async function get_nfts(){
 	'frosty-snowbois', "baycforpeople", 'zoogangnft', 'dirtybird-flight-club', 'ens', 'metaverse-cool-cats', 'larva-eggs', 
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
 	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos',
-	'radioactiveapesofficial', 'blockverse-mc', 'hollydao']
+	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft']
 	for(var account in values.default.OWNER_ADDRESS){
-		get_weth_balance(values.default.OWNER_ADDRESS[account].address)
-		await new Promise(resolve => setTimeout(resolve, 500))
-		get_balance(values.default.OWNER_ADDRESS[account].address)
-		await new Promise(resolve => setTimeout(resolve, 500))
-		console.log(account)
 		try {
 			await new Promise(resolve => setTimeout(resolve, 500))
 			const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&address=" + values.default.OWNER_ADDRESS[account].address + "&startblock=0&endblock=999999999&sort=asc&apikey=" + API_KEY);
@@ -209,9 +271,7 @@ async function display(){
 	var count = 0
 	var eth_value = 0
 	var divNode = document.getElementById('page')
-	while(divNode.hasChildNodes()) {
-        divNode.removeChild(divNode.lastChild);
-    }
+	divNode.innerHTML = ''
 	for(const collection in collections){
 		try{
 			await new Promise(resolve => setTimeout(resolve, 500))

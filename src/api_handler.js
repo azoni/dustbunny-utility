@@ -38,19 +38,16 @@ providerEngine.start()
 // 	}
 // }
 
-// async function get_listed_asset(slug){
-// 	var listed_assets = []
-// 	var assets = await get_assets(slug)
-// 	console.log(assets)
-
-// 	for(asset in assets){
-// 		if(assets[asset].sellOrders !== null){
-
-// 		}
-// 	}
-
-// 	return listed_assets
-// }
+async function get_listed_asset(slug){
+	var listed_assets = []
+	var assets = await get_assets(slug)
+	for(let asset of assets){
+		if(asset.sellOrders !== null){
+			listed_assets.push(asset)
+		}
+	}
+	return listed_assets
+}
 
 async function get_collection(slug){
 	try{
@@ -68,22 +65,29 @@ async function get_assets(slug){
 	var assets_length = 0
 	var assets_dict = {}
 	var assets_list = []
+	try {
+		return require('./collections/' + slug + '.json').assets
+	} catch(ex) {
+		do {
+			var assets = await seaport.api.getAssets({
+				'collection': slug,
+				'offset': offset,
+				'limit': limit,
+			})
+			assets.assets.forEach((asset) =>{
+				assets_list.push(asset)
+			})
+			assets_length = assets.assets.length
+			offset += 50
+			if(offset % 1000 === 0){
+				console.log(offset)
+			}
+			
+		} while(assets_length === 50)
+	
+		return assets_list
+	}
 
-	do {
-		var assets = await seaport.api.getAssets({
-			'collection': slug,
-			'offset': offset,
-			'limit': limit,
-		})
-		assets.assets.forEach((asset) =>{
-			assets_list.push(asset)
-		})
-		assets_length = assets.assets.length
-		offset += 50
-		console.log(offset)
-	} while(assets_length === 50)
-
-	return assets_list
 }
 
 // 
@@ -181,6 +185,21 @@ async function getCollectionDetails(collectionName){
     console.log("couldn't get collection")
   }  
 }
+//order['orders'][o].taker !== '0x0000000000000000000000000000000000000000'
+async function buy_order_by_collection(){
+	try{   
+		const order = await seaport.api.getOrders({
+			side: 1,
+			order_by: 'created_date',
+			listed_after: search_time,
+			listed_before: search_time2,
+			limit: 50,
+			offset: offset
+		})
+	} catch(ex){
+		console.log(ex.message)
+	}
+}
 
 async function fulfil_order(){
 	var asset = await seaport.api.getAsset({
@@ -200,14 +219,21 @@ async function fulfil_order(){
 }
 
 async function main(){
-	// var slug = ['creatureworld']
-	// //var assets = await get_assets('cool-cats-nft')
-	// //console.log(assets)
-	// //write_assets('lazy-lions', 10080)
+	var slug = ['alienfrensnft']
+	//var assets = await get_assets('cool-cats-nft')
+	//console.log(assets)
+	//write_assets('lazy-lions', 10080)
 	// for(var index in slug){
 	// 	var collect = await getCollectionDetails(slug[index])
 	// 	await write_assets(slug[index], collect.collection.stats.total_supply)
 	// }
+	var collect = await getCollectionDetails('alienfrensnft')
+	console.log(collect.collection.stats.count)
+	console.log(collect.collection.traits)
+	let list_assets = await get_listed_asset('alienfrensnft')
+	console.log(list_assets[0].traits)
+
+
 }
 
 main()
