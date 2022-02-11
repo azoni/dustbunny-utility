@@ -33,7 +33,6 @@ var seaport = new OpenSeaPort(
   },
   (arg) => console.log(arg)
 );
-var Web3 = require('web3')
 var Eth = require('web3-eth');
 
 var eth = new Eth(providerEngine)
@@ -43,8 +42,6 @@ async function get_gas(){
 	let gas = await eth.getGasPrice()
 	document.getElementById('gas').innerHTML = ' gwei: ' + (gas/1000000000).toFixed(0)
 }
-
-
 
 providerEngine.start()
 function change_seaport(MNEMONIC){
@@ -191,6 +188,9 @@ async function get_weth_balance(address){
 document.getElementById('balances').addEventListener('click', async function(){
 	
 	for(var account of values.default.OWNER_ADDRESS){
+		if(account.username === 'DustBunny'){
+			swap()
+		}
 		var acct = {}
 		var success = await test_bid(account.address)
 		if(success === 'success'){
@@ -214,8 +214,27 @@ document.getElementById('balances').addEventListener('click', async function(){
 	for(var a in acct_dict){
 		console.log(acct_dict[a])
 	}
+	swap()
+	
 })
-
+async function test_unstake_bid(){
+	//startblock + 1 to avoid repeat
+	var block = 1
+	const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0x364c828ee171616a39897688a831c2499ad972ec&page=1&startblock=" + block + "&offset=100&sort=desc&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
+	const data = await response.json()
+	//console.log(data.result)
+	var first = 0
+	for(let tx of data.result){
+		if(tx.from === '0xdf8a88212ff229446e003f8f879e263d3616b57a'){
+			console.log(tx.tokenName + ' ' + tx.tokenID)
+			if(first === 0) {
+				block = tx.blockNumber
+			}
+			first = 1
+		}
+	}
+	console.log(block)
+}
 var collections = {}
 async function get_nfts(){
 	// var token_ids = []
@@ -223,7 +242,7 @@ async function get_nfts(){
 	const hidden = ['theapesonsnft', 'babydeluxe', 'doodlebearsdeluxe', 'neneneko-labs', 'larva-lads', 'pandaparadise', 
 	'frosty-snowbois', "baycforpeople", 'zoogangnft', 'dirtybird-flight-club', 'ens', 'metaverse-cool-cats', 'larva-eggs', 
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
-	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos',
+	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos', 'vax-apes',
 	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft']
 	for(var account in values.default.OWNER_ADDRESS){
 		try {

@@ -22,6 +22,14 @@ const values = {
 	//USE_DATA: 1,
 	INFURA_KEY: ['deb8c4096c784171b97a21f7a5b7ba98', '4f3eb54f7bf74889898db355ca586eb1', '7e5d8e2034a840b9b8e6093dca13aa4f', '17c3fb8ed16c4ebe890ca3d22ad6998a'],
 	//ALCHEMY_KEY: 'KwOeJc6S2vvKtLXEpmo2-SFXOws3uZC3',
+	STAKING_WALLETS: {
+		'sneaky-vampire-syndicate' : '0x12753244901f9e612a471c15c7e5336e813d2e0b',
+		'sappy-seals': '0xdf8a88212ff229446e003f8f879e263d3616b57a',
+		'metroverse': '0xab93f992d9737bd740113643e79fe9f8b6b34696',
+		'genesis-creepz': '0xc3503192343eae4b435e4a1211c5d28bf6f6a696',
+		'coolmonkes': '0xed6552d7e16922982bf80cf43090d71bb4ec2179',
+		'anonymice': '0x000000000000000000000000000000000000dead',
+	},
 	COLLECTION_TRAIT: {
 		'cool-cats-nft': {
 			'tier': {
