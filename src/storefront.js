@@ -124,33 +124,30 @@ document.getElementById('display').addEventListener('click', function(){
 document.getElementById('running').addEventListener('click', function(){	
 	current_running()
 })
-async function current_running(){
+async function current_running(account){
 	let search_time = Math.floor(+new Date()) - 180
 	search_time = new Date(search_time).toISOString();
-	await new Promise(resolve => setTimeout(resolve, 3000))
 	console.log('Current running accounts...')
-	for(var address in values.default.OWNER_ADDRESS){
-	  await new Promise(resolve => setTimeout(resolve, 1000))
-	 //console.log(address) 
-	  try{
-		const order = await seaport.api.getOrders({
-		  side: 0,
-		  order_by: 'created_date',
-		  maker: values.default.OWNER_ADDRESS[address].address,
-		  listed_after: search_time,
-		  limit: 1,
-		})
-		if(order.orders.length > 0){
-			acct_dict[values.default.OWNER_ADDRESS[address].username]['running'] = order.orders[0].asset.collection.slug
-			console.log(values.default.OWNER_ADDRESS[address].username + ' ' + order.orders[0].asset.collection.slug)
-		} else {
-			acct_dict[values.default.OWNER_ADDRESS[address].username]['running'] = false
-		}
-	  }
-	  catch(ex) {
-		console.log(ex.message)
-	  }
+  await new Promise(resolve => setTimeout(resolve, 1000))
+ //console.log(address) 
+  try{
+	const order = await seaport.api.getOrders({
+	  side: 0,
+	  order_by: 'created_date',
+	  maker: account.address,
+	  listed_after: search_time,
+	  limit: 1,
+	})
+	if(order.orders.length > 0){
+		return order.orders[0].asset.collection.slug
+		console.log(account.username + ' ' + order.orders[0].asset.collection.slug)
+	} else {
+		return false
 	}
+  }
+  catch(ex) {
+	console.log(ex.message)
+  }
 	console.log('Complete') 
 }
 function get_available_accounts(){
@@ -186,11 +183,13 @@ async function get_weth_balance(address){
 	}	
 }
 document.getElementById('balances').addEventListener('click', async function(){
-	
+	swap()
+	let text_area = document.getElementById('textarea')
 	for(var account of values.default.OWNER_ADDRESS){
-		if(account.username === 'DustBunny'){
-			swap()
+		if(account.username === 'Azoni'){
+			continue
 		}
+		var running = await current_running(account)
 		var acct = {}
 		var success = await test_bid(account.address)
 		if(success === 'success'){
@@ -201,21 +200,20 @@ document.getElementById('balances').addEventListener('click', async function(){
 		var bal = await get_balance(account.address)
 		await new Promise(resolve => setTimeout(resolve, 500))
 		var weth_bal = await get_weth_balance(account.address)
+		acct['running'] = running
 		acct['username'] = account.username
 		acct['weth_balance'] = weth_bal.toFixed(4)
 		acct['eth_balance'] = bal.toFixed(4)
 		acct_dict[account.username] = acct
 		console.log(account.username + ' WETH: ' + weth_bal.toFixed(4) + ' ETH: ' + bal.toFixed(4))
+		text_area.innerHTML += account.username + ' ' + weth_bal.toFixed(2) + ' ' + success + ' ' + running + '<br>'
 	}
-	await current_running()
-	console.log("Eth: " + balance)
-	console.log("Weth: " + weth_balance)
-	console.log(acct_dict)
-	for(var a in acct_dict){
-		console.log(acct_dict[a])
-	}
-	swap()
 	
+	// console.log("Eth: " + balance)
+	// console.log("Weth: " + weth_balance)
+	// console.log(acct_dict)
+	swap()
+
 })
 async function test_unstake_bid(){
 	//startblock + 1 to avoid repeat
