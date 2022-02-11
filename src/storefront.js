@@ -184,6 +184,8 @@ async function get_weth_balance(address){
 }
 document.getElementById('balances').addEventListener('click', async function(){
 	swap()
+	var table = document.createElement("table");
+
 	let text_area = document.getElementById('textarea')
 	for(var account of values.default.OWNER_ADDRESS){
 		if(account.username === 'Azoni'){
@@ -241,7 +243,7 @@ async function get_nfts(){
 	'frosty-snowbois', "baycforpeople", 'zoogangnft', 'dirtybird-flight-club', 'ens', 'metaverse-cool-cats', 'larva-eggs', 
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
 	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos', 'vax-apes',
-	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft']
+	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft', 'cryptoheartznft']
 	for(var account in values.default.OWNER_ADDRESS){
 		try {
 			await new Promise(resolve => setTimeout(resolve, 500))
