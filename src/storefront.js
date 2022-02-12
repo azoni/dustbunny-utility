@@ -288,11 +288,12 @@ async function get_latest_block(){
 	const block_data = await block_response.json()
 	block = block_data.result
 }
-get_latest_block()
+
 
 
 // test_unstake_bid()
 async function test_unstake_bid(){
+	get_latest_block()
 	//startblock + 1 to avoid repeat
 	for(var set in staking_sets){
 		await new Promise(resolve => setTimeout(resolve, 500))
@@ -302,13 +303,11 @@ async function test_unstake_bid(){
 		const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + collection.primary_asset_contracts[0].address + "&page=1&startblock=" + block + "&offset=100&sort=desc&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
 		const data = await response.json()
 		console.log(data.result)
-
+		var bid_amount = collection.stats.floor_price * (.9 - collection.dev_seller_fee_basis_points/10000)
 		for(let tx of data.result){	
-			if(tx.blockNumber > block){
-				block = parseInt(tx.blockNumber) + 1
-			}
 			if(tx.from === staking_sets[set]){
-				bid(tx.tokenName, tx.tokenID, collection.primary_asset_contracts[0].address, collection.stats.floor_price)
+				
+				bid(set, tx.tokenName, tx.tokenID, collection.primary_asset_contracts[0].address, bid_amount)
 				console.log('--------------------------------------------------------')
 				console.log('--------------------------------------------------------')
 				console.log('--------------------------------------------------------')
@@ -320,31 +319,31 @@ async function test_unstake_bid(){
 				console.log('--------------------------------------------------------')
 			}
 		}
-		console.log(set + ' ' + collection.stats.floor_price + ' ' + block)
+		console.log(set + ' ' + collection.stats.floor_price + ' bid: ' + bid_amount + ' block ' + block)
 	}
 	
 	await new Promise(resolve => setTimeout(resolve, 5000))
 	test_unstake_bid()
 }
-async function bid(name, token_id, contract_address, floor_price){
+async function bid(set, name, token_id, contract_address, bid_amount){
 	try{
 		await seaport.createBuyOrder({
 			asset: {
 			tokenId: token_id,
 			tokenAddress: contract_address
 			},
-			startAmount: floor_price * .9,
+			startAmount: bid_amount,
 			accountAddress: document.getElementById('unstake_bid').value,
 			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .5),
 		})
-		text_area.innerHTML += "Bid: " + (floor_price * .9) + "on " + name + " " + token_id + '<br>'
+		text_area.innerHTML += "Bid: " + bid_amount + " on <a href=https://opensea.io/assets/" + contract_address + '/' + token_id + " target=_blank>" + name + "</a> " + token_id + '<br>'
 	} catch(e){
-		text_area.innerHTML += name + " " + token_id + 'error' + '<br>'
+		text_area.innerHTML += "ERROR: " + bid_amount + " on <a href=https://opensea.io/assets/" + contract_address + '/' + token_id + " target=_blank>" + name + "</a> " + token_id + '<br>'
 		console.log(e)
 	}
 }
 async function get_top_bid(){
-
+	
 }
 
 async function get_collection(slug){
@@ -363,7 +362,7 @@ async function get_nfts(){
 	'frosty-snowbois', "baycforpeople", 'zoogangnft', 'dirtybird-flight-club', 'ens', 'metaverse-cool-cats', 'larva-eggs', 
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
 	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos', 'vax-apes',
-	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft', 'cryptoheartznft']
+	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft', 'cryptoheartznft', 'chainfaces-arena']
 	for(var account in values.default.OWNER_ADDRESS){
 		try {
 			await new Promise(resolve => setTimeout(resolve, 500))
