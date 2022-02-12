@@ -125,7 +125,7 @@ document.getElementById('running').addEventListener('click', function(){
 	current_running()
 })
 async function current_running(account){
-	let search_time = Math.floor(+new Date()) - 180
+	let search_time = Math.floor(+new Date()) - 9000
 	search_time = new Date(search_time).toISOString();
 	console.log('Current running accounts...')
   await new Promise(resolve => setTimeout(resolve, 1000))
@@ -136,10 +136,20 @@ async function current_running(account){
 	  order_by: 'created_date',
 	  maker: account.address,
 	  listed_after: search_time,
-	  limit: 1,
+	  limit: 10,
 	})
+	var col_list = []
 	if(order.orders.length > 0){
-		return order.orders[0].asset.collection.slug
+		for(let o of order.orders){
+			if(col_list.includes(o.asset.collection.slug) === false){
+				col_list.push(o.asset.collection.slug)
+			}
+		}
+		var return_val = ''
+		for(let c of col_list){
+			return_val += "<a href=https://opensea.io/collection/" + c + " target=_blank>" + c + "</a>" + '<br>'
+		}
+		return return_val//order.orders[0].asset.collection.slug
 		console.log(account.username + ' ' + order.orders[0].asset.collection.slug)
 	} else {
 		return false
@@ -182,9 +192,12 @@ async function get_weth_balance(address){
 	  console.log('Looks like there was a problem: ', error);
 	}	
 }
+//account for account running multiple sets
 document.getElementById('balances').addEventListener('click', async function(){
 	swap()
-	var table = document.createElement("table");
+	var table1 = document.getElementById('table1-body')
+	var table2 = document.getElementById('table2-body')
+	var table3 = document.getElementById('table3-body')
 
 	let text_area = document.getElementById('textarea')
 	for(var account of values.default.OWNER_ADDRESS){
@@ -199,16 +212,53 @@ document.getElementById('balances').addEventListener('click', async function(){
 		} else{
 			acct['can_run'] = false
 		}
+
 		var bal = await get_balance(account.address)
 		await new Promise(resolve => setTimeout(resolve, 500))
 		var weth_bal = await get_weth_balance(account.address)
+		if(weth_bal < .003){
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.innerHTML = account.username
+			if(acct['can_run']){
+				tr.style.backgroundColor = 'lightgreen'
+				tr.appendChild(td)
+				table2.appendChild(tr)
+			} else {
+				tr.style.backgroundColor = 'pink'
+				tr.appendChild(td)
+				table3.appendChild(tr)
+			}
+			
+		} else {
+			var tr = document.createElement("tr");
+			var td1 = document.createElement("td");
+			var td2 = document.createElement("td");
+			var td3 = document.createElement("td");
+
+			td1.innerHTML = account.username
+			td2.innerHTML = weth_bal.toFixed(2)
+
+			if(running === false){
+				tr.style.backgroundColor = 'pink'
+				td3.innerHTML = '-----'
+			} else {
+				tr.style.backgroundColor = 'lightgreen'
+				td3.innerHTML = running
+			}
+
+			tr.appendChild(td1)
+			tr.appendChild(td2)
+			tr.appendChild(td3)
+			table1.appendChild(tr)
+		}
 		acct['running'] = running
 		acct['username'] = account.username
 		acct['weth_balance'] = weth_bal.toFixed(4)
 		acct['eth_balance'] = bal.toFixed(4)
 		acct_dict[account.username] = acct
 		console.log(account.username + ' WETH: ' + weth_bal.toFixed(4) + ' ETH: ' + bal.toFixed(4))
-		text_area.innerHTML += account.username + ' ' + weth_bal.toFixed(2) + ' ' + success + ' ' + running + '<br>'
+		// text_area.innerHTML += account.username + ' ' + weth_bal.toFixed(2) + ' ' + success + ' ' + running + '<br>'
 	}
 	
 	// console.log("Eth: " + balance)
@@ -229,7 +279,7 @@ var staking_sets = {
 }
 
 var block = 1
-test_unstake_bid()
+// test_unstake_bid()
 async function test_unstake_bid(){
 	//startblock + 1 to avoid repeat
 	for(var set in staking_sets){
