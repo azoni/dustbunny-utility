@@ -228,25 +228,27 @@ var staking_sets = {
 	'critterznft': '0x6714de8aa0db267552eb5421167f5d77f0c05c6d'
 }
 
-var block = 1
+var block = 14193046
 test_unstake_bid()
 async function test_unstake_bid(){
 	//startblock + 1 to avoid repeat
 	for(var set in staking_sets){
+		await new Promise(resolve => setTimeout(resolve, 500))
 		var collection = await get_collection(set)
 		collection = collection.collection
-		const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + collection.primary_asset_contracts[0].address + "&page=1&startblock=" + (block + 1) + "&offset=100&sort=desc&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
+		
+		const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + collection.primary_asset_contracts[0].address + "&page=1&startblock=" + block + "&offset=100&sort=desc&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
 		const data = await response.json()
-		var first = 0
-		for(let tx of data.result){
+		console.log(data.result)
+
+		for(let tx of data.result){	
+			if(tx.blockNumber > block){
+				block = parseInt(tx.blockNumber) + 1
+			}
 			if(tx.from === staking_sets[set]){
 				console.log('--------------------------------------------------------')
 				console.log(tx.tokenName + ' ' + tx.tokenID + ' ' + collection.stats.floor_price)
 				console.log('--------------------------------------------------------')
-				if(first === 0) {
-					block = tx.blockNumber
-				}
-				first = 1
 			}
 		}
 		console.log(set + ' ' + collection.stats.floor_price + ' ' + block)
