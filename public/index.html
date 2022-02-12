@@ -17,16 +17,78 @@
 
     <title id='title'>Store</title>
   </head>
-  <body id='body' style="text-align: center; background: teal">
+  <body id='body' style="text-align: center; background: lightgray;">
     <h2 style='display: inline;' id='account_name'>Azoni</h2> <h2 id='gas' style='display: inline;'>Gas: </h2>  
     <h2 id='account'>Azoni</h2>    
-    <input id='search' placeholder="winterbears"></input>
-    <button id='refresh'>Refresh</button>
+    <!-- <input id='search' placeholder="winterbears"></input> -->
+    <!-- <button id='refresh'>Refresh</button> -->
     <button id='balances'>Balances</button>
     <button id='display'>display</button>
     <button id='swap'>Swap</button>
-    <button id='running'>Running</button>
-    <button id='test'>Test</button>
+    <!-- <button id='running'>Running</button> -->
+    <!-- <button id='test'>Test</button> -->
+    <input id='unstake_bid' placeholder="0xcae462347cd2d83f9a548afacb2ca6e0c6063bff"></input>
+    <button id='unstake'>Unstake Bid</button>
+    <br><br>
+    <style type="text/css">
+      td {
+        padding: 0 15px;
+      }
+      th {
+        padding: 0 15px;
+      }
+    </style>
+    <table style="display: inline; text-align: left; font-size:200%;">
+    <thead>
+    <tr>
+        <th>Account</th>
+        <th>Balance</th>
+        <th>Running</th>
+    </tr>
+    </thead>
+    <tbody id='table1-body'>
+<!--     <tr bgcolor="lightgreen">
+        <td>Monte Falco</td>
+        <td>1658</td>
+        <td>Parco Foreste Casentinesi</td>
+    </tr>
+    <tr bgcolor="pink">
+        <td>Monte Falterona</td>
+        <td>1654</td>
+        <td>Parco Foreste Casentinesi</td>
+    </tr> -->
+    </tbody>
+</table>
+<table style="display: inline; text-align: left; font-size:200%; padding-left: 5%; ">
+    <thead>
+    <tr>
+        <th>Ready</th>
+    </tr>
+    </thead>
+    <tbody id='table2-body'>
+<!--     <tr>
+        <td bgcolor="lightgreen">Monte Falco</td>
+    </tr>
+    <tr>
+        <td bgcolor="pink">Monte Falterona</td>
+    </tr> -->
+    </tbody>
+</table>
+<table style="display: inline; text-align: left; font-size:200%; padding-left: 5%; ">
+    <thead>
+    <tr>
+        <th>Not Ready</th>
+    </tr>
+    </thead>
+    <tbody id='table3-body'>
+<!--     <tr>
+        <td bgcolor="lightgreen">Monte Falco</td>
+    </tr>
+    <tr>
+        <td bgcolor="pink">Monte Falterona</td>
+    </tr> -->
+    </tbody>
+</table>
     <p style="font-size: 28px; text-align: left;padding-left: 10px" id='textarea'>
 
     </p>

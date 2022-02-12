@@ -79,22 +79,22 @@ function swap(){
 	}
 }
 var acct_dict = {}
-document.getElementById('test').addEventListener('click', async function(){
-	for(var address of values.default.OWNER_ADDRESS){
-		if(address.username === 'DustBunny'){
-			swap()
-		}
-		var success = await test_bid(address.address)
-		if(success === 'success'){
-			acct_dict['can_run'] = true 
-		} else{
-			acct_dict['can_run'] = false
-		}
-		console.log(address.username + ' ' + success) 
-	}	
-	swap()
-	console.log(acct_dict)
-})
+// document.getElementById('test').addEventListener('click', async function(){
+// 	for(var address of values.default.OWNER_ADDRESS){
+// 		if(address.username === 'DustBunny'){
+// 			swap()
+// 		}
+// 		var success = await test_bid(address.address)
+// 		if(success === 'success'){
+// 			acct_dict['can_run'] = true 
+// 		} else{
+// 			acct_dict['can_run'] = false
+// 		}
+// 		console.log(address.username + ' ' + success) 
+// 	}	
+// 	swap()
+// 	console.log(acct_dict)
+// })
 async function test_bid(address){
 	var asset = {
 	  tokenId: '8573',
@@ -114,18 +114,20 @@ async function test_bid(address){
 	}
 	return 'fail'
 }
-
-document.getElementById('refresh').addEventListener('click', function(){	
-	display()
+document.getElementById('unstake').addEventListener('click', function(){	
+	test_unstake_bid()
 })
+// document.getElementById('refresh').addEventListener('click', function(){	
+// 	display()
+// })
 document.getElementById('display').addEventListener('click', function(){	
 	get_nfts()
 })
-document.getElementById('running').addEventListener('click', function(){	
-	current_running()
-})
+// document.getElementById('running').addEventListener('click', function(){	
+// 	current_running()
+// })
 async function current_running(account){
-	let search_time = Math.floor(+new Date()) - 180
+	let search_time = Math.floor(+new Date()) - 9000
 	search_time = new Date(search_time).toISOString();
 	console.log('Current running accounts...')
   await new Promise(resolve => setTimeout(resolve, 1000))
@@ -136,10 +138,20 @@ async function current_running(account){
 	  order_by: 'created_date',
 	  maker: account.address,
 	  listed_after: search_time,
-	  limit: 1,
+	  limit: 10,
 	})
+	var col_list = []
 	if(order.orders.length > 0){
-		return order.orders[0].asset.collection.slug
+		for(let o of order.orders){
+			if(col_list.includes(o.asset.collection.slug) === false){
+				col_list.push(o.asset.collection.slug)
+			}
+		}
+		var return_val = ''
+		for(let c of col_list){
+			return_val += "<a href=https://opensea.io/collection/" + c + " target=_blank>" + c + "</a>" + '<br>'
+		}
+		return return_val//order.orders[0].asset.collection.slug
 		console.log(account.username + ' ' + order.orders[0].asset.collection.slug)
 	} else {
 		return false
@@ -182,11 +194,15 @@ async function get_weth_balance(address){
 	  console.log('Looks like there was a problem: ', error);
 	}	
 }
+let text_area = document.getElementById('textarea')
+//account for account running multiple sets
 document.getElementById('balances').addEventListener('click', async function(){
 	swap()
-	var table = document.createElement("table");
+	var table1 = document.getElementById('table1-body')
+	var table2 = document.getElementById('table2-body')
+	var table3 = document.getElementById('table3-body')
 
-	let text_area = document.getElementById('textarea')
+	
 	for(var account of values.default.OWNER_ADDRESS){
 		if(account.username === 'Azoni'){
 			continue
@@ -199,16 +215,53 @@ document.getElementById('balances').addEventListener('click', async function(){
 		} else{
 			acct['can_run'] = false
 		}
+
 		var bal = await get_balance(account.address)
 		await new Promise(resolve => setTimeout(resolve, 500))
 		var weth_bal = await get_weth_balance(account.address)
+		if(weth_bal < .003){
+			var tr = document.createElement("tr");
+			var td = document.createElement("td");
+			td.innerHTML = account.username
+			if(acct['can_run']){
+				tr.style.backgroundColor = 'lightgreen'
+				tr.appendChild(td)
+				table2.appendChild(tr)
+			} else {
+				tr.style.backgroundColor = 'pink'
+				tr.appendChild(td)
+				table3.appendChild(tr)
+			}
+			
+		} else {
+			var tr = document.createElement("tr");
+			var td1 = document.createElement("td");
+			var td2 = document.createElement("td");
+			var td3 = document.createElement("td");
+
+			td1.innerHTML = account.username
+			td2.innerHTML = weth_bal.toFixed(2)
+
+			if(running === false){
+				tr.style.backgroundColor = 'pink'
+				td3.innerHTML = '-----'
+			} else {
+				tr.style.backgroundColor = 'lightgreen'
+				td3.innerHTML = running
+			}
+
+			tr.appendChild(td1)
+			tr.appendChild(td2)
+			tr.appendChild(td3)
+			table1.appendChild(tr)
+		}
 		acct['running'] = running
 		acct['username'] = account.username
 		acct['weth_balance'] = weth_bal.toFixed(4)
 		acct['eth_balance'] = bal.toFixed(4)
 		acct_dict[account.username] = acct
 		console.log(account.username + ' WETH: ' + weth_bal.toFixed(4) + ' ETH: ' + bal.toFixed(4))
-		text_area.innerHTML += account.username + ' ' + weth_bal.toFixed(2) + ' ' + success + ' ' + running + '<br>'
+		// text_area.innerHTML += account.username + ' ' + weth_bal.toFixed(2) + ' ' + success + ' ' + running + '<br>'
 	}
 	
 	// console.log("Eth: " + balance)
@@ -225,11 +278,20 @@ var staking_sets = {
 	'genesis-creepz': '0xc3503192343eae4b435e4a1211c5d28bf6f6a696',
 	'coolmonkes': '0xed6552d7e16922982bf80cf43090d71bb4ec2179',
 	'anonymice': '0x000000000000000000000000000000000000dead',
-	'critterznft': '0x6714de8aa0db267552eb5421167f5d77f0c05c6d'
+	'critterznft': '0x6714de8aa0db267552eb5421167f5d77f0c05c6d',
 }
-
 var block = 14193046
-test_unstake_bid()
+async function get_latest_block(){
+	
+	var current_time = Math.floor(+new Date()/1000)
+	const block_response = await fetch("https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=" + current_time + "&closest=before&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
+	const block_data = await block_response.json()
+	block = block_data.result
+}
+get_latest_block()
+
+
+// test_unstake_bid()
 async function test_unstake_bid(){
 	//startblock + 1 to avoid repeat
 	for(var set in staking_sets){
@@ -246,8 +308,15 @@ async function test_unstake_bid(){
 				block = parseInt(tx.blockNumber) + 1
 			}
 			if(tx.from === staking_sets[set]){
+				bid(tx.tokenName, tx.tokenID, collection.primary_asset_contracts[0].address, collection.stats.floor_price)
+				console.log('--------------------------------------------------------')
+				console.log('--------------------------------------------------------')
+				console.log('--------------------------------------------------------')
 				console.log('--------------------------------------------------------')
 				console.log(tx.tokenName + ' ' + tx.tokenID + ' ' + collection.stats.floor_price)
+				console.log('--------------------------------------------------------')
+				console.log('--------------------------------------------------------')
+				console.log('--------------------------------------------------------')
 				console.log('--------------------------------------------------------')
 			}
 		}
@@ -257,21 +326,27 @@ async function test_unstake_bid(){
 	await new Promise(resolve => setTimeout(resolve, 5000))
 	test_unstake_bid()
 }
-// async function bid(){
-// 	try{
-// 		await seaport.createBuyOrder({
-// 			asset: {
-// 			tokenId: i,
-// 			tokenAddress: NFT_CONTRACT_ADDRESS
-// 			},
-// 			startAmount: bid1,
-// 			accountAddress: OWNER_ADDRESS,
-// 			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
-// 		})
-// 	} catch(e){
+async function bid(name, token_id, contract_address, floor_price){
+	try{
+		await seaport.createBuyOrder({
+			asset: {
+			tokenId: token_id,
+			tokenAddress: contract_address
+			},
+			startAmount: floor_price * .9,
+			accountAddress: document.getElementById('unstake_bid').value,
+			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .5),
+		})
+		text_area.innerHTML += "Bid: " + (floor_price * .9) + "on " + name + " " + token_id + '<br>'
+	} catch(e){
+		text_area.innerHTML += name + " " + token_id + 'error' + '<br>'
+		console.log(e)
+	}
+}
+async function get_top_bid(){
 
-// 	}
-// }
+}
+
 async function get_collection(slug){
 	try{
 		const collect = await seaport.api.get('/api/v1/collection/' + slug)
@@ -459,8 +534,8 @@ async function display(){
 	document.getElementById('account').innerHTML = 'Total ' + balance.toFixed(4) + ' ETH ' + weth_balance.toFixed(4) + ' WETH NFTs: ' + count + ' Value(Based on Floor): ' + eth_value
 	
 }
-document.getElementById('refresh').addEventListener('click', display)
-document.getElementById('search').addEventListener('input', search)
+// document.getElementById('refresh').addEventListener('click', display)
+// document.getElementById('search').addEventListener('input', search)
 
 function search(){
 	console.log(document.getElementById('search').value)
