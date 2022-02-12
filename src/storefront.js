@@ -217,23 +217,66 @@ document.getElementById('balances').addEventListener('click', async function(){
 	swap()
 
 })
+
+var staking_sets = {
+	'sneaky-vampire-syndicate' : '0x12753244901f9e612a471c15c7e5336e813d2e0b',
+	'sappy-seals': '0xdf8a88212ff229446e003f8f879e263d3616b57a',
+	'metroverse': '0xab93f992d9737bd740113643e79fe9f8b6b34696',
+	'genesis-creepz': '0xc3503192343eae4b435e4a1211c5d28bf6f6a696',
+	'coolmonkes': '0xed6552d7e16922982bf80cf43090d71bb4ec2179',
+	'anonymice': '0x000000000000000000000000000000000000dead',
+	'critterznft': '0x6714de8aa0db267552eb5421167f5d77f0c05c6d'
+}
+
+var block = 1
+test_unstake_bid()
 async function test_unstake_bid(){
 	//startblock + 1 to avoid repeat
-	var block = 1
-	const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0x364c828ee171616a39897688a831c2499ad972ec&page=1&startblock=" + block + "&offset=100&sort=desc&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
-	const data = await response.json()
-	//console.log(data.result)
-	var first = 0
-	for(let tx of data.result){
-		if(tx.from === '0xdf8a88212ff229446e003f8f879e263d3616b57a'){
-			console.log(tx.tokenName + ' ' + tx.tokenID)
-			if(first === 0) {
-				block = tx.blockNumber
+	for(var set in staking_sets){
+		var collection = await get_collection(set)
+		collection = collection.collection
+		const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + collection.primary_asset_contracts[0].address + "&page=1&startblock=" + (block + 1) + "&offset=100&sort=desc&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
+		const data = await response.json()
+		var first = 0
+		for(let tx of data.result){
+			if(tx.from === staking_sets[set]){
+				console.log('--------------------------------------------------------')
+				console.log(tx.tokenName + ' ' + tx.tokenID + ' ' + collection.stats.floor_price)
+				console.log('--------------------------------------------------------')
+				if(first === 0) {
+					block = tx.blockNumber
+				}
+				first = 1
 			}
-			first = 1
 		}
+		console.log(set + ' ' + collection.stats.floor_price + ' ' + block)
 	}
-	console.log(block)
+	
+	await new Promise(resolve => setTimeout(resolve, 5000))
+	test_unstake_bid()
+}
+// async function bid(){
+// 	try{
+// 		await seaport.createBuyOrder({
+// 			asset: {
+// 			tokenId: i,
+// 			tokenAddress: NFT_CONTRACT_ADDRESS
+// 			},
+// 			startAmount: bid1,
+// 			accountAddress: OWNER_ADDRESS,
+// 			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
+// 		})
+// 	} catch(e){
+
+// 	}
+// }
+async function get_collection(slug){
+	try{
+		const collect = await seaport.api.get('/api/v1/collection/' + slug)
+		return collect
+	} catch (ex) {
+		console.log("couldn't get floor")
+	} 
 }
 var collections = {}
 async function get_nfts(){
@@ -423,16 +466,6 @@ function search(){
 		document.getElementById(document.getElementById('search').value).scrollIntoView();
 	} 
 }
-// function hide_all(){
-// 	for(var collection in collections){
-// 		document.getElementById(collection).style.visibility = "hidden"
-// 	}
-// }
-// function show_all(){
-// 	for(var collection in collections){
-// 		document.getElementById(collection).style.visibility = "hidden"
-// 	}
-// }
 
 async function sell_order(item){
 	console.log(document.getElementById(item[0]+item[1]).value)

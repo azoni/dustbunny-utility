@@ -29,6 +29,7 @@ const values = {
 		'genesis-creepz': '0xc3503192343eae4b435e4a1211c5d28bf6f6a696',
 		'coolmonkes': '0xed6552d7e16922982bf80cf43090d71bb4ec2179',
 		'anonymice': '0x000000000000000000000000000000000000dead',
+		'critterznft': '0x6714de8aa0db267552eb5421167f5d77f0c05c6d'
 	},
 	COLLECTION_TRAIT: {
 		'cool-cats-nft': {
