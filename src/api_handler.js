@@ -1,24 +1,24 @@
 const fs = require('fs')
-const secret = require('./secret_node.js')
+// const secret = require('./secret_node.js')
 const opensea = require("opensea-js")
 const Network = opensea.Network;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
 const OpenSeaPort = opensea.OpenSeaPort;
-const MnemonicWalletSubprovider = require("@0x/subproviders")
-.MnemonicWalletSubprovider;
-const MNEMONIC = secret.MNEMONIC2
-const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
-  mnemonic: MNEMONIC,
-});
-var INFURA_KEY = 'deb8c4096c784171b97a21f7a5b7ba98'
-provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
-var infuraRpcSubprovider = new RPCSubprovider({
-	rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
-  });
+// const MnemonicWalletSubprovider = require("@0x/subproviders")
+// .MnemonicWalletSubprovider;
+// const MNEMONIC = secret.MNEMONIC2
+// const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
+//   mnemonic: MNEMONIC,
+// });
+// var INFURA_KEY = 'deb8c4096c784171b97a21f7a5b7ba98'
+// provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
+// var infuraRpcSubprovider = new RPCSubprovider({
+// 	rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
+//   });
 var providerEngine = new Web3ProviderEngine();
-providerEngine.addProvider(mnemonicWalletSubprovider);
-providerEngine.addProvider(infuraRpcSubprovider);
+// providerEngine.addProvider(mnemonicWalletSubprovider);
+// providerEngine.addProvider(infuraRpcSubprovider);
 
 var seaport = new OpenSeaPort(
   providerEngine,
@@ -219,21 +219,18 @@ async function fulfil_order(){
 }
 
 async function main(){
-	var slug = ['alienfrensnft']
-	//var assets = await get_assets('cool-cats-nft')
-	//console.log(assets)
-	//write_assets('lazy-lions', 10080)
-	// for(var index in slug){
-	// 	var collect = await getCollectionDetails(slug[index])
-	// 	await write_assets(slug[index], collect.collection.stats.total_supply)
-	// }
-	var collect = await getCollectionDetails('alienfrensnft')
-	console.log(collect.collection.stats.count)
-	console.log(collect.collection.traits)
-	let list_assets = await get_listed_asset('alienfrensnft')
-	console.log(list_assets[0].traits)
-
-
+	var slug = ['chain-runners-nft']
+	// var assets = await get_assets('cool-cats-nft')
+	// console.log(assets)
+	for(var index in slug){
+		var collect = await getCollectionDetails(slug[index])
+		await write_assets(slug[index], collect.collection.stats.total_supply)
+	}
+	// var collect = await getCollectionDetails('alienfrensnft')
+	// console.log(collect.collection.stats.count)
+	// console.log(collect.collection.traits)
+	// let list_assets = await get_listed_asset('alienfrensnft')
+	// console.log(list_assets[0].traits)
 }
 
 main()

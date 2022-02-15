@@ -244,6 +244,9 @@ document.getElementById('balances').addEventListener('click', async function(){
 
 			if(running === false){
 				tr.style.backgroundColor = 'pink'
+				if(acct['can_run']){
+					tr.style.backgroundColor = 'yellow'
+				}
 				td3.innerHTML = '-----'
 			} else {
 				tr.style.backgroundColor = 'lightgreen'
@@ -289,8 +292,6 @@ async function get_latest_block(){
 	block = block_data.result
 }
 
-
-
 // test_unstake_bid()
 async function test_unstake_bid(){
 	get_latest_block()
@@ -325,6 +326,7 @@ async function test_unstake_bid(){
 	await new Promise(resolve => setTimeout(resolve, 5000))
 	test_unstake_bid()
 }
+
 async function bid(set, name, token_id, contract_address, bid_amount){
 	try{
 		await seaport.createBuyOrder({
@@ -343,7 +345,46 @@ async function bid(set, name, token_id, contract_address, bid_amount){
 	}
 }
 async function get_top_bid(){
-	
+
+}
+async function two_function_bid(){
+
+}
+document.getElementById('collection_bid').addEventListener('click', function(){	
+	collection_bid('onchainmonkey')
+})
+var bids_made = 0
+async function collection_bid(slug){
+	var assets_data = require('./collections/' + slug + '.json')
+	assets_data = assets_data.assets
+	text_area.innerHTML = ""
+	var collection_data = await get_collection(slug)
+	collection_data = collection_data.collection
+	var contract_address = collection_data.primary_asset_contracts[0].address
+	if(bids_made % 100 === 0 || bids_made === 0) {
+		text_area.innerHTML = ""
+		collection_data = await get_collection(slug)
+		collection_data = collection_data.collection
+		contract_address = collection_data.primary_asset_contracts[0].address
+	}
+	console.log(assets_data[0])
+	// try{
+	// 	await seaport.createBuyOrder({
+	// 		asset: {
+	// 		tokenId: token_id,
+	// 		tokenAddress: contract_address
+	// 		},
+	// 		startAmount: bid_amount,
+	// 		//bot_1
+	// 		accountAddress: '0xdD549945A8dDDdCD73EB2F2D5Fe2bfce932c6A78',
+	// 		expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * 1),
+	// 	})
+	// 	text_area.innerHTML += "Bid: " + bid_amount + " on <a href=https://opensea.io/assets/" + contract_address + '/' + token_id + " target=_blank>" + name + "</a> " + token_id + '<br>'
+	// } catch(e){
+	// 	text_area.innerHTML += "ERROR: " + bid_amount + " on <a href=https://opensea.io/assets/" + contract_address + '/' + token_id + " target=_blank>" + name + "</a> " + token_id + '<br>'
+	// 	console.log(e)
+	// }	
+	bids_made += 1
 }
 
 async function get_collection(slug){
@@ -362,7 +403,7 @@ async function get_nfts(){
 	'frosty-snowbois', "baycforpeople", 'zoogangnft', 'dirtybird-flight-club', 'ens', 'metaverse-cool-cats', 'larva-eggs', 
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
 	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos', 'vax-apes',
-	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft', 'cryptoheartznft', 'chainfaces-arena']
+	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft', 'cryptoheartznft', 'chainfaces-arena', 'dopey-ducklings']
 	for(var account in values.default.OWNER_ADDRESS){
 		try {
 			await new Promise(resolve => setTimeout(resolve, 500))
@@ -578,3 +619,57 @@ async function transfer(item){
 	swap()
 }
 
+// Convert time to a format of hours, minutes, seconds, and milliseconds
+
+function timeToString(time) {
+  let diffInHrs = time / 3600000;
+  let hh = Math.floor(diffInHrs);
+
+  let diffInMin = (diffInHrs - hh) * 60;
+  let mm = Math.floor(diffInMin);
+
+  let diffInSec = (diffInMin - mm) * 60;
+  let ss = Math.floor(diffInSec);
+
+  let diffInMs = (diffInSec - ss) * 100;
+  let ms = Math.floor(diffInMs);
+
+  let formattedHH = hh.toString().padStart(2, "0");
+  let formattedMM = mm.toString().padStart(2, "0");
+  let formattedSS = ss.toString().padStart(2, "0");
+  let formattedMS = ms.toString().padStart(2, "0");
+
+  return `${formattedHH}:${formattedMM}:${formattedSS}:${formattedMS}`;
+}
+
+// Declare variables to use in our functions below
+
+let startTime;
+let elapsedTime = 0;
+let timerInterval;
+
+// Create function to modify innerHTML
+
+function print(txt) {
+  document.getElementById("display").innerHTML = txt;
+}
+
+// Create "start", "pause" and "reset" functions
+
+function start() {
+  startTime = Date.now() - elapsedTime;
+  timerInterval = setInterval(function printTime() {
+    elapsedTime = Date.now() - startTime;
+    print(timeToString(elapsedTime));
+  }, 10);
+}
+
+function pause() {
+  clearInterval(timerInterval);
+}
+
+function reset() {
+  clearInterval(timerInterval);
+  print("00:00:00:00");
+  elapsedTime = 0;
+}
