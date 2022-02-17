@@ -344,14 +344,91 @@ async function bid(set, name, token_id, contract_address, bid_amount){
 		console.log(e)
 	}
 }
-async function get_top_bid(){
+async function get_top_bid_range(a, min, max){
+	try{
+		const order = await seaport.api.getOrders({
+			asset_contract_address: a.tokenAddress,
+			token_ids: a.tokenId,
+			side: 0,
+			order_by: 'eth_price',
+			order_direction: 'desc',
+			limit: 50,
+		})
+		var orders = order.orders
+		var top_bid = min
+		for(var bid of orders){
+			try{
+				if(bid.makerAccount.user.username === 'DrBurry'){
+				continue
+				} 
+			}catch(e) {
+			}
+			
+			var curr_bid = bid.basePrice/1000000000000000000
+			if(curr_bid > max){
+				console.log(a.name + " High bid: " + curr_bid)
+				continue
+			}
+			if(curr_bid > top_bid){
+				top_bid = curr_bid
+			}
+		}
+		return top_bid
+	} catch(e){
+		console.log(e)
+	}
+}
+async function batch_up_bid(collection, a_list, token_address, address){
+	try{
+		var offset = 0
+		var token_ids = []
+		var min = collection.stats.floor_price * (.7 - (collection.dev_seller_fee_basis_points/10000))
+		var max = collection.stats.floor_price * (.9 - (collection.dev_seller_fee_basis_points/10000))
+		for(var a of a_list){
+			token_ids.push(a.tokenId)
+		}
+		do {
+			const order = await seaport.api.getOrders({
+				asset_contract_address: token_address,
+				token_ids: token_ids,
+				side: 0,
+				order_by: 'eth_price',
+				order_direction: 'desc',
+				limit: 50,
+				offset: offset
+			})
+			var order_length = order.orders.length
+			console.log(order.orders.length)
+			console.log(order.orders)
+			offset += 50
+		} while(order_length === 50)
+		
+		// var top_bid = order.orders[0].basePrice/1000000000000000000
+		// for(var bid of orders){
+		// 	console.log(bid)
+		// 	try{
+		// 		if(bid.makerAccount.user.username === 'DrBurry' || bid.makerAccount.address === address){
+		// 		continue
+		// 		} 
+		// 	}catch(e) {
+		// 		}
+		// 	var curr_bid = bid.basePrice/1000000000000000000
+		// 	if(curr_bid > top_bid){
+		// 		top_bid = curr_bid
+		// 	}
+		// }
+	} catch(e){
+		console.log(e)
+	}
 
 }
 async function two_function_bid(){
 
 }
 document.getElementById('collection_bid').addEventListener('click', function(){	
+	//slug, textarea, abs max
 	collection_bid('onchainmonkey')
+	collection_bid('chain-runners-nft')
 })
 var bids_made = 0
 async function collection_bid(slug){
@@ -361,30 +438,64 @@ async function collection_bid(slug){
 	var collection_data = await get_collection(slug)
 	collection_data = collection_data.collection
 	var contract_address = collection_data.primary_asset_contracts[0].address
-	if(bids_made % 100 === 0 || bids_made === 0) {
-		text_area.innerHTML = ""
-		collection_data = await get_collection(slug)
-		collection_data = collection_data.collection
-		contract_address = collection_data.primary_asset_contracts[0].address
+	var traits = data.default.COLLECTION_TRAIT[slug]
+	console.log(traits)
+
+	if('fur' in traits){
+		console.log('fur found')
+		console.log(traits['fur'])
 	}
-	console.log(assets_data[0])
-	// try{
-	// 	await seaport.createBuyOrder({
-	// 		asset: {
-	// 		tokenId: token_id,
-	// 		tokenAddress: contract_address
-	// 		},
-	// 		startAmount: bid_amount,
-	// 		//bot_1
-	// 		accountAddress: '0xdD549945A8dDDdCD73EB2F2D5Fe2bfce932c6A78',
-	// 		expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * 1),
-	// 	})
-	// 	text_area.innerHTML += "Bid: " + bid_amount + " on <a href=https://opensea.io/assets/" + contract_address + '/' + token_id + " target=_blank>" + name + "</a> " + token_id + '<br>'
-	// } catch(e){
-	// 	text_area.innerHTML += "ERROR: " + bid_amount + " on <a href=https://opensea.io/assets/" + contract_address + '/' + token_id + " target=_blank>" + name + "</a> " + token_id + '<br>'
-	// 	console.log(e)
-	// }	
-	bids_made += 1
+	// var a_list = []
+	start()
+	for(let a of assets_data){
+		if(bids_made % 100 === 0 || bids_made === 0) {
+			collection_data = await get_collection(slug)
+			console.log(collection_data)
+			collection_data = collection_data.collection
+			contract_address = collection_data.primary_asset_contracts[0].address
+		}
+		if(bids_made % 10 === 0 || bids_made === 0){
+			text_area.innerHTML = ""
+			text_area.innerHTML += slug + " Floor: " + collection_data.stats.floor_price + " fee: " + collection_data.dev_seller_fee_basis_points/100 + "%<br>"
+		}
+		await new Promise(resolve => setTimeout(resolve, 250))
+		var min_range = .7
+		var max_range = .9
+
+		for(let trait of a.traits){
+			if(trait.trait_type in traits){
+
+			}
+		}
+
+		var min = collection_data.stats.floor_price * (min_range - (collection_data.dev_seller_fee_basis_points/10000))
+		var max = collection_data.stats.floor_price * (max_range - (collection_data.dev_seller_fee_basis_points/10000))
+		var top_bid = await get_top_bid_range(a, min, max)
+		var bid_amount = parseFloat(top_bid) + parseFloat(.001)
+		try{
+			await seaport.createBuyOrder({
+				asset: {
+				tokenId: a.tokenId,
+				tokenAddress: a.tokenAddress
+				},
+				startAmount: bid_amount,
+				//bot_1
+				accountAddress: '0xdD549945A8dDDdCD73EB2F2D5Fe2bfce932c6A78',
+				expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * 1),
+			})
+			text_area.innerHTML += "Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + a.tokenAddress + '/' + a.tokenId + " target=_blank>" + a.name + "</a> " + bids_made + '<br>'
+		} catch(e){
+			text_area.innerHTML += "ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + a.tokenAddress + '/' + a.tokenId + " target=_blank>" + a.name + "</a> " + a.tokenId + '<br>'
+			console.log(e)
+		}
+
+		// a_list.push(a)
+		// if(a_list.length === 30) {
+		// 	await batch_up_bid(collection_data, a_list, a.tokenAddress, '0xdD549945A8dDDdCD73EB2F2D5Fe2bfce932c6A78')
+		// 	a_list = []
+		// }
+		bids_made += 1
+	}
 }
 
 async function get_collection(slug){
@@ -392,6 +503,7 @@ async function get_collection(slug){
 		const collect = await seaport.api.get('/api/v1/collection/' + slug)
 		return collect
 	} catch (ex) {
+		await new Promise(resolve => setTimeout(resolve, 500))
 		console.log("couldn't get floor")
 	} 
 }
@@ -651,7 +763,7 @@ let timerInterval;
 // Create function to modify innerHTML
 
 function print(txt) {
-  document.getElementById("display").innerHTML = txt;
+  document.getElementById("time").innerHTML = txt;
 }
 
 // Create "start", "pause" and "reset" functions
