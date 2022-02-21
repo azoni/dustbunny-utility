@@ -289,7 +289,12 @@ async function get_latest_block(){
 	var current_time = Math.floor(+new Date()/1000)
 	const block_response = await fetch("https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=" + current_time + "&closest=before&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
 	const block_data = await block_response.json()
-	block = block_data.result
+	if(block === block_data.result){
+		block = parseInt(block) + parseInt(1)
+	} else {
+		block = block_data.result
+	}
+	
 }
 
 // test_unstake_bid()
@@ -336,7 +341,7 @@ async function bid(set, name, token_id, contract_address, bid_amount){
 			},
 			startAmount: bid_amount,
 			accountAddress: document.getElementById('unstake_bid').value,
-			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .5),
+			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .25),
 		})
 		text_area.innerHTML += "Bid: " + bid_amount + " on <a href=https://opensea.io/assets/" + contract_address + '/' + token_id + " target=_blank>" + name + "</a> " + token_id + '<br>'
 	} catch(e){
@@ -515,7 +520,7 @@ async function get_nfts(){
 	'frosty-snowbois', "baycforpeople", 'zoogangnft', 'dirtybird-flight-club', 'ens', 'metaverse-cool-cats', 'larva-eggs', 
 	'doomers', 'etherdash', 'minitaurs-reborn', 'trexmafiaog', 'bit-kongz', 'drinkbepis', 'larvadads', 'larva-doods', 'doodlefrensnft'
 	, 'flower-friends', 'feelgang', 'doodlebitsnft', 'croodles', 'doodle-apes-society-das', 'doodledogsofficial', 'pixelwomennft', 'drunk-ass-dinos', 'vax-apes',
-	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft', 'cryptoheartznft', 'chainfaces-arena', 'dopey-ducklings']
+	'radioactiveapesofficial', 'blockverse-mc', 'hollydao', 'fees-wtf-nft', 'cryptoheartznft', 'chainfaces-arena', 'dopey-ducklings', 'the-pigeon-social-tps']
 	for(var account in values.default.OWNER_ADDRESS){
 		try {
 			await new Promise(resolve => setTimeout(resolve, 500))
@@ -655,6 +660,7 @@ async function display(){
 				transfer_button.id = asset.collection.slug + ' ' + asset.tokenId + ' ' + asset.tokenAddress + ' ' + asset.owner.address
 				input.id = asset.collection.slug + '' + asset.tokenId
 				transfer_button.addEventListener('click', function(){	
+					get_gas()
 					var confirm_transfer = window.confirm('Confirm Transfer.')
 					if(confirm_transfer === true){
 						console.log('transfer complete')
@@ -725,7 +731,7 @@ async function transfer(item){
 			tokenId: item[1], // Token ID
 	    },
 		fromAddress: item[3], // Must own the asset
-		toAddress:  '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
+		toAddress:  ADDRESS
 	})
 	console.log(transactionHash)
 	swap()
