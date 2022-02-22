@@ -1,10 +1,14 @@
 const fs = require('fs')
+const data_node = require('./data_node.js')
 // const secret = require('./secret_node.js')
 const opensea = require("opensea-js")
 const Network = opensea.Network;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
 const OpenSeaPort = opensea.OpenSeaPort;
+const node_redis = require('redis')
+const http = require('http')
+
 // const MnemonicWalletSubprovider = require("@0x/subproviders")
 // .MnemonicWalletSubprovider;
 // const MNEMONIC = secret.MNEMONIC2
@@ -217,7 +221,168 @@ async function fulfil_order(){
 		console.log(ex)
 	}
 }
+async function sleep(ms){
+	await new Promise(resolve => setTimeout(resolve, ms))
+}
+function get_ISOString(seconds){
+	let search_time = Math.floor(+new Date()) - seconds
+	return new Date(search_time).toISOString();
+}
+function get_ISOString_now(){
+	let search_time = Math.floor(+new Date())
+	return new Date(search_time).toISOString();
+}
 
+var wallet_set = data_node.WATCH_LIST
+var wallet_orders = data_node.COMP_WALLETS
+var event_window = 60000
+async function get_competitor_bids(){
+	var start_time = Math.floor(+new Date())
+  // if(document.getElementById('event_window').value !== ''){
+  //   event_window = document.getElementById('event_window').value * 1000
+  // } 
+  // var start_time = Math.floor(+new Date() / 1000)
+  // if(document.getElementById('event_wallet').value !== ''){
+  //   wallet_orders = [document.getElementById('event_wallet').value]
+  // }
+  // if(document.getElementById('event_collection').value !== ''){
+  //   var collect_set = document.getElementById('event_collection').value
+  //   wallet_set = [collect_set]
+  // }
+
+  // reset()
+  // start()
+
+  let search_time = get_ISOString(event_window)
+  let search_time2 = get_ISOString_now()
+
+  console.log(search_time)
+  var counter = 0
+
+  for(var wallet in wallet_orders){
+  	await sleep(500)
+    var offset = 0
+    do{
+    	await sleep(250)
+	    try{
+		    const order = await seaport.api.getOrders({
+		      side: 0,
+		      order_by: 'created_date',
+		      maker: wallet_orders[wallet],
+		      listed_after: search_time,
+		      listed_before: search_time2,
+		      limit: 50,
+		      offset: offset
+		    })
+		    try{
+	        var username = order['orders'][0].makerAccount.user.username
+	        console.log(username)
+	      } catch(ex){
+	        username = 'Null'
+	      }
+	      // console.log(order.orders)
+		    var order_length = order['orders'].length
+		    redis_push_bids(order)
+	    }
+	    catch(ex) {
+	      console.log(ex.message)
+	      console.log('error with buy orders')
+	    }
+	    counter += order_length
+	    offset += 50
+    } while(order_length === 50)
+    console.log(counter)
+  }
+  // console.log(start_time)
+  var end_time = Math.floor(+new Date())
+  // console.log(end_time)
+  // console.log(end_time - start_time)
+  // console.log(end_time - start_time < event_window)
+  console.log(await client.LLEN("queue:flash"))
+  if (end_time - start_time < event_window){
+  	console.log('waiting: ' + (end_time - start_time))
+  	await sleep((end_time - start_time))
+  }
+  // get_competitor_bids()
+}
+// get_competitor_bids()
+const client = node_redis.createClient({
+	url: "redis://10.0.0.77:6379",
+});
+client.connect();
+client.on('error', (err) => console.log('Redis Client Error', err));
+
+async function redis_push_asset(asset){
+	await client.rPush('queue:flash', JSON.stringify(asset));
+}
+
+const requestListener = function(req, res){
+	    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    if ( req.method === 'OPTIONS' ) {
+        res.writeHead(200);
+        res.end();
+        return;
+    }
+	res.writeHead(200)
+	console.log(req.url)
+	if(req.url === '/test_call'){
+		
+		test_call().then(val => {
+			res.write('[');
+			let first = true;
+			for (const el of val) {
+				if (!first) {
+					res.write(',');
+				} else {
+					first = false;
+				}
+				res.write(el);
+				
+			}
+			res.end(']');
+		});
+	} else {
+		res.end('bye you');
+	}
+}
+//172
+const server = http.createServer(requestListener)
+server.listen(3000, '10.0.0.172', () => {
+	console.log('Server is running')
+})
+
+async function dump_queue(){
+	client.DEL('queue:flash')
+	console.log(await client.LLEN("queue:flash"))
+}
+//http method - client pull
+async function test_call(){
+	return await client.lPopCount('queue:flash', 3)
+}
+//http method - client push
+async function node_redis_push(payload){
+	await client.rPush('queue:flash', JSON.stringify(order));
+}
+
+// get_competitor_bids()
+// async function test(){
+// 	const client = node_redis.createClient({
+//   	url: "redis://10.0.0.77:6379",
+// 	});
+// 	client.on('error', (err) => console.log('Redis Client Error', err));
+
+//   await client.connect();
+  
+//   await client.rPush('queue:flash', JSON.stringify({'test':'hello'}));
+//   const value = await client.lPop('queue:flash');
+//   console.log(value)
+
+// }
+// test()
 async function main(){
 	var slug = ['chain-runners-nft']
 	// var assets = await get_assets('cool-cats-nft')
@@ -233,4 +398,4 @@ async function main(){
 	// console.log(list_assets[0].traits)
 }
 
-main()
+// main()

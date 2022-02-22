@@ -2,7 +2,8 @@ const values = require('./values.js')
 const data = require('./data.js')
 const secret = require('./secret.js')
 const opensea = require("opensea-js")
-
+// import { createClient } from 'redis';
+const node_redis = require('redis')
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const MnemonicWalletSubprovider = require("@0x/subproviders")
@@ -736,6 +737,137 @@ async function transfer(item){
 	console.log(transactionHash)
 	swap()
 }
+async function sleep(ms){
+	await new Promise(resolve => setTimeout(resolve, ms))
+}
+function get_ISOString(seconds){
+	let search_time = Math.floor(+new Date()) - seconds
+	return new Date(search_time).toISOString();
+}
+function get_ISOString_now(){
+	let search_time = Math.floor(+new Date())
+	return new Date(search_time).toISOString();
+}
+document.getElementById('get_competitor_bids').addEventListener('click', function(){	
+	get_competitor_bids()
+})
+
+
+ 
+
+var wallet_set = data.default.WATCH_LIST
+var wallet_orders = data.default.COMP_WALLETS
+var event_window = 60000
+async function get_competitor_bids(){
+	var start_time = Math.floor(+new Date())
+  // if(document.getElementById('event_window').value !== ''){
+  //   event_window = document.getElementById('event_window').value * 1000
+  // } 
+  // var start_time = Math.floor(+new Date() / 1000)
+  // if(document.getElementById('event_wallet').value !== ''){
+  //   wallet_orders = [document.getElementById('event_wallet').value]
+  // }
+  // if(document.getElementById('event_collection').value !== ''){
+  //   var collect_set = document.getElementById('event_collection').value
+  //   wallet_set = [collect_set]
+  // }
+
+  reset()
+  start()
+
+  let search_time = get_ISOString(event_window)
+  let search_time2 = get_ISOString_now()
+
+  console.log(search_time)
+  var counter = 0
+
+  for(var wallet in wallet_orders){
+  	await sleep(500)
+    var offset = 0
+    do{
+    	await sleep(500)
+	    try{
+		    const order = await seaport.api.getOrders({
+		      side: 0,
+		      order_by: 'created_date',
+		      maker: wallet_orders[wallet],
+		      listed_after: search_time,
+		      listed_before: search_time2,
+		      limit: 50,
+		      offset: offset
+		    })
+		    try{
+	        var username = order['orders'][0].makerAccount.user.username
+	        console.log(username)
+	      } catch(ex){
+	        username = 'Null'
+	      }
+	      console.log(order.orders)
+		    var order_length = order['orders'].length
+	    }
+	    catch(ex) {
+	      console.log(ex.message)
+	      console.log('error with buy orders')
+	    }
+	    counter += order_length
+	    offset += 50
+    } while(order_length === 50)
+    console.log(counter)
+  }
+  console.log(start_time)
+  var end_time = Math.floor(+new Date())
+  console.log(end_time)
+  console.log(end_time - start_time)
+  console.log(end_time - start_time < event_window)
+  if (end_time - start_time < event_window){
+  	await sleep((end_time - start_time))
+  }
+  get_competitor_bids()
+}
+async function redis_push_bids(){
+
+}
+
+document.getElementById('competitor_bid').addEventListener('click', function(){	
+	// competitor_bid()
+})
+// async function competitor_bid(order_array, username){
+// 	  if(document.getElementById('event-multiplier').value !== ''){
+//       event_multi = document.getElementById('event-multiplier').value
+//     }
+//     if(document.getElementById('event-expiration').value !== ''){
+//       expiration = document.getElementById('event-expiration').value
+//     }
+//     for(var i = Math.floor(order_array.length/2); i < order_array.length; i++){
+//       if(event_stop === 1){
+//         break
+//       }
+//       console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
+//       //await new Promise(resolve => setTimeout(resolve, delay.value))
+//       try{
+//         await seaport.createBuyOrder({
+//           asset: order_array[i].asset,
+//           startAmount: order_array[i].bid,
+//           accountAddress: values.default.EVENT_WALLET,
+//           expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
+//         })
+//         text.innerHTML = order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)
+//         text1.innerHTML = username + ' #' + order_array[i].asset.tokenId + ' upbid: ' + order_array[i].bid.toFixed(4)
+//         console.log(order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
+//         console.log(username + ' #' + order_array[i].asset.tokenId + ' upbid: ' + order_array[i].bid.toFixed(4))// + wallet_orders[wallet])
+//         eventbidcount += 1
+//         counter += 1 
+//         offersMade.innerHTML = 'offers made: ' + counter + ' total: ' + order_array.length
+//       }
+
+//       catch(ex){
+//         console.log(ex)
+//         console.log(ex.message)
+//         await new Promise(resolve => setTimeout(resolve, 30000))
+//       }
+//     }
+//     values.default.BID = 1
+// }
 
 // Convert time to a format of hours, minutes, seconds, and milliseconds
 

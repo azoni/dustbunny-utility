@@ -488,7 +488,7 @@ const values = {
 		}, 
 	],
 }
-export default values
+module.exports = values
 
 //9e72715b3e504813ac3ebc0512d473bf
 //3e994eb084474893abe7842014dbd66c
