@@ -3,7 +3,6 @@ const data = require('./data.js')
 const secret = require('./secret.js')
 const opensea = require("opensea-js")
 // import { createClient } from 'redis';
-const node_redis = require('redis')
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const MnemonicWalletSubprovider = require("@0x/subproviders")
