@@ -6,7 +6,12 @@ const Network = opensea.Network;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
 const OpenSeaPort = opensea.OpenSeaPort;
-const node_redis = require('redis')
+try{
+	const node_redis = require('redis')
+} catch(e){
+	console.log(e)
+}
+
 const http = require('http')
 
 // const MnemonicWalletSubprovider = require("@0x/subproviders")
@@ -282,7 +287,14 @@ async function get_competitor_bids(){
 	      }
 	      // console.log(order.orders)
 		    var order_length = order['orders'].length
-		    redis_push_bids(order)
+		    for(let order of order.orders){
+		    	let asset = {}
+		    	asset['token_id'] = order.asset.tokenId
+		    	asset['current_bid'] = order.basePrice/1000000000000000000
+		    	asset['token_address'] = order.asset.tokenAddress
+		    	redis_push_asset(asset)
+		    }
+		    
 	    }
 	    catch(ex) {
 	      console.log(ex.message)
