@@ -366,9 +366,13 @@ const values = {
 	// '0x15cba6d3b98d220bc1ecda89afdf07dd0bf06c5d',
 	// '0xbb2cd2434ca0881bcdcce88f6e77c607fc71c128',
 	// '0x07b52eac4361f6aa840237e20afe89fe5eb8d031',
+
 	'0x41f01d8f02c569be620e13c9b33ce803bed84e90',
 	'0x26054c824ff0a6225dfa24a1eebd6a18de6b5f7d',
 	'0x5bcfc791b9baa68e9aa50eb98e555304ad53d697'],
+	PRIORITY_COMP_WALLET: [
+	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
+	],
 	OWNER_ADDRESS: [
 		{
 			username: 'Azoni',

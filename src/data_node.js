@@ -369,6 +369,10 @@ const values = {
 	'0x41f01d8f02c569be620e13c9b33ce803bed84e90',
 	'0x26054c824ff0a6225dfa24a1eebd6a18de6b5f7d',
 	'0x5bcfc791b9baa68e9aa50eb98e555304ad53d697'],
+	PRIORITY_COMP_WALLET: [
+	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
+	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98'
+	],
 	OWNER_ADDRESS: [
 		{
 			username: 'Azoni',
