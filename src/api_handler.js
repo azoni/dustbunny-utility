@@ -8,10 +8,13 @@ const Web3ProviderEngine = require("web3-provider-engine");
 const OpenSeaPort = opensea.OpenSeaPort;
 const node_redis = require('redis')
 const throttledQueue = require('throttled-queue');
-const collection_json = require('./collections/collection_json.json')
 const http = require('http')
 const url = require('url');
-
+const client = node_redis.createClient({
+	url: "redis://10.0.0.77:6379",
+});
+client.connect();
+client.on('error', (err) => console.log('Redis Client Error', err));
 const ONE_SEC = 2000;
 const floorThrottle = throttledQueue(2, ONE_SEC);
 
@@ -42,9 +45,10 @@ async function specialUpdateSingleFloor(collection, retry = 0) {
     const collect = await seaport.api.get('/api/v1/collection/' + collection);
     clearTimeout(warningTimeout);
     const fetched_floor = collect['collection']['stats']['floor_price'];
+    const dev_seller_fee_basis_points = collect['collection']['dev_seller_fee_basis_points']/10000;
     const token_address = collect['collection']['primary_asset_contracts'][0]['address']
     collection_json[collection] = {
-      floor: fetched_floor, token_address, slug: collection
+      floor: fetched_floor, token_address, slug: collection, fee: dev_seller_fee_basis_points
     };
     console.log(`floor updated: ${collection}, floor: ${fetched_floor}, token_address: ${token_address}`);
   } catch (ex) {
@@ -310,7 +314,7 @@ async function getJSONFromFetch(f) {
 
 async function get_latest_block(){
 	var current_time = Math.floor(+new Date()/1000)
-
+	console.log('Getting lastest block...')
 	const block_response = await fetch("https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=" + current_time + "&closest=before&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
 	const block_data = await block_response.json()
 	return block_data.result
@@ -338,29 +342,37 @@ async function get_etherscan_transactions(){
 		block++;
 	}	console.log('starting transactions')
 	console.log('block: ' +  block)
+	let tx_count = 0
 	for(let collection in collection_json){
 		const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + collection_json[collection]['token_address'] + "&page=1&startblock=" + block + "&offset=100&sort=desc&apikey=" + ETHERSCAN_API_KEY);
 		const data = await response.json()
-		console.log('tx: ' + data.result.length)
+		tx_count += data.result.length
 		for(let tx of data.result){
+			let event_type = 'transfer'
 			if (tx.blockNumber > ourlatest) { ourlatest = tx.blockNumber; }
-			await get_nfts_from_wallet(tx.to)
-			await get_nfts_from_wallet(tx.from)
+			if(staking_collections.includes(tx.from)){
+				event_type = 'unstake'
+			} else if (staking_collections.includes(tx.to)) {
+				event_type = 'stake'
+			}
+			await get_nfts_from_wallet(tx.to, event_type)
+			await get_nfts_from_wallet(tx.from, event_type)
 		}
 	}
+	console.log('tx found: ' + tx_count)
 	console.log('total nfts found: ' + running_nft_total)
 	block = ourlatest;
 	get_etherscan_transactions()
 
 }
 let running_nft_total = 0
-async function get_nfts_from_wallet(interestAddress){
+async function get_nfts_from_wallet(interestAddress, event_type){
 	if (staking_collections.includes(interestAddress)) {return; }
 	// const interestAddress = "0xcae462347cd2d83f9a548afacb2ca6e0c6063bff";
 	let f = fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&address=" + interestAddress + "&startblock=0&endblock=999999999&sort=asc&apikey=" + ETHERSCAN_API_KEY)
 	let myData = await getJSONFromFetch(f);
 
-	console.log(Object.keys(myData), myData.status, myData.message, myData.result?.length);
+	// console.log(Object.keys(myData), myData.status, myData.message, myData.result?.length);
 
 	let miniDb = {};
 
@@ -404,33 +416,26 @@ async function get_nfts_from_wallet(interestAddress){
 	      if (!(c in countMap)) { countMap[c] = 0; }
 	      countMap[c]++;
 	      if(Object.values(collection_json).map(x=>x.token_address).includes(c)){
-	      	console.log(`${c} : { tokenid: ${id} }`);
+	      	// console.log(`${c} : { tokenid: ${id} }`);
 	      	ownCount++
 		    	let asset = {}
-		    	asset['token_id'] = o.asset.tokenId
-		    	asset['current_bid'] = o.basePrice/1000000000000000000
-		    	asset['token_address'] = o.asset.tokenAddress
-		    	asset['slug'] = o.asset.collection.slug
-		    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
-		    	if(wallet_set.includes(asset['slug'])){
-		    		counter += 1
-		    		if (data_node.PRIORITY_COMP_WALLET.includes(wallet_orders[wallet])) {
-		    			asset['priority'] = 'high'
-		    			push_asset_high_priority(asset);
-		    		} else {
-		    			asset['priority'] = 'flash'
-		    			redis_push_asset(asset)	
-		    		}
-		    	}
-		    
+		    	asset['token_id'] = id
+		    	asset['token_address'] = c
+		    	asset['slug'] = token_address_dict[c]
+		    	asset['fee'] = token_fee_dict[c]
+		    	asset['event_type'] = event_type
+    			push_asset_high_priority(asset);
 	      }
 	    }
 	  }
+
 	}
+	console.log('owned by: ' + interestAddress)
 	running_nft_total += ownCount
-	console.log(countMap);
+	// console.log(countMap);
 	//console.log(`count: ${count}`);
 	console.log(`total own: ${ownCount}`);
+	get_queue_length('high')
 	//console.log(miniDb);
 	//console.log(Object.keys(miniDb))
 	//console.log(Object.keys(miniDb).length);
@@ -443,7 +448,7 @@ async function get_competitor_bids(){
   let search_time2 = get_ISOString_now()
 
   console.log('Adding to queue at: ' + search_time)
-
+  get_queue_length('flash')
   for(var wallet in wallet_orders){
   	var counter = 0
   	await sleep(500)
@@ -470,17 +475,15 @@ async function get_competitor_bids(){
 		    for(let o of order.orders){
 		    	let asset = {}
 		    	asset['token_id'] = o.asset.tokenId
-		    	asset['current_bid'] = o.basePrice/1000000000000000000
 		    	asset['token_address'] = o.asset.tokenAddress
 		    	asset['slug'] = o.asset.collection.slug
 		    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
 		    	if(wallet_set.includes(asset['slug'])){
 		    		counter += 1
 		    		if (data_node.PRIORITY_COMP_WALLET.includes(wallet_orders[wallet])) {
-		    			asset['priority'] = 'high'
+		    			asset['current_bid'] = o.basePrice/1000000000000000000
 		    			push_asset_high_priority(asset);
 		    		} else {
-		    			asset['priority'] = 'flash'
 		    			redis_push_asset(asset)	
 		    		}
 		    	}
@@ -508,11 +511,8 @@ async function get_competitor_bids(){
   get_competitor_bids()
 }
 
-const client = node_redis.createClient({
-	url: "redis://10.0.0.77:6379",
-});
-client.connect();
-client.on('error', (err) => console.log('Redis Client Error', err));
+
+
 
 async function redis_push_asset(asset) {
 	await client.rPush('queue:flash', JSON.stringify(asset));
@@ -554,8 +554,6 @@ const requestListener = function(req, res){
 			}
 			res.end(']');
 		});
-		console.log('Grabbing 10')
-		get_queue_length()
 	} else if (req.url === '/floor' && req.method === 'POST') {
 		let bod = [];
 		req.on('error', (err) => {
@@ -596,12 +594,12 @@ const requestListener = function(req, res){
 //172
 
 
-async function dump_queue(){
-	client.DEL('queue:flash')
-	console.log(await client.LLEN("queue:flash"))
+async function dump_queue(queue_name){
+	client.DEL('queue:' + queue_name)
+	console.log(await client.LLEN("queue:" + queue_name))
 }
-async function get_queue_length(){
-	console.log('Queue: ' + await client.LLEN("queue:flash"))
+async function get_queue_length(queue_name){
+	console.log('Queue: ' + await client.LLEN("queue:" + queue_name))
 }
 //http method - client pull
 async function redis_queue_pop(){
@@ -615,31 +613,35 @@ async function redis_queue_pop(){
 	}
 }
 let token_address_dict = {}
-async function test_main() {
+let token_fee_dict = {}
+async function transfer_queue_start() {
+	dump_queue('high')
 	for(let collection in collection_json){
-		console.log(collection)
+		// console.log(collection)
 		token_address_dict[collection_json[collection]['token_address']] = collection
+		token_fee_dict[collection_json[collection]['token_address']]= collection_json[collection]['fee']
 	}
-	console.log(token_address_dict)
+	// console.log(token_address_dict)
+	// console.log(token_fee_dict)
 	block = await get_latest_block();
-// 	await updateFloorDictionary()	
-// 	const data = JSON.stringify(collection_json);
+	// await updateFloorDictionary()	
+	// const data = JSON.stringify(collection_json);
 
-// 	fs.writeFile('./collections/collection_json.json', data, (err) => {
-//     if (err) {
-//         throw err;
-//     }
-//     console.log("JSON data is saved.");
-// });
+	// fs.writeFile('./collections/collection_json.json', data, (err) => {
+ //    if (err) {
+ //        throw err;
+ //    }
+ //    console.log("JSON data is saved.");
+	// });
 	get_etherscan_transactions()
 }
-async function main(){
+async function flash_queue_start(){
 	const server = http.createServer(requestListener)
 	server.listen(3000, '10.0.0.172', () => {
 		console.log('Server is running')
 	})
 	get_competitor_bids()
-	dump_queue()
+	dump_queue('flash')
 	// var slug = ['chain-runners-nft']
 	// var assets = await get_assets('cool-cats-nft')
 	// console.log(assets)
@@ -654,5 +656,16 @@ async function main(){
 	// console.log(list_assets[0].traits)
 }
 
-// main()
-test_main()
+function main(){
+	flash_queue_start()
+	// const readline = require('readline-sync')	
+	// let start_function = readline.question('Which queue? ')
+	// console.log('Starting' + start_function + 'queue...')
+	// if(start_function === 'transfer'){
+	// 	transfer_queue_start()
+	// } else if (start_function === 'flash'){
+	// 	flash_queue_start()
+	// }
+}
+main()
+// test_main()
