@@ -44,7 +44,7 @@ async function specialUpdateSingleFloor(collection, retry = 0) {
     const fetched_floor = collect['collection']['stats']['floor_price'];
     const token_address = collect['collection']['primary_asset_contracts'][0]['address']
     collection_json[collection] = {
-      floor: fetched_floor, token_address
+      floor: fetched_floor, token_address, slug: collection
     };
     console.log(`floor updated: ${collection}, floor: ${fetched_floor}, token_address: ${token_address}`);
   } catch (ex) {
@@ -309,7 +309,6 @@ async function getJSONFromFetch(f) {
 }
 
 async function get_latest_block(){
-	console.log('hey')
 	var current_time = Math.floor(+new Date()/1000)
 
 	const block_response = await fetch("https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=" + current_time + "&closest=before&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
@@ -333,7 +332,6 @@ var staking_collections = [
 async function get_etherscan_transactions(){
 	let ourlatest = await get_latest_block()
 	if(block === ourlatest){
-
 		get_etherscan_transactions()
 		return
 	} else {
@@ -408,6 +406,23 @@ async function get_nfts_from_wallet(interestAddress){
 	      if(Object.values(collection_json).map(x=>x.token_address).includes(c)){
 	      	console.log(`${c} : { tokenid: ${id} }`);
 	      	ownCount++
+		    	let asset = {}
+		    	asset['token_id'] = o.asset.tokenId
+		    	asset['current_bid'] = o.basePrice/1000000000000000000
+		    	asset['token_address'] = o.asset.tokenAddress
+		    	asset['slug'] = o.asset.collection.slug
+		    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
+		    	if(wallet_set.includes(asset['slug'])){
+		    		counter += 1
+		    		if (data_node.PRIORITY_COMP_WALLET.includes(wallet_orders[wallet])) {
+		    			asset['priority'] = 'high'
+		    			push_asset_high_priority(asset);
+		    		} else {
+		    			asset['priority'] = 'flash'
+		    			redis_push_asset(asset)	
+		    		}
+		    	}
+		    
 	      }
 	    }
 	  }
@@ -599,8 +614,13 @@ async function redis_queue_pop(){
 		return await client.lPopCount('queue:flash', pop_count)
 	}
 }
-
+let token_address_dict = {}
 async function test_main() {
+	for(let collection in collection_json){
+		console.log(collection)
+		token_address_dict[collection_json[collection]['token_address']] = collection
+	}
+	console.log(token_address_dict)
 	block = await get_latest_block();
 // 	await updateFloorDictionary()	
 // 	const data = JSON.stringify(collection_json);
