@@ -7,10 +7,55 @@ const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
 const OpenSeaPort = opensea.OpenSeaPort;
 const node_redis = require('redis')
-
-
+const throttledQueue = require('throttled-queue');
+const collection_json = require('./collections/collection_json.json')
 const http = require('http')
 const url = require('url');
+
+const ONE_SEC = 2000;
+const floorThrottle = throttledQueue(2, ONE_SEC);
+
+async function updateFloorDictionary() {
+  return Promise.all(
+    data_node.WATCH_LIST.map((curr_coll_name) =>
+      floorThrottle(() => specialUpdateSingleFloor(curr_coll_name, 2))
+    )
+  );
+}
+
+let response_error_count = 0;
+async function specialUpdateSingleFloor(collection, retry = 0) {
+  response_error_count = Math.max(response_error_count - 1, 0);
+  if (response_error_count >= 3) {
+    await floorThrottle(() => specialUpdateSingleFloor(collection, retry));
+  }
+  let warningTimeout;
+  try {
+    let fiveSecCount = 0;
+    const WARN_TIME = 5000;
+    function hangingWarning() {
+      console.log(`fetching ${collection} details taking too long. time so far: ${++fiveSecCount * WARN_TIME}ms`);
+      warningTimeout = setTimeout(hangingWarning, WARN_TIME);
+    }
+    warningTimeout = setTimeout(hangingWarning, WARN_TIME);
+    
+    const collect = await seaport.api.get('/api/v1/collection/' + collection);
+    clearTimeout(warningTimeout);
+    const fetched_floor = collect['collection']['stats']['floor_price'];
+    const token_address = collect['collection']['primary_asset_contracts'][0]['address']
+    collection_json[collection] = {
+      floor: fetched_floor, token_address
+    };
+    console.log(`floor updated: ${collection}, floor: ${fetched_floor}, token_address: ${token_address}`);
+  } catch (ex) {
+    clearTimeout(warningTimeout);
+    response_error_count++;
+    console.error(ex, '\n', collection)
+    if (retry > 0) {
+      await floorThrottle(() => specialUpdateSingleFloor(collection, retry - 1))
+    }
+  }
+}
 
 // const MnemonicWalletSubprovider = require("@0x/subproviders")
 // .MnemonicWalletSubprovider;
@@ -64,6 +109,18 @@ async function get_collection(slug){
 		console.log("couldn't get floor")
 	} 
 }
+// async function get_token_address(){
+// 	console.log('Building collection JSON started.')
+// 	for(let slug of data_node.WATCH_LIST){
+// 		await sleep(1000)
+// 		let collection = await get_collection(slug)
+// 		console.log(slug + ' ' + collection.collection.primary_asset_contracts[0].address)
+// 		collection_json[slug] = collection.collection.primary_asset_contracts[0].address
+// 	}
+// 	console.log('Building collection JSON complete.')
+// }
+
+
 async function get_assets(slug){
 	// if slug exists call from json
 	// else opensea api call
@@ -236,25 +293,136 @@ function get_ISOString_now(){
 	return new Date(search_time).toISOString();
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const ETHERSCAN_API_KEY = 'AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ'
+
+var block = 0;
 var wallet_set = data_node.WATCH_LIST
 var wallet_orders = [...(data_node.PRIORITY_COMP_WALLET), ...(data_node.COMP_WALLETS)]
 var event_window = 60000
+
+async function getJSONFromFetch(f) {
+  let r = await f;
+  return r.json();
+}
+
+async function get_latest_block(){
+	console.log('hey')
+	var current_time = Math.floor(+new Date()/1000)
+
+	const block_response = await fetch("https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=" + current_time + "&closest=before&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
+	const block_data = await block_response.json()
+	return block_data.result
+
+
+	// const block_response2 =  await fetch("https://api.etherscan.io/api?module=proxy&action=eth_blockNumber&apikey=" + ETHERSCAN_API_KEY)
+	// block = await block_response2.json()
+	// console.log(block.result)
+}
+var staking_collections = [
+	'0x12753244901f9e612a471c15c7e5336e813d2e0b', //sneaky vamps
+	'0xdf8a88212ff229446e003f8f879e263d3616b57a', // sappy seals
+	'0xab93f992d9737bd740113643e79fe9f8b6b34696', // metroverse
+	'0xc3503192343eae4b435e4a1211c5d28bf6f6a696', // genesis creepz
+	'0xed6552d7e16922982bf80cf43090d71bb4ec2179', // coolmonkes
+	'0x000000000000000000000000000000000000dead', // anonymice
+	'0x6714de8aa0db267552eb5421167f5d77f0c05c6d', // critterznft
+]
+async function get_etherscan_transactions(){
+	let ourlatest = await get_latest_block()
+	if(block === ourlatest){
+
+		get_etherscan_transactions()
+		return
+	} else {
+		block++;
+	}	console.log('starting transactions')
+	console.log('block: ' +  block)
+	for(let collection in collection_json){
+		const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + collection_json[collection]['token_address'] + "&page=1&startblock=" + block + "&offset=100&sort=desc&apikey=" + ETHERSCAN_API_KEY);
+		const data = await response.json()
+		console.log('tx: ' + data.result.length)
+		for(let tx of data.result){
+			if (tx.blockNumber > ourlatest) { ourlatest = tx.blockNumber; }
+			await get_nfts_from_wallet(tx.to)
+			await get_nfts_from_wallet(tx.from)
+		}
+	}
+	console.log('total nfts found: ' + running_nft_total)
+	block = ourlatest;
+	get_etherscan_transactions()
+
+}
+let running_nft_total = 0
+async function get_nfts_from_wallet(interestAddress){
+	if (staking_collections.includes(interestAddress)) {return; }
+	// const interestAddress = "0xcae462347cd2d83f9a548afacb2ca6e0c6063bff";
+	let f = fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&address=" + interestAddress + "&startblock=0&endblock=999999999&sort=asc&apikey=" + ETHERSCAN_API_KEY)
+	let myData = await getJSONFromFetch(f);
+
+	console.log(Object.keys(myData), myData.status, myData.message, myData.result?.length);
+
+	let miniDb = {};
+
+	//console.log(myData.result[0]);
+	const allNftTX = myData.result || [];
+
+	function upsertContract(contractAddress) {
+	  if (!(contractAddress in miniDb)) {
+	    miniDb[contractAddress] = {};
+	  }
+	}
+
+	function upsertTokenId(contractAddress, tokenId) {
+	  if (!(tokenId in miniDb[contractAddress])) {
+	    miniDb[contractAddress][tokenId] = {};
+	  }
+	}
+
+	for (const tx of allNftTX) {
+	  upsertContract(tx.contractAddress);
+	  upsertTokenId(tx.contractAddress, tx.tokenID);
+	  if (tx.to === interestAddress) {
+	    const lastTo = miniDb[tx.contractAddress][tx.tokenID].toTime || -1;
+	    miniDb[tx.contractAddress][tx.tokenID].toTime = Math.max(tx.timeStamp, lastTo)
+	  } else if (tx.from === interestAddress) {
+	    const lastFrom = miniDb[tx.contractAddress][tx.tokenID].fromTime || -1;
+	    miniDb[tx.contractAddress][tx.tokenID].fromTime = Math.max(tx.timeStamp, lastFrom);
+	  } else {
+	    console.error('error!!!');
+	  }
+	}
+	let count = 0;
+	let ownCount = 0;
+	let countMap = {};
+	for (const c in miniDb) {
+	  for (const id in miniDb[c]) {
+	    count++;
+	    const boughtTime = miniDb[c][id].toTime || -Infinity;
+	    const soldTime = miniDb[c][id].fromTime || -Infinity;
+	    if (boughtTime > soldTime) {
+	      if (!(c in countMap)) { countMap[c] = 0; }
+	      countMap[c]++;
+	      if(Object.values(collection_json).map(x=>x.token_address).includes(c)){
+	      	console.log(`${c} : { tokenid: ${id} }`);
+	      	ownCount++
+	      }
+	    }
+	  }
+	}
+	running_nft_total += ownCount
+	console.log(countMap);
+	//console.log(`count: ${count}`);
+	console.log(`total own: ${ownCount}`);
+	//console.log(miniDb);
+	//console.log(Object.keys(miniDb))
+	//console.log(Object.keys(miniDb).length);
+}
+
 async function get_competitor_bids(){
 	var start_time = Math.floor(+new Date())
-  // if(document.getElementById('event_window').value !== ''){
-  //   event_window = document.getElementById('event_window').value * 1000
-  // } 
-  // var start_time = Math.floor(+new Date() / 1000)
-  // if(document.getElementById('event_wallet').value !== ''){
-  //   wallet_orders = [document.getElementById('event_wallet').value]
-  // }
-  // if(document.getElementById('event_collection').value !== ''){
-  //   var collect_set = document.getElementById('event_collection').value
-  //   wallet_set = [collect_set]
-  // }
-
-  // reset()
-  // start()
 
   let search_time = get_ISOString(event_window)
   let search_time2 = get_ISOString_now()
@@ -294,8 +462,10 @@ async function get_competitor_bids(){
 		    	if(wallet_set.includes(asset['slug'])){
 		    		counter += 1
 		    		if (data_node.PRIORITY_COMP_WALLET.includes(wallet_orders[wallet])) {
+		    			asset['priority'] = 'high'
 		    			push_asset_high_priority(asset);
 		    		} else {
+		    			asset['priority'] = 'flash'
 		    			redis_push_asset(asset)	
 		    		}
 		    	}
@@ -322,7 +492,7 @@ async function get_competitor_bids(){
   }
   get_competitor_bids()
 }
-get_competitor_bids()
+
 const client = node_redis.createClient({
 	url: "redis://10.0.0.77:6379",
 });
@@ -334,7 +504,7 @@ async function redis_push_asset(asset) {
 }
 
 async function push_asset_high_priority(asset) {
-	await client.lPush('queue:flash', JSON.stringify(asset));
+	await client.rPush('queue:high', JSON.stringify(asset));
 }
 
 const requestListener = function(req, res){
@@ -352,9 +522,9 @@ const requestListener = function(req, res){
 
 	res.writeHead(200)
 	// console.log(req.url)
-	if(req.url === '/test_call'){
+	if(req.url === '/redis_queue_pop'){
 
-		test_call().then((val) => {
+		redis_queue_pop().then((val) => {
 			val = val || [];
 			res.write('[');
 			let first = true;
@@ -401,15 +571,15 @@ const requestListener = function(req, res){
 		} else {
 			res.end('null');
 		}
-	}else {
-		res.end('bye you');
+	} else if (urlParts.pathname === '/length' && req.method === 'GET') {
+			client.LLEN("queue:flash").then(x => res.end(x)).catch(_=>res.end(-1));
 	}
+		else {
+			res.end('bye you');
+		}
 }
 //172
-const server = http.createServer(requestListener)
-server.listen(3000, '10.0.0.172', () => {
-	console.log('Server is running')
-})
+
 
 async function dump_queue(){
 	client.DEL('queue:flash')
@@ -418,35 +588,45 @@ async function dump_queue(){
 async function get_queue_length(){
 	console.log('Queue: ' + await client.LLEN("queue:flash"))
 }
-dump_queue()
 //http method - client pull
-async function test_call(){
-	return await client.lPopCount('queue:flash', 10)
+async function redis_queue_pop(){
+	let pop_count = 2
+	let queue_data = await client.lPopCount('queue:high', pop_count)
+
+	if(queue_data.length()){
+		return queue_data
+	} else {
+		return await client.lPopCount('queue:flash', pop_count)
+	}
 }
 
-// get_competitor_bids()
-// async function test(){
-// 	const client = node_redis.createClient({
-//   	url: "redis://10.0.0.77:6379",
-// 	});
-// 	client.on('error', (err) => console.log('Redis Client Error', err));
+async function test_main() {
+	block = await get_latest_block();
+// 	await updateFloorDictionary()	
+// 	const data = JSON.stringify(collection_json);
 
-//   await client.connect();
-  
-//   await client.rPush('queue:flash', JSON.stringify({'test':'hello'}));
-//   const value = await client.lPop('queue:flash');
-//   console.log(value)
-
-// }
-// test()
+// 	fs.writeFile('./collections/collection_json.json', data, (err) => {
+//     if (err) {
+//         throw err;
+//     }
+//     console.log("JSON data is saved.");
+// });
+	get_etherscan_transactions()
+}
 async function main(){
-	var slug = ['chain-runners-nft']
+	const server = http.createServer(requestListener)
+	server.listen(3000, '10.0.0.172', () => {
+		console.log('Server is running')
+	})
+	get_competitor_bids()
+	dump_queue()
+	// var slug = ['chain-runners-nft']
 	// var assets = await get_assets('cool-cats-nft')
 	// console.log(assets)
-	for(var index in slug){
-		var collect = await getCollectionDetails(slug[index])
-		await write_assets(slug[index], collect.collection.stats.total_supply)
-	}
+	// for(var index in slug){
+	// 	var collect = await getCollectionDetails(slug[index])
+	// 	await write_assets(slug[index], collect.collection.stats.total_supply)
+	// }
 	// var collect = await getCollectionDetails('alienfrensnft')
 	// console.log(collect.collection.stats.count)
 	// console.log(collect.collection.traits)
@@ -455,3 +635,4 @@ async function main(){
 }
 
 // main()
+test_main()

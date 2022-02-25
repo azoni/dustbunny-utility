@@ -353,7 +353,7 @@ const values = {
      'karafuru', 'coolpetsnft', 'boredapeyachtclub', 'azuki', 'nft-worlds', 'hapeprime',
      'supernormalbyzipcy', 'world-of-women-nft', 'hype-bears-club-official-', 'kaiju-kingz',
      'raidparty', 'mfers', 'bossbeauties', 'pixelmongen1',
-     'genesis-creepz', 'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro', 'beans-dumb-ways-to-die', 'prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'metroverse', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'sappy-seals', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'jrny-club-official', 'superplastic-supergucci', 'thehabibiz', 'pudgypenguins', 'meebits', 'wolf-game-migrated', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'lootproject', 'rumble-kong-league', 'cryptoskulls', 'metahero-generative', 'mekaverse', 'sneaky-vampire-syndicate', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
+     // 'genesis-creepz', 'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro', 'beans-dumb-ways-to-die', 'prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'metroverse', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'sappy-seals', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'jrny-club-official', 'superplastic-supergucci', 'thehabibiz', 'pudgypenguins', 'meebits', 'wolf-game-migrated', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'lootproject', 'rumble-kong-league', 'cryptoskulls', 'metahero-generative', 'mekaverse', 'sneaky-vampire-syndicate', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
      ],
 	WATCH_LIST_LOW: ['meebits', 'lootproject', 'boredapeyachtclub'],
 	COMP_WALLETS: [//'0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
@@ -366,11 +366,14 @@ const values = {
 	// '0x15cba6d3b98d220bc1ecda89afdf07dd0bf06c5d',
 	// '0xbb2cd2434ca0881bcdcce88f6e77c607fc71c128',
 	// '0x07b52eac4361f6aa840237e20afe89fe5eb8d031',
+	//flash-boi 12-14
 	'0x41f01d8f02c569be620e13c9b33ce803bed84e90',
 	'0x26054c824ff0a6225dfa24a1eebd6a18de6b5f7d',
 	'0x5bcfc791b9baa68e9aa50eb98e555304ad53d697'],
 	PRIORITY_COMP_WALLET: [
+	//upbids flash on big sets
 	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
+	 // bids on hacked accounts
 	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98'
 	],
 	OWNER_ADDRESS: [
