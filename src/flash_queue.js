@@ -78,7 +78,7 @@ const ETHERSCAN_API_KEY = 'AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ'
 var block = 0;
 var wallet_set = data_node.WATCH_LIST
 var wallet_orders = [...(data_node.PRIORITY_COMP_WALLET), ...(data_node.COMP_WALLETS)]
-var event_window = 60000
+var event_window = 30000
 
 var staking_collections = [
 	'0x12753244901f9e612a471c15c7e5336e813d2e0b', //sneaky vamps
@@ -89,7 +89,7 @@ var staking_collections = [
 	'0x000000000000000000000000000000000000dead', // anonymice
 	'0x6714de8aa0db267552eb5421167f5d77f0c05c6d', // critterznft
 ]
-
+let bids_added = 0
 async function get_competitor_bids(){
 	var start_time = Math.floor(+new Date())
 
@@ -97,7 +97,11 @@ async function get_competitor_bids(){
   let search_time2 = get_ISOString_now()
 
   console.log('Adding to queue at: ' + search_time)
-  get_queue_length('flash')
+  
+	let queue_length = await return_queue_length('flash')
+	console.log('Queue size: ' + queue_length)
+	console.log('bids added: ' + bids_added)
+  bids_added = 0
   for(var wallet in wallet_orders){
   	var counter = 0
   	await sleep(500)
@@ -129,6 +133,7 @@ async function get_competitor_bids(){
 		    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
 		    	if(wallet_set.includes(asset['slug'])){
 		    		counter += 1
+		    		bids_added += 1
 		    		if (data_node.PRIORITY_COMP_WALLET.includes(wallet_orders[wallet])) {
 		    			asset['current_bid'] = o.basePrice/1000000000000000000
 		    			push_asset_high_priority(asset);
@@ -246,12 +251,15 @@ async function dump_queue(queue_name){
 async function get_queue_length(queue_name){
 	console.log('Queue: ' + await client.LLEN("queue:" + queue_name))
 }
+async function return_queue_length(queue_name){
+	return await client.LLEN("queue:" + queue_name)
+}
 //http method - client pull
 async function redis_queue_pop(){
 	let pop_count = 2
 	let queue_data = await client.lPopCount('queue:high', pop_count)
 
-	if(queue_data.length()){
+	if(queue_data !== null && queue_data !== undefined && queue_data.length > 0){
 		return queue_data
 	} else {
 		return await client.lPopCount('queue:flash', pop_count)
@@ -262,8 +270,9 @@ async function flash_queue_start(){
 	server.listen(3000, myIp, () => {
 		console.log('Server is running')
 	})
-	get_competitor_bids()
 	dump_queue('flash')
+	get_competitor_bids()
+	
 }
 
 function main(){

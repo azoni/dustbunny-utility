@@ -18,6 +18,8 @@ let token_fee_dict = {}
 const ETHERSCAN_API_KEY = 'AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ'
 
 const staking_collections = [
+	'0x29205f257f9e3b78bcb27e253d0f3fad9d7522a2',
+	'0xd3a316d5fa3811553f67d9974e457c37d1c098b8',
 	'0x12753244901f9e612a471c15c7e5336e813d2e0b', //sneaky vamps
 	'0xdf8a88212ff229446e003f8f879e263d3616b57a', // sappy seals
 	'0xab93f992d9737bd740113643e79fe9f8b6b34696', // metroverse
@@ -25,6 +27,7 @@ const staking_collections = [
 	'0xed6552d7e16922982bf80cf43090d71bb4ec2179', // coolmonkes
 	'0x000000000000000000000000000000000000dead', // anonymice
 	'0x6714de8aa0db267552eb5421167f5d77f0c05c6d', // critterznft
+
 ]
 async function getJSONFromFetch(f) {
   let r = await f;

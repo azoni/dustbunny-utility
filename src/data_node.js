@@ -356,7 +356,8 @@ const values = {
      'genesis-creepz', 'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro', 'beans-dumb-ways-to-die', 'prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'metroverse', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'sappy-seals', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'jrny-club-official', 'superplastic-supergucci', 'thehabibiz', 'pudgypenguins', 'meebits', 'wolf-game-migrated', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'lootproject', 'rumble-kong-league', 'cryptoskulls', 'metahero-generative', 'mekaverse', 'sneaky-vampire-syndicate', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
      ],
 	WATCH_LIST_LOW: ['meebits', 'lootproject', 'boredapeyachtclub'],
-	COMP_WALLETS: [//'0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
+	COMP_WALLETS: [
+	//'0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
 	// '0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea',
 	// '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4',
 	// '0xfdb32c8ddda21172a031d928056e19725a0836c5',
@@ -366,15 +367,19 @@ const values = {
 	// '0x15cba6d3b98d220bc1ecda89afdf07dd0bf06c5d',
 	// '0xbb2cd2434ca0881bcdcce88f6e77c607fc71c128',
 	// '0x07b52eac4361f6aa840237e20afe89fe5eb8d031',
-	//flash-boi 12-14
-	'0x41f01d8f02c569be620e13c9b33ce803bed84e90',
-	'0x26054c824ff0a6225dfa24a1eebd6a18de6b5f7d',
-	'0x5bcfc791b9baa68e9aa50eb98e555304ad53d697'],
+	// '0x41f01d8f02c569be620e13c9b33ce803bed84e90',
+	// '0x26054c824ff0a6225dfa24a1eebd6a18de6b5f7d',
+	// '0x5bcfc791b9baa68e9aa50eb98e555304ad53d697',
+	'0x429cdc4baf9d216fbff22a8eeb56bc7a225329c0',
+	'0x277371339da18e8c5c4dc4c799fa556df62c6b71',
+	'0x16f98ff6bb49d329bc92ed5051c7e901c8ee976e',
+	],
 	PRIORITY_COMP_WALLET: [
-	//upbids flash on big sets
+	'0xee87f1579c7743683ad41aa3ca2477f5f40a4b34',
+	 '0x0e78c12ad4c2e31ff38c4c0ce2fea1e57b838d47',
 	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
-	 // bids on hacked accounts
-	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98'
+	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98',
+	 '0xdeef55689a46931754ff18d76ccda30459786bc0'
 	],
 	OWNER_ADDRESS: [
 		{
