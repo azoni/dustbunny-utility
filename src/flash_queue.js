@@ -131,6 +131,7 @@ async function get_competitor_bids(){
 		    	asset['token_address'] = o.asset.tokenAddress
 		    	asset['slug'] = o.asset.collection.slug
 		    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
+		    	asset['event_type'] = 'flash'
 		    	if(wallet_set.includes(asset['slug'])){
 		    		counter += 1
 		    		bids_added += 1
