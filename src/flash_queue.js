@@ -137,6 +137,7 @@ async function get_competitor_bids(){
 		    		bids_added += 1
 		    		if (data_node.PRIORITY_COMP_WALLET.includes(wallet_orders[wallet])) {
 		    			asset['current_bid'] = o.basePrice/1000000000000000000
+		    			asset['event_type'] = 'high'
 		    			push_asset_high_priority(asset);
 		    		} else {
 		    			redis_push_asset(asset)	
