@@ -56,12 +56,14 @@ async function get_etherscan_transactions(){
 		block++;
 	}	console.log('starting transactions')
 	console.log('block: ' +  block)
-	let tx_count = 0
+	let tx_count = 0;
+	const walletsToBidOnDict = {};
+
 	for(let collection in collection_json){
 		const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + collection_json[collection]['token_address'] + "&page=1&startblock=" + block + "&offset=100&sort=desc&apikey=" + ETHERSCAN_API_KEY);
 		const data = await response.json()
 		tx_count += data.result.length
-		for(let tx of data.result){
+		for (let tx of data.result) {
 			let event_type = 'transfer'
 			if (tx.blockNumber > ourlatest) { ourlatest = tx.blockNumber; }
 			if(staking_collections.includes(tx.from)){
@@ -69,8 +71,12 @@ async function get_etherscan_transactions(){
 			} else if (staking_collections.includes(tx.to)) {
 				event_type = 'stake'
 			}
-			await get_nfts_from_wallet(tx.to, event_type)
-			await get_nfts_from_wallet(tx.from, event_type)
+			walletsToBidOnDict[tx.to] = event_type;
+			walletsToBidOnDict[tx.from] = event_type;
+		}
+		for (const address in walletsToBidOnDict) {
+			const event_type = walletsToBidOnDict[address];
+			await get_nfts_from_wallet(address, event_type);
 		}
 	}
 	console.log('tx found: ' + tx_count)
