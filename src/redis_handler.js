@@ -27,5 +27,7 @@ async function redis_push_asset_flash(asset) {
 async function push_asset_high_priority(asset) {
 	await client.rPush('queue:high', JSON.stringify(asset));
 }
+print_queue_length('high')
+print_queue_length('flash')
 
 module.exports = { client, print_queue_length, dump_queue };
