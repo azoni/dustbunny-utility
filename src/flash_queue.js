@@ -239,7 +239,7 @@ const requestListener = function(req, res){
 			res.end('null');
 		}
 	} else if (urlParts.pathname === '/length' && req.method === 'GET') {
-			client.LLEN("queue:flash").then(x => res.end(x)).catch(_=>res.end(-1));
+			return_queue_length('flash').then(x => res.end(x + '')).catch(_=>res.end('-1'));
 	}
 		else {
 			res.end('bye you');
