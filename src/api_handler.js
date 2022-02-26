@@ -124,7 +124,6 @@ async function get_collection(slug){
 // 	console.log('Building collection JSON complete.')
 // }
 
-
 async function get_assets(slug){
 	// if slug exists call from json
 	// else opensea api call
@@ -155,7 +154,6 @@ async function get_assets(slug){
 	
 		return assets_list
 	}
-
 }
 
 // 
@@ -181,12 +179,13 @@ async function write_assets(slug, total_assets){
 		//Check for null. Ex. colection 10,000 assets, storing 10,050
 		assets.assets.forEach((asset) =>{
 			var trimmed_asset = {}
-			trimmed_asset['tokenId'] = asset['tokenId']
+			trimmed_asset['token_id'] = asset['tokenId']
 			trimmed_asset['traits'] = asset['traits']
 			trimmed_asset['name'] = asset['name']
-			trimmed_asset['tokenAddress'] = asset['tokenAddress']
-			trimmed_asset['imageUrl'] = asset['imageUrl']
-			if(asset['imageUrl'] !== ''){
+			trimmed_asset['token_address'] = asset['tokenAddress']
+			trimmed_asset['image_url'] = asset['imageUrl']
+			trimmed_asset['slug'] = slug
+			if(asset['image_url'] !== ''){
 				assets_list.push(trimmed_asset)
 			} else {
 				console.log("Asset doesn't exist")
@@ -656,8 +655,22 @@ async function flash_queue_start(){
 	// console.log(list_assets[0].traits)
 }
 
-function main(){
-	flash_queue_start()
+async function main(){
+	let offset = 0
+	let limit = 50
+	let collectionName = 'cyberkongz'
+	let direction = 'asc'
+	// let assets = await get_assets('alienfrensnft')
+	 var collection = await seaport.api.getAssets({
+      'collection': collectionName,
+      'offset': offset,
+      'limit': limit,
+      'order_direction': direction
+    })
+	 for(let asset of collection['assets']){
+	 	console.log(asset.name)
+	 }
+	// flash_queue_start()
 	// const readline = require('readline-sync')	
 	// let start_function = readline.question('Which queue? ')
 	// console.log('Starting' + start_function + 'queue...')

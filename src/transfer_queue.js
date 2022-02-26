@@ -28,8 +28,8 @@ const staking_collections = [
 	'0xed6552d7e16922982bf80cf43090d71bb4ec2179', // coolmonkes
 	'0x000000000000000000000000000000000000dead', // anonymice
 	'0x6714de8aa0db267552eb5421167f5d77f0c05c6d', // critterznft
-
 ]
+
 async function getJSONFromFetch(f) {
   let r = await f;
   return r.json();
@@ -87,7 +87,7 @@ async function get_etherscan_transactions(){
 }
 
 let running_nft_total = 0
-async function get_nfts_from_wallet(interestAddress, event_type){
+async function get_nfts_from_wallet(interestAddress, event_type) {
 	if (staking_collections.includes(interestAddress)) {return; }
 	// const interestAddress = "0xcae462347cd2d83f9a548afacb2ca6e0c6063bff";
 	let f = fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&address=" + interestAddress + "&startblock=0&endblock=999999999&sort=asc&apikey=" + ETHERSCAN_API_KEY)
