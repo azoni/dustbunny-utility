@@ -185,6 +185,9 @@ async function write_assets(slug, total_assets){
 			trimmed_asset['token_address'] = asset['tokenAddress']
 			trimmed_asset['image_url'] = asset['imageUrl']
 			trimmed_asset['slug'] = slug
+			trimmed_asset['fee'] = asset.collection.devSellerFeeBasisPoints / 10000
+			trimmed_asset['event_type'] = 'file'
+			
 			if(asset['image_url'] !== ''){
 				assets_list.push(trimmed_asset)
 			} else {
@@ -209,14 +212,15 @@ async function write_assets(slug, total_assets){
 
 	assets_dict['assets'] = assets_list
 	console.log(assets_dict['assets'][total_assets - invalid - 1])
+	console.log(assets_dict)
 	const data = JSON.stringify(assets_dict);
 
-	fs.writeFile(path, data, (err) => {
-	    if (err) {
-	        throw err;
-	    }
-	    console.log("JSON data is saved.");
-	});
+	fs.writeFile('./collections/' + slug + '.json', data, (err) => {
+    if (err) {
+        throw err;
+    }
+    console.log("JSON data is saved.");
+	})
 }
 
 async function read_assets(slug){
@@ -654,22 +658,37 @@ async function flash_queue_start(){
 	// let list_assets = await get_listed_asset('alienfrensnft')
 	// console.log(list_assets[0].traits)
 }
-
+async function write() {
+	var slug = ['critterznft']
+	for(var index in slug){
+		var collect = await getCollectionDetails(slug[index])
+		await write_assets(slug[index], collect.collection.stats.total_supply)
+	}
+	let data = await read_assets('critterznft')
+	console.log(data)
+	// var collect = await getCollectionDetails('alienfrensnft')
+	// console.log(collect.collection.stats.count)
+	// console.log(collect.collection.traits)
+	// let list_assets = await get_listed_asset('alienfrensnft')
+	// console.log(list_assets[0].traits)
+}
 async function main(){
-	let offset = 0
-	let limit = 50
-	let collectionName = 'cyberkongz'
-	let direction = 'asc'
-	// let assets = await get_assets('alienfrensnft')
-	 var collection = await seaport.api.getAssets({
-      'collection': collectionName,
-      'offset': offset,
-      'limit': limit,
-      'order_direction': direction
-    })
-	 for(let asset of collection['assets']){
-	 	console.log(asset.name)
-	 }
+	write()
+	// let offset = 0
+	// let limit = 50
+	// let collectionName = 'doodles-official'
+	// let direction = 'asc'
+	// // let assets = await get_assets('alienfrensnft')
+	//  var collection = await seaport.api.getAssets({
+ //      'collection': collectionName,
+ //      'offset': offset,
+ //      'limit': limit,
+ //      'order_direction': direction
+ //    })
+	//  for(let asset of collection['assets']){
+	//  	console.log(asset.name)
+	//  	console.log(asset)
+	//  }
 	// flash_queue_start()
 	// const readline = require('readline-sync')	
 	// let start_function = readline.question('Which queue? ')
@@ -680,5 +699,6 @@ async function main(){
 	// 	flash_queue_start()
 	// }
 }
-main()
+// main()
+module.exports = { get_assets };
 // test_main()

@@ -244,7 +244,6 @@ const requestListener = function(req, res){
 			res.end('bye you');
 		}
 }
-
 async function dump_queue(queue_name){
 	client.DEL('queue:' + queue_name)
 	console.log(await client.LLEN("queue:" + queue_name))
@@ -262,8 +261,15 @@ async function redis_queue_pop(){
 
 	if(queue_data !== null && queue_data !== undefined && queue_data.length > 0){
 		return queue_data
-	} else {
-		return await client.lPopCount('queue:flash', pop_count)
+	} 
+	else {
+		let manual_queue_data = await client.lPopCount('queue:manual', pop_count)
+		if(manual_queue_data !== null && manual_queue_data !== undefined && manual_queue_data.length > 0){
+			return manual_queue_data
+		}
+		else {
+			return await client.lPopCount('queue:flash', pop_count)
+		}
 	}
 }
 async function flash_queue_start(){
@@ -273,7 +279,6 @@ async function flash_queue_start(){
 	})
 	dump_queue('flash')
 	get_competitor_bids()
-	
 }
 
 function main(){
