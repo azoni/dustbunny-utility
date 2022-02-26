@@ -78,7 +78,7 @@ const ETHERSCAN_API_KEY = 'AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ'
 var block = 0;
 var wallet_set = data_node.WATCH_LIST
 var wallet_orders = [...(data_node.PRIORITY_COMP_WALLET), ...(data_node.COMP_WALLETS)]
-var event_window = 30000
+var event_window = 15000
 
 var staking_collections = [
 	'0x12753244901f9e612a471c15c7e5336e813d2e0b', //sneaky vamps
@@ -92,7 +92,6 @@ var staking_collections = [
 let bids_added = 0
 async function get_competitor_bids(){
 	var start_time = Math.floor(+new Date())
-
   let search_time = get_ISOString(event_window)
   let search_time2 = get_ISOString_now()
 
@@ -150,7 +149,6 @@ async function get_competitor_bids(){
 	      console.log(ex.message)
 	      console.log('error with buy orders')
 	    }
-	    
 	    offset += 50
     } while(order_length === 50)
     console.log(counter + ' bids made by ' + username)
@@ -161,8 +159,9 @@ async function get_competitor_bids(){
   // console.log(end_time - start_time)
   // console.log(end_time - start_time < event_window)
   if (end_time - start_time < event_window){
-  	console.log('waiting: ' + (end_time - start_time)/1000 + ' seconds')
-  	await sleep((end_time - start_time))
+  	let wait_time = event_window - (end_time - start_time)
+  	console.log('waiting: ' + wait_time + 'ms')
+  	await sleep(wait_time)
   }
   get_competitor_bids()
 }

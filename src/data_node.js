@@ -351,7 +351,7 @@ const values = {
      'deadfellaz', 'lazy-lions', 'pudgypenguins', 'forgottenruneswizardscult',
      'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject', 'livesofasuna',
      'karafuru', 'coolpetsnft', 'boredapeyachtclub', 'azuki', 'nft-worlds', 'hapeprime',
-     'supernormalbyzipcy', 'world-of-women-nft', 'hype-bears-club-official-', 'kaiju-kingz',
+     'supernormalbyzipcy', 'world-of-women-nft', 'kaiju-kingz', 'winterbears',
      'raidparty', 'mfers', 'bossbeauties', 'pixelmongen1',
      'genesis-creepz', 'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro', 'beans-dumb-ways-to-die', 'prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'metroverse', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'sappy-seals', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'jrny-club-official', 'superplastic-supergucci', 'thehabibiz', 'pudgypenguins', 'meebits', 'wolf-game-migrated', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'lootproject', 'rumble-kong-league', 'cryptoskulls', 'metahero-generative', 'mekaverse', 'sneaky-vampire-syndicate', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
      ],
@@ -375,7 +375,7 @@ const values = {
 	'0x16f98ff6bb49d329bc92ed5051c7e901c8ee976e',
 	],
 	PRIORITY_COMP_WALLET: [
-	'0xee87f1579c7743683ad41aa3ca2477f5f40a4b34',
+	 '0xee87f1579c7743683ad41aa3ca2477f5f40a4b34',
 	 '0x0e78c12ad4c2e31ff38c4c0ce2fea1e57b838d47',
 	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
 	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98',
