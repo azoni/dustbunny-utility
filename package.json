@@ -4,15 +4,20 @@
   "private": true,
   "dependencies": {
     "@0x/subproviders": "^6.6.0",
+    "@alch/alchemy-web3": "^1.1.9",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "fs": "0.0.1-security",
-    "opensea-js": "^1.2.0",
+    "opensea-js": "^2.0.1-beta.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
-    "web-vitals": "^1.1.2"
+    "readline-sync": "^1.4.10",
+    "redis": "^4.0.4",
+    "throttled-queue": "^2.1.2",
+    "web-vitals": "^1.1.2",
+    "web3-eth": "^1.6.0"
   },
   "scripts": {
     "start": "react-scripts start",
