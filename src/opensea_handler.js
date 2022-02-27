@@ -57,19 +57,24 @@ async function get_assets(slug){
 		return require('./collections/' + slug + '.json').assets
 	} catch(ex) {
 		do {
-			var assets = await seaport.api.getAssets({
-				'collection': slug,
-				'offset': offset,
-				'limit': limit,
-			})
-			assets.assets.forEach((asset) =>{
-				assets_list.push(asset)
-			})
-			assets_length = assets.assets.length
-			offset += 50
-			if(offset % 1000 === 0){
-				console.log(offset)
+			try{
+				var assets = await seaport.api.getAssets({
+					'collection': slug,
+					'offset': offset,
+					'limit': limit,
+				})
+				assets.assets.forEach((asset) =>{
+					assets_list.push(asset)
+				})
+				assets_length = assets.assets.length
+				offset += 50
+				if(offset % 250 === 0){
+					console.log(offset)
+				}
+			} catch(e) {
+				console.log(e.message)
 			}
+		
 			
 		} while(assets_length === 50)
 	
@@ -154,19 +159,42 @@ async function read_assets(slug){
 }
 
 //order['orders'][o].taker !== '0x0000000000000000000000000000000000000000'
-async function get_orders(){
-	try{   
-		const order = await seaport.api.getOrders({
-			side: 1,
-			order_by: 'created_date',
-			listed_after: search_time,
-			listed_before: search_time2,
-			limit: 50,
-			offset: offset
-		})
-	} catch(ex){
-		console.log(ex.message)
-	}
+async function get_orders_window(address, time_window){
+  var offset = 0
+  let search_time = get_ISOString(time_window)
+  let search_time2 = get_ISOString_now()
+  let orders_array = []
+  do{
+  	await sleep(250)
+    try{
+	    const order = await seaport.api.getOrders({
+	      side: 0,
+	      order_by: 'created_date',
+	      maker: address,
+	      listed_after: search_time,
+	      listed_before: search_time2,
+	      limit: 50,
+	      offset: offset
+	    })
+	    try{
+        var username = order['orders'][0].makerAccount.user.username
+      } catch(ex){
+        username = 'Null'
+      }
+	    var order_length = order['orders'].length
+	    for(let o of order.orders){
+	    	orders_array.push(o)
+	    }
+    }
+    catch(ex) {
+    	order_length = 0
+      console.log(ex.message)
+      console.log('error with buy orders')
+    }
+    offset += 50
+  } while(order_length === 50)
+  console.log(orders_array.length + ' bids made by ' + username)
+  return orders_array
 }
 
 // buy nft with ETH
@@ -199,4 +227,4 @@ function get_ISOString_now(){
 	return new Date(search_time).toISOString();
 }
 
-module.exports = { seaport, get_collection, get_assets};
+module.exports = { seaport, get_collection, get_assets, get_orders_window};

@@ -135,7 +135,7 @@ async function get_competitor_bids(){
 		    		counter += 1
 		    		bids_added += 1
 		    		if (data_node.PRIORITY_COMP_WALLET.includes(wallet_orders[wallet])) {
-		    			asset['current_bid'] = o.basePrice/1000000000000000000
+		    			asset['bid_amount'] = o.basePrice/1000000000000000000
 		    			asset['event_type'] = 'high'
 		    			push_asset_high_priority(asset);
 		    		} else {

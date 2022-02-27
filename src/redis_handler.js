@@ -30,4 +30,4 @@ async function push_asset_high_priority(asset) {
 print_queue_length('high')
 print_queue_length('flash')
 
-module.exports = { client, print_queue_length, dump_queue };
+module.exports = { client, print_queue_length, dump_queue, push_asset_high_priority };
