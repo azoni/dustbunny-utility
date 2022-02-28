@@ -6,7 +6,6 @@ const utils = require('./utils.js')
 const smart_list = data_node.SMART_WATCH_LIST
 
 //getOrders on 30 token IDs at once, possibly match expiration
-
 async function start_listener(){
 	var exp = .33
 	let asset_contract_address = '0x8a90cab2b38dba80c64b7734e58ee1db38b8992e'
