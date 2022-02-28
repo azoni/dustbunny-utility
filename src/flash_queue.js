@@ -15,10 +15,10 @@ const myIp  = require('./what-is-my-ip.js');
 if (!myIp) {
 	throw new Error(`cant get ip: "${myIp}"`);
 }
-console.log(myIp)
+// console.log(myIp)
 
 const client = node_redis.createClient({
-	url: "redis://10.0.0.77:6379",
+	url: "redis://10.0.0.80:6379",
 });
 client.connect();
 client.on('error', (err) => console.log('Redis Client Error', err));
@@ -35,7 +35,7 @@ var seaport = new OpenSeaPort(
 );
 
 providerEngine.start()
-
+	
 async function get_collection(slug){
 	try{
 		const collect = await seaport.api.get('/api/v1/collection/' + slug)
@@ -281,7 +281,8 @@ async function flash_queue_start(){
 	get_competitor_bids()
 }
 
-function main(){
+function start(){
 	flash_queue_start()
 }
-main()
+// start()
+module.exports = { start };

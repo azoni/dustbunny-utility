@@ -3,11 +3,11 @@ const node_redis = require('redis')
 const collection_json = require('./collections/collection_json.json')
 const url = require('url');
 const fetch = require('node-fetch')
-const client = node_redis.createClient({
-	url: "redis://10.0.0.77:6379",
-});
-client.connect();
-client.on('error', (err) => console.log('Redis Client Error', err));
+// const client = node_redis.createClient({
+// 	url: "redis://10.0.0.77:6379",
+// });
+// client.connect();
+// client.on('error', (err) => console.log('Redis Client Error', err));
 
 var block = 0;
 var wallet_set = data_node.WATCH_LIST
@@ -193,8 +193,8 @@ async function transfer_queue_start() {
 	// });
 	get_etherscan_transactions()
 }
-async function main(){
+async function start(){
 	dump_queue('high')
 	transfer_queue_start()
 }
-main()
+// start()

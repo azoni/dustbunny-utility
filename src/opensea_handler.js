@@ -159,23 +159,39 @@ async function read_assets(slug){
 }
 
 //order['orders'][o].taker !== '0x0000000000000000000000000000000000000000'
-async function get_orders_window(address, time_window){
+async function get_orders_window(address, time_window, token_ids){
   var offset = 0
   let search_time = get_ISOString(time_window)
   let search_time2 = get_ISOString_now()
   let orders_array = []
+  var order = 0
   do{
   	await sleep(250)
     try{
-	    const order = await seaport.api.getOrders({
-	      side: 0,
-	      order_by: 'created_date',
-	      maker: address,
-	      listed_after: search_time,
-	      listed_before: search_time2,
-	      limit: 50,
-	      offset: offset
-	    })
+    	if(token_ids){
+    		console.log('hello')
+    		order = await seaport.api.getOrders({
+		      side: 0,
+		      order_by: 'created_date',
+		      asset_contract_address: address,
+		      token_ids: token_ids,
+		      listed_after: search_time,
+		      listed_before: search_time2,
+		      limit: 50,
+		      offset: offset
+		    })
+    	} else {
+    			order = await seaport.api.getOrders({
+			      side: 0,
+			      order_by: 'created_date',
+			      maker: address,
+			      listed_after: search_time,
+			      listed_before: search_time2,
+			      limit: 50,
+			      offset: offset
+			    })
+    	}
+	    
 	    try{
         var username = order['orders'][0].makerAccount.user.username
       } catch(ex){
@@ -189,7 +205,7 @@ async function get_orders_window(address, time_window){
     catch(ex) {
     	order_length = 0
       console.log(ex.message)
-      console.log('error with buy orders')
+      console.log('----error with buy orders')
     }
     offset += 50
   } while(order_length === 50)
