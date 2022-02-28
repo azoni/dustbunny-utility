@@ -169,7 +169,6 @@ async function get_orders_window(address, time_window, token_ids){
   	await sleep(250)
     try{
     	if(token_ids){
-    		console.log('hello')
     		order = await seaport.api.getOrders({
 		      side: 0,
 		      order_by: 'created_date',
