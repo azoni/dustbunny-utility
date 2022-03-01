@@ -103,9 +103,10 @@ async function main(){
 		server.listen(3000, myIp, () => {
 			console.log('Server is running')
 		})
-		await redis_handler.start_connection()
-		await mongo.connect()
+		
 	}
+	await redis_handler.start_connection()
+	await mongo.connect()
 	const readline = require('readline-sync')	
 	let command = readline.question('Run: ')
 	if(command === 'comp'){
