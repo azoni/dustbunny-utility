@@ -6,8 +6,8 @@ const TRAITS_DICT = data_node.COLLECTION_TRAIT
 
 // Grab assets from database to avoid api rate limits. 
 async function manual_queue_add(slug){
-	var assets =  await opensea_handler.get_assets(slug)
 	console.log('Getting assets for ' + slug + '...')
+	var assets =  await opensea_handler.get_assets(slug)
 	let collection_traits = TRAITS_DICT[slug]
 	console.log('Trait bids: ' + collection_traits)
 	for(let asset of assets){
@@ -33,7 +33,7 @@ async function manual_queue_add(slug){
     	await redis_handler.redis_push_asset(trimmed_asset)
 	}
 	await redis_handler.print_queue_length('manual')
-	console.log('done')
+	console.log(slug + ' added.')
 }
 var wallet_set = data_node.WATCH_LIST
 
@@ -87,4 +87,4 @@ async function manual_queue_start(){
 	}
 	manual_queue_add(slug)
 }
-module.exports = { get_competitor, manual_queue_add};
+module.exports = { TRAITS_DICT, get_competitor, manual_queue_add};

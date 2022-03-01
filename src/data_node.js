@@ -311,11 +311,10 @@ const values = {
      'clonex', 'decentraland', 'collectvox', 'creatureworld',
      'meebits', 'guttercatgang', 'veefriends', 'rumble-kong-league',
      'deadfellaz', 'lazy-lions', 'pudgypenguins', 'forgottenruneswizardscult',
-     'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject', 'livesofasuna',
-     'karafuru', 'coolpetsnft', 'boredapeyachtclub', 'azuki', 'nft-worlds', 'hapeprime', 'gutterrats',' gutterdogs', 
-     'supernormalbyzipcy', 'world-of-women-nft', 'kaiju-kingz', 'winterbears',
-     'raidparty', 'mfers', 'bossbeauties', 'pixelmongen1',
-     'genesis-creepz', 'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro','prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'metroverse', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'sappy-seals', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'pudgypenguins', 'meebits', 'wolf-game-migrated', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'lootproject', 'rumble-kong-league', 'cryptoskulls', 'metahero-generative', 'mekaverse', 'sneaky-vampire-syndicate', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
+     'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject',
+     'karafuru', 'coolpetsnft', 'boredapeyachtclub', 'azuki', 'nft-worlds', 'hapeprime', 'gutterrats',' gutterdogs',
+     'supernormalbyzipcy', 'world-of-women-nft', 'kaiju-kingz', 'raidparty', 'mfers', 'bossbeauties', 'pixelmongen1',
+     'genesis-creepz', 'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro','prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'metroverse', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'pudgypenguins', 'meebits','onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'lootproject', 'rumble-kong-league', 'cryptoskulls', 'metahero-generative', 'mekaverse', 'sneaky-vampire-syndicate', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
      ],
 	WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
      'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',
@@ -323,7 +322,7 @@ const values = {
      'clonex', 'decentraland', 'collectvox', 'creatureworld',
      'meebits', 'guttercatgang', 'veefriends', 'rumble-kong-league',
      'deadfellaz', 'lazy-lions', 'pudgypenguins', 'forgottenruneswizardscult',
-     'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject', 'livesofasuna',
+     'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject', 
      'karafuru', 'coolpetsnft', 'boredapeyachtclub', 'azuki', 'nft-worlds', 'hapeprime', 'gutterrats',' gutterdogs', 
      'supernormalbyzipcy', 'world-of-women-nft', 'kaiju-kingz', 'winterbears',
      'raidparty', 'mfers', 'bossbeauties', 'pixelmongen1',
@@ -353,7 +352,8 @@ const values = {
 	 '0x0e78c12ad4c2e31ff38c4c0ce2fea1e57b838d47',
 	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
 	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98',
-	 '0xdeef55689a46931754ff18d76ccda30459786bc0'
+	 '0xdeef55689a46931754ff18d76ccda30459786bc0',
+	 '0x1a5355f31ee2652f0040151856ff60ddd23d81cc'
 	],
 	OWNER_ADDRESS: [
 		{
