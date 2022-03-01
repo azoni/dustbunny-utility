@@ -12,7 +12,7 @@ const requestListener = function(req, res){
 	    // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Request-Method', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
     res.setHeader('Access-Control-Allow-Headers', '*');
     if ( req.method === 'OPTIONS' ) {
         res.writeHead(200);
@@ -40,6 +40,18 @@ const requestListener = function(req, res){
 			}
 			res.end(']');
 		});
+	} else if (req.url === '/collectionstats' && req.method === 'GET') {
+		const collectionname = urlParts.query?.name;
+		if (collectionname) {
+			redis_handler.client.GET(`${collectionname}:stats`)
+			.then(x => res.end(x))
+			.catch(x => {
+				console.error(x);
+				res.end();
+			});
+		} else {
+			res.end('null');
+		}
 	} else if (req.url === '/floor' && req.method === 'POST') {
 		let bod = [];
 		req.on('error', (err) => {
@@ -55,13 +67,17 @@ const requestListener = function(req, res){
 					const r = JSON.parse(bod);
 					if (r.collection && typeof r.collection === 'string' && r.floor >= 0) {
 						const key = `${r.collection}:floor`;
-						redis_handler.client.SET(key, r.floor);
+						redis_handler.client.SETEX(key, 3600, r.floor);
+						if (r.stats) {
+							const statKey = `${r.collection}:stats`
+							redis_handler.client.SETEX(statKey, 3600, JSON.stringify(r.stats));
+						}
 					}
 				} catch (ex) {
 					console.log(ex);
 				}
-				res.end();
 			}
+			res.end();
 		})
 	} else if (urlParts.pathname === '/floor' && req.method === 'GET') {
 		const collectionname = urlParts.query?.name;
@@ -72,10 +88,9 @@ const requestListener = function(req, res){
 		}
 	} else if (urlParts.pathname === '/length' && req.method === 'GET') {
 			redis_handler.get_queue_length('flash').then(x => res.end(x + '')).catch(_=>res.end('-1'));
+	} else {
+		res.end('{error:"bye you"}');
 	}
-		else {
-			res.end('bye you');
-		}
 }
 
 if (!myIp) {
