@@ -9,7 +9,7 @@ async function manual_queue_add(slug){
 	var assets =  await opensea_handler.get_assets(slug)
 	console.log('Getting assets for ' + slug + '...')
 	let collection_traits = TRAITS_DICT[slug]
-	console.log(collection_traits)
+	console.log('Trait bids: ' + collection_traits)
 	for(let asset of assets){
 		let trimmed_asset = {}
 		trimmed_asset['token_id'] = asset.tokenId
@@ -21,7 +21,7 @@ async function manual_queue_add(slug){
     	trimmed_asset['expiration'] = .33
     	trimmed_asset['bid_multi'] = false
     	for(trait of asset.traits){
-			if(collection_traits[trait.trait_type]){
+			if(collection_traits !== undefined && collection_traits[trait.trait_type]){
 				if(collection_traits[trait.trait_type][trait.value]){
 					// console.log(trait.value)
 					// console.log(collection_traits[trait.trait_type][trait.value])
@@ -85,9 +85,6 @@ async function manual_queue_start(){
 		let exp = readline.question('expire: ')
 		get_competitor(address, time_window*1000, exp)
 	}
-	// console.log(slug)
-	
 	manual_queue_add(slug)
 }
-// manual_queue_start()
 module.exports = { get_competitor, manual_queue_add};

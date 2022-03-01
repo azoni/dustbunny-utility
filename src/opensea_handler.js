@@ -179,7 +179,17 @@ async function get_orders_window(address, time_window, token_ids){
 		      limit: 50,
 		      offset: offset
 		    })
-    	} else {
+    	} else if(address === 'all') {
+    			order = await seaport.api.getOrders({
+			      side: 0,
+			      order_by: 'created_date',
+			      listed_after: search_time,
+			      listed_before: search_time2,
+			      limit: 50,
+			      offset: offset
+			    })
+    	}
+    	else {
     			order = await seaport.api.getOrders({
 			      side: 0,
 			      order_by: 'created_date',
