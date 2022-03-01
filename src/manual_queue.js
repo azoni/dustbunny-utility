@@ -9,18 +9,17 @@ const TRAITS_DICT = data_node.COLLECTION_TRAIT
 // Grab assets from database to avoid api rate limits. 
 async function manual_queue_add(slug, event_type, exp, bid){
 	console.log('Getting assets for ' + slug + '...')
-	var assets =  await opensea_handler.get_assets(slug)
-	// var assets = await mongo.find({'slug':slug}, {})
-	// console.log(assets)
+	// var assets =  await opensea_handler.get_assets(slug)
+	var assets = await mongo.find({'slug':slug}, {})
 	let collection_traits = TRAITS_DICT[slug]
 	console.log('Trait bids: ' + collection_traits)
 	for(let asset of assets){
 		let trimmed_asset = {}
-		trimmed_asset['token_id'] = asset.tokenId
+		trimmed_asset['token_id'] = asset.token_id
 		trimmed_asset['traits'] = asset.traits
-    	trimmed_asset['token_address'] = asset.tokenAddress
-    	trimmed_asset['slug'] = asset.collection.slug
-    	trimmed_asset['fee'] = asset.collection.devSellerFeeBasisPoints / 10000
+    	trimmed_asset['token_address'] = asset.token_address
+    	trimmed_asset['slug'] = asset.slug
+    	trimmed_asset['fee'] = asset.dev_seller_fee_basis_points / 10000
     	trimmed_asset['event_type'] = event_type
     	trimmed_asset['expiration'] = exp
     	trimmed_asset['bid_multi'] = false

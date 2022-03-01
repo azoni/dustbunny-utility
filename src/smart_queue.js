@@ -37,6 +37,7 @@ async function start(){
 			allowed_collections.push(slug)
 		}
 	}
+	console.log('Getting OpenSea bids...')
 	let orders = await opensea_handler.get_orders_window('all', 30000)
 	console.log(orders.length)
 	for(let o of orders){
@@ -55,12 +56,11 @@ async function start(){
 	}
 	for(var c of allowed_collections){
 		if(bid_dict[c] < 10 || !bid_dict[c]){
-			let collection = await opensea_handler.get_collection(c)
 			try{
-				console.log(c + ' ' + bid_dict[c] + ' size: ' + collection.collection.stats.total_supply)
+				console.log(c + ' ' + bid_dict[c] + ' size: ' + 1)
 				let final_collection = {}
 				final_collection['slug'] = c
-				final_collection['supply'] = collection.collection.stats.total_supply
+				final_collection['supply'] = 1
 				final_collection['bids'] = bid_dict[c] 
 				final_product.push(final_collection)
 			} catch (e){

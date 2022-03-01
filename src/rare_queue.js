@@ -3,7 +3,6 @@ const data_node = require('./data_node.js')
 const opensea_handler = require('./opensea_handler.js')
 const utils = require('./utils.js')
 
-const smart_list = data_node.SMART_WATCH_LIST
 
 //getOrders on 30 token IDs at once, possibly match expiration
 async function start_listener(){

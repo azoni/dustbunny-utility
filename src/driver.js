@@ -1,5 +1,4 @@
 const manual = require('./manual_queue.js')
-const rare = require('./rare_queue.js')
 const flash = require('./flash_queue.js')
 const transfer = require('./transfer_queue.js')
 const smart = require('./smart_queue.js')
@@ -83,12 +82,15 @@ if (!myIp) {
 	throw new Error(`cant get ip: "${myIp}"`);
 }
 async function main(){
-	const server = http.createServer(requestListener)
-	server.listen(3000, myIp, () => {
-		console.log('Server is running')
-	})
-	await redis_handler.start_connection()
-	await mongo.connect()
+	console.log(myIp)
+	if(myIp === '10.0.0.59'){
+		const server = http.createServer(requestListener)
+		server.listen(3000, myIp, () => {
+			console.log('Server is running')
+		})
+		await redis_handler.start_connection()
+		await mongo.connect()
+	}
 	const readline = require('readline-sync')	
 	let command = readline.question('Run: ')
 	if(command === 'comp'){
@@ -107,21 +109,13 @@ async function main(){
 		if(bid === ''){
 			bid = false
 		}
-		// console.log('exp = ' + exp + ' min')
-		// console.log('bid = ' + bid)
-		while(true){
-			await manual.manual_queue_add(slug, 'manual', exp/60, bid)
-			await manual.manual_queue_add('capsulehouse', 'manual', exp/60, bid)
-			await manual.manual_queue_add('bears-deluxe', 'manual', exp/60, bid)
-			await manual.manual_queue_add('worldwidewebbland', 'manual', exp/60, bid)
-		}
-		
+
+		await manual.manual_queue_add(slug, 'manual', exp/60, bid)
+
 	} else if(command === 'flash'){
 		flash.start()
 	} else if(command === 'transfer'){
 		transfer.start()
-	} else if(command === 'rare'){
-		rare.start_listener()
 	} else if(command === 'smart'){
 		smart.start()
 	}	
