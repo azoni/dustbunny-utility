@@ -10,17 +10,9 @@ var wallet_set = data_node.WATCH_LIST
 
 let bids_added = 0
 let counter = 0
+var wallet_orders = data_node.COMP_WALLETS
 
 async function get_competitor_bids(type, exp){
- 	let wallet_orders = data_node.COMP_WALLETS
- 	if(type === 'high1' || type === 'high2'){
- 		if(type === 'high1'){
- 			wallet_orders = data_node.PRIORITY_COMP_WALLET1
- 		} else if(type === 'high2'){
- 			wallet_orders = data_node.PRIORITY_COMP_WALLET2
- 		}
- 		type = 'high'
- 	}
  	var time_window = wallet_orders.length * 2000
  	let start_time = Math.floor(+new Date())
   let search_time = utils.get_ISOString(time_window)
@@ -28,11 +20,11 @@ async function get_competitor_bids(type, exp){
   console.log('Adding to queue...' + ' event widnow: ' + time_window)
   
 	let queue_length = await redis_handler.get_queue_length(type)
-	console.log('Queue size: ' + queue_length)
+	
 	console.log('bids added: ' + bids_added)
   bids_added = 0
   for(var address of wallet_orders){
-  	await utils.sleep(750)
+  	await utils.sleep(500)
   	var orders =  await opensea_handler.get_orders_window(address, time_window)
     try {
 	    try{
@@ -73,6 +65,7 @@ async function get_competitor_bids(type, exp){
 	var end_time = Math.floor(+new Date())
 	if (end_time - start_time < time_window){
 		let wait_time = time_window - (end_time - start_time)
+		console.log('Queue ' + type + ': ' + queue_length)
 		console.log('waiting: ' + wait_time + 'ms')
 		await utils.sleep(wait_time)
 	}
@@ -87,6 +80,14 @@ async function flash_queue_start(){
 		exp = false
 	}
 	let type = readline.question('flash or high1, high2: ')
+ 	if(type === 'high1' || type === 'high2'){
+ 		if(type === 'high1'){
+ 			wallet_orders = data_node.PRIORITY_COMP_WALLET1
+ 		} else if(type === 'high2'){
+ 			wallet_orders = data_node.PRIORITY_COMP_WALLET2
+ 		}
+ 		type = 'high'
+ 	}
 	get_competitor_bids(type, exp)
 }
 

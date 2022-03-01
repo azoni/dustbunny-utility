@@ -55,7 +55,7 @@ const requestListener = function(req, res){
 					const r = JSON.parse(bod);
 					if (r.collection && typeof r.collection === 'string' && r.floor >= 0) {
 						const key = `${r.collection}:floor`;
-						client.SET(key, r.floor);
+						redis_handler.client.SET(key, r.floor);
 					}
 				} catch (ex) {
 					console.log(ex);
@@ -66,7 +66,7 @@ const requestListener = function(req, res){
 	} else if (urlParts.pathname === '/floor' && req.method === 'GET') {
 		const collectionname = urlParts.query?.name;
 		if (collectionname) {
-			client.GET(`${collectionname}:floor`).then(x => res.end(x));
+			redis_handler.client.GET(`${collectionname}:floor`).then(x => res.end(x));
 		} else {
 			res.end('null');
 		}
