@@ -7,6 +7,7 @@ const http = require('http')
 const url = require('url');
 const myIp  = require('./what-is-my-ip.js');
 const redis_handler = require('./redis_handler.js')
+const mongo = require('./AssetsMongoHandler.js')
 
 const requestListener = function(req, res){
 	    // Set CORS headers
@@ -87,6 +88,7 @@ async function main(){
 		console.log('Server is running')
 	})
 	await redis_handler.start_connection()
+	await mongo.connect()
 	const readline = require('readline-sync')	
 	let command = readline.question('Run: ')
 	if(command === 'comp'){
@@ -94,9 +96,26 @@ async function main(){
 		let time_window = readline.question('window: ')
 		let exp = readline.question('expire: ')
 		manual.get_competitor(address, time_window*1000, exp)
+		// add option for flat bid, and expiration
 	} else if(command === 'slug'){
 		let slug = readline.question('slug: ')
-		manual.manual_queue_add(slug)
+		let exp = ''//readline.question('exp: ')
+		let bid = ''//readline.question('bid: ')
+		if(exp === ''){
+			exp = 20
+		}
+		if(bid === ''){
+			bid = false
+		}
+		// console.log('exp = ' + exp + ' min')
+		// console.log('bid = ' + bid)
+		while(true){
+			await manual.manual_queue_add(slug, 'manual', exp/60, bid)
+			await manual.manual_queue_add('capsulehouse', 'manual', exp/60, bid)
+			await manual.manual_queue_add('bears-deluxe', 'manual', exp/60, bid)
+			await manual.manual_queue_add('worldwidewebbland', 'manual', exp/60, bid)
+		}
+		
 	} else if(command === 'flash'){
 		flash.start()
 	} else if(command === 'transfer'){

@@ -58,6 +58,7 @@ async function get_assets(slug){
 	} catch(ex) {
 		do {
 			try{
+				await sleep(250)
 				var assets = await seaport.api.getAssets({
 					'collection': slug,
 					'offset': offset,
@@ -68,14 +69,16 @@ async function get_assets(slug){
 				})
 				assets_length = assets.assets.length
 				offset += 50
-				if(offset % 250 === 0){
+				if(offset % 1000 === 0){
 					console.log(offset)
 				}
 			} catch(e) {
 				console.log(e.message)
 			}
 		
-			
+			if(offset > 10000){
+				assets_length = 1
+			}
 		} while(assets_length === 50)
 	
 		return assets_list

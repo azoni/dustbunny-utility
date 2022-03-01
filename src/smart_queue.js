@@ -8,6 +8,7 @@ const manual_queue = require('./manual_queue.js')
 const smart_list = data_node.SMART_WATCH_LIST
 
 async function start(){
+	await redis_handler.dump_queue('manual')
 	let bid_dict = {}
 	let final_product = []
 	// var orders = await opensea_handler.get_orders_window('all', 60000)
@@ -32,7 +33,7 @@ async function start(){
 		//floor*asset_count < total_weth * 1000
 		//exp based on run time (750bids/min)
 		// subtract fee from .9
-		if((floor * .9) < total_weth/10){
+		if((floor * .9) < total_weth/10 && floor > 1){
 			allowed_collections.push(slug)
 		}
 	}
@@ -65,13 +66,13 @@ async function start(){
 			} catch (e){
 				console.log(e)
 			}
-			
 		}
 	}
 	console.log(final_product)
 	for(let coll of final_product){
-		await manual_queue.manual_queue_add(coll.slug)
-		console.log(coll.slug + ' added.')
+		//check for when queue length === 0 and add next.
+		//dump queue if it becomes too competitive.
+		await manual_queue.manual_queue_add(coll.slug, 'smart', .33, false)
 	}
 }
 

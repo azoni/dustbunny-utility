@@ -2,12 +2,16 @@ const opensea_handler = require('./opensea_handler.js')
 const redis_handler = require('./redis_handler.js')
 const data_node = require('./data_node.js')
 const utils = require('./utils.js')
+const mongo = require('./AssetsMongoHandler.js')
+
 const TRAITS_DICT = data_node.COLLECTION_TRAIT
 
 // Grab assets from database to avoid api rate limits. 
-async function manual_queue_add(slug){
+async function manual_queue_add(slug, event_type, exp, bid){
 	console.log('Getting assets for ' + slug + '...')
 	var assets =  await opensea_handler.get_assets(slug)
+	// var assets = await mongo.find({'slug':slug}, {})
+	// console.log(assets)
 	let collection_traits = TRAITS_DICT[slug]
 	console.log('Trait bids: ' + collection_traits)
 	for(let asset of assets){
@@ -17,8 +21,8 @@ async function manual_queue_add(slug){
     	trimmed_asset['token_address'] = asset.tokenAddress
     	trimmed_asset['slug'] = asset.collection.slug
     	trimmed_asset['fee'] = asset.collection.devSellerFeeBasisPoints / 10000
-    	trimmed_asset['event_type'] = 'manual'
-    	trimmed_asset['expiration'] = .33
+    	trimmed_asset['event_type'] = event_type
+    	trimmed_asset['expiration'] = exp
     	trimmed_asset['bid_multi'] = false
     	for(trait of asset.traits){
 			if(collection_traits !== undefined && collection_traits[trait.trait_type]){
@@ -29,7 +33,7 @@ async function manual_queue_add(slug){
 				}
 			}
     	}
-    	trimmed_asset['bid_amount'] = false
+    	trimmed_asset['bid_amount'] = bid
     	await redis_handler.redis_push_asset(trimmed_asset)
 	}
 	await redis_handler.print_queue_length('manual')
@@ -75,7 +79,7 @@ async function get_competitor(address, time_window, exp){
 }
 
 async function manual_queue_start(){
-	// await redis_handler.dump_queue('high')
+	
 	await redis_handler.print_queue_length('manual')
 	const readline = require('readline-sync')	
 	let slug = readline.question('collection: ')
@@ -85,6 +89,6 @@ async function manual_queue_start(){
 		let exp = readline.question('expire: ')
 		get_competitor(address, time_window*1000, exp)
 	}
-	manual_queue_add(slug)
+	manual_queue_add(slug, 'manual')
 }
 module.exports = { TRAITS_DICT, get_competitor, manual_queue_add};

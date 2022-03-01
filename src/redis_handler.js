@@ -10,7 +10,6 @@ async function start_connection(){
 	client.on('error', (err) => console.log('Redis Client Error', err));
 }
 
-
 async function dump_queue(queue_name){
 	console.log(await client.LLEN("queue:" + queue_name))
 	client.DEL('queue:' + queue_name)

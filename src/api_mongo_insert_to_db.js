@@ -22,7 +22,7 @@ main().catch(err => console.log(err));
 
 async function main() {
   try {
-    await mongoose.connect('mongodb://localhost:27017/test');
+    await mongoose.connect('mongodb://10.0.0.80:27017/test');
     //const k =  await Kitten.findOne();
     //console.log(k.traits[0]);
     console.log(process.argv)
@@ -64,7 +64,6 @@ const options = {method: 'GET', headers: {Accept: 'application/json', 'X-API-KEY
 async function getAsset(slug, direction = 'desc') {
   const limit = 50;
   let cursor = '';
-
 
   do {
     let resourceUrl = createGetAssetURL({ slug, direction, limit, cursor });
@@ -150,7 +149,6 @@ async function testing() {
 
 async function retrieveAssets() {
 
-
   const slug = 'cryptoadz-by-gremplin';
   const offset = 0;
   const limit = 50;
@@ -164,4 +162,7 @@ async function retrieveAssets() {
 
 async function sleep(ms){
 	await new Promise(resolve => setTimeout(resolve, ms))
+}
+module.exports = {
+  getAsset
 }

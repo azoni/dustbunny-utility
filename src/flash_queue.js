@@ -1,20 +1,24 @@
 const fs = require('fs')
 const data_node = require('./data_node.js')
 const redis_handler = require('./redis_handler.js')
+const utils = require('./utils.js')
+const opensea_handler = require('./opensea_handler.js')
 
 var wallet_set = data_node.WATCH_LIST
 var wallet_orders = [...(data_node.PRIORITY_COMP_WALLET), ...(data_node.COMP_WALLETS)]
 var time_window = 15000
 
 let bids_added = 0
+let counter = 0
+
 async function get_competitor_bids(exp){
-	var start_time = Math.floor(+new Date())
-  let search_time = get_ISOString(time_window)
-  let search_time2 = get_ISOString_now()
+	let start_time = Math.floor(+new Date())
+  let search_time = utils.get_ISOString(time_window)
+  let search_time2 = utils.get_ISOString_now()
 
   console.log('Adding to queue...')
   
-	let queue_length = await return_queue_length('flash')
+	let queue_length = redis_handler.get_queue_length('flash')
 	console.log('Queue size: ' + queue_length)
 	console.log('bids added: ' + bids_added)
   bids_added = 0
@@ -67,7 +71,7 @@ async function get_competitor_bids(exp){
 }
 
 async function flash_queue_start(){
-	dump_queue('flash')
+	redis_handler.dump_queue('flash')
 	const readline = require('readline-sync')	
 	let exp = readline.question('exp: ')
 	if(exp === ''){
