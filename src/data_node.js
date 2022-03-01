@@ -343,20 +343,28 @@ const values = {
 	// '0x41f01d8f02c569be620e13c9b33ce803bed84e90',
 	// '0x26054c824ff0a6225dfa24a1eebd6a18de6b5f7d',
 	// '0x5bcfc791b9baa68e9aa50eb98e555304ad53d697',
-	// '0x429cdc4baf9d216fbff22a8eeb56bc7a225329c0',
-	// '0x277371339da18e8c5c4dc4c799fa556df62c6b71',
-	// '0x16f98ff6bb49d329bc92ed5051c7e901c8ee976e',
+	'0x429cdc4baf9d216fbff22a8eeb56bc7a225329c0',
+	'0x277371339da18e8c5c4dc4c799fa556df62c6b71',
+	'0x16f98ff6bb49d329bc92ed5051c7e901c8ee976e',
+	],
+	PRIORITY_COMP_WALLET: [
 	 '0xee87f1579c7743683ad41aa3ca2477f5f40a4b34',
 	 '0x0e78c12ad4c2e31ff38c4c0ce2fea1e57b838d47',
 	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
-	],
-	PRIORITY_COMP_WALLET: [
-
 	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98',
 	 '0xdeef55689a46931754ff18d76ccda30459786bc0',
 	 '0x1a5355f31ee2652f0040151856ff60ddd23d81cc'
 	],
-
+	PRIORITY_COMP_WALLET1: [
+	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98',
+	 '0xdeef55689a46931754ff18d76ccda30459786bc0',
+	 '0x1a5355f31ee2652f0040151856ff60ddd23d81cc'
+	],
+	PRIORITY_COMP_WALLET2: [
+	 '0xee87f1579c7743683ad41aa3ca2477f5f40a4b34',
+	 '0x0e78c12ad4c2e31ff38c4c0ce2fea1e57b838d47',
+	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
+	],
 	OWNER_ADDRESS: [
 		{
 			username: 'Azoni',
