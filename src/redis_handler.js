@@ -35,20 +35,25 @@ async function push_asset_high_priority(asset) {
 //http method - client pull
 async function redis_queue_pop(){
 	let pop_count = 2
-	let queue_data = await client.lPopCount('queue:high', pop_count)
+	let high_queue_data = await client.lPopCount('queue:high', pop_count)
 
-	if(queue_data !== null && queue_data !== undefined && queue_data.length > 0){
-		return queue_data
+	if(high_queue_data !== null && high_queue_data !== undefined && high_queue_data.length > 0){
+		return high_queue_data
 	} 
-	else {
-		let manual_queue_data = await client.lPopCount('queue:manual', pop_count)
-		if(manual_queue_data !== null && manual_queue_data !== undefined && manual_queue_data.length > 0){
-			return manual_queue_data
-		}
-		else {
-			return await client.lPopCount('queue:flash', pop_count)
-		}
+
+	let transfer_queue_data = await client.lPopCount('queue:transfer', pop_count)
+	if(transfer_queue_data !== null && transfer_queue_data !== undefined && transfer_queue_data.length > 0){
+		return transfer_queue_data
+	} 
+
+	let manual_queue_data = await client.lPopCount('queue:manual', pop_count)
+	if(manual_queue_data !== null && manual_queue_data !== undefined && manual_queue_data.length > 0){
+		return manual_queue_data
 	}
+
+	return await client.lPopCount('queue:flash', pop_count)
+
+	
 }
 
 module.exports = { client, start_connection, print_queue_length, dump_queue, push_asset_high_priority, redis_push_asset, redis_queue_pop , get_queue_length, redis_push_asset_flash };

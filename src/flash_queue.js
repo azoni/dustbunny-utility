@@ -24,7 +24,7 @@ async function get_competitor_bids(type, exp){
 	console.log('bids added: ' + bids_added)
   bids_added = 0
   for(var address of wallet_orders){
-  	await utils.sleep(500)
+  	await utils.sleep(250)
   	var orders =  await opensea_handler.get_orders_window(address, time_window)
     try {
 	    try{
@@ -50,6 +50,9 @@ async function get_competitor_bids(type, exp){
 	    			asset['bid_amount'] = o.basePrice/1000000000000000000
 	    			redis_handler.push_asset_high_priority(asset);
 	    		} else {
+	    			if(queue_length < 1000){
+	    				asset['bid_amount'] = o.basePrice/1000000000000000000
+	    			}
 	    			redis_handler.redis_push_asset_flash(asset);
 	    		}
 	    	}

@@ -67,10 +67,10 @@ const requestListener = function(req, res){
 					const r = JSON.parse(bod);
 					if (r.collection && typeof r.collection === 'string' && r.floor >= 0) {
 						const key = `${r.collection}:floor`;
-						redis_handler.client.SETEX(key, 3600, r.floor);
+						redis_handler.client.SETEX(key, 3600, r.floor).catch(x=>console.log(x));
 						if (r.stats) {
 							const statKey = `${r.collection}:stats`
-							redis_handler.client.SETEX(statKey, 3600, JSON.stringify(r.stats));
+							redis_handler.client.SETEX(statKey, 3600, JSON.stringify(r.stats)).catch(x=>console.log(x));
 						}
 					}
 				} catch (ex) {

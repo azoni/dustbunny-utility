@@ -100,42 +100,42 @@ const values = {
 			// 	'airpod': [.925, .95],
 			// },			
 		},
-		'cryptoadz-by-gremplin': {
-			'accessory': {
-				'explorer': [1, 1.05],
-				'hoodie': [1.5, 2],
-			},
-			'clothes': {
-				'hoodie': [1.5, 1.6],
-			},
-			'background': {
-				'bloood': [1.2, 1.5],
-				'ghost crash': [4.5, 6],
-				'matrix': [4.5,6],
-			},
-			'body': {
-				'bones': [ 1.05, 1.1],
-				'toadenza': [2.5, 3],
-				'blood bones': [1.5,1.6],
-			},
-			'eyes': {
-				'nounish': [1.1, 1.5],
-				'3d': [.85, .925],
-			},
-			'head': {
-				'wizard': [.925, 1.5],
-				'fez': [.9, .95],
-				'swept teal': [ 1.2, 1.3],
+		// 'cryptoadz-by-gremplin': {
+		// 	'accessory': {
+		// 		'explorer': [1, 1.05],
+		// 		'hoodie': [1.5, 2],
+		// 	},
+		// 	'clothes': {
+		// 		'hoodie': [1.5, 1.6],
+		// 	},
+		// 	'background': {
+		// 		'bloood': [1.2, 1.5],
+		// 		'ghost crash': [4.5, 6],
+		// 		'matrix': [4.5,6],
+		// 	},
+		// 	'body': {
+		// 		'bones': [ 1.05, 1.1],
+		// 		'toadenza': [2.5, 3],
+		// 		'blood bones': [1.5,1.6],
+		// 	},
+		// 	'eyes': {
+		// 		'nounish': [1.1, 1.5],
+		// 		'3d': [.85, .925],
+		// 	},
+		// 	'head': {
+		// 		'wizard': [.925, 1.5],
+		// 		'fez': [.9, .95],
+		// 		'swept teal': [ 1.2, 1.3],
 
-			},
-			'custom': {
-				'1/1': [4, 5],
-				'licked': [3.5,4],
-				'murdered': [2,4],
-				'legendary': [3,5],
-			},
+		// 	},
+		// 	'custom': {
+		// 		'1/1': [4, 5],
+		// 		'licked': [3.5,4],
+		// 		'murdered': [2,4],
+		// 		'legendary': [3,5],
+		// 	},
 			
-		},
+		// },
 		'cyberkongz': {
 			'type': {
 				'genesis': [1.5, 5],
