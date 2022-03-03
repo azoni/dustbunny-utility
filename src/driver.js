@@ -108,6 +108,7 @@ async function main(){
 	}
 	await redis_handler.start_connection()
 	await mongo.connect()
+	opensea_handler.start()
 	const readline = require('readline-sync')	
 	let command = readline.question('Run: ')
 	if(command === 'comp'){
