@@ -37,8 +37,8 @@ const values = {
 				// 'cool_1': [.7,.8],
 				// 'cool_2': [.7, .825],
 				'wild_1': [.9,.925],
-				'wild_2': [1,1.05],
-				'classy_1': [1.05 ,1.1],
+				'wild_2': [.95,.975],
+				'classy_1': [1.0 ,1.05],
 				'classy_2': [1.1, 1.2],
 				'exotic_1': [1.2,1.3],
 				'exotic_2': [1.5,1.6],
@@ -272,6 +272,18 @@ const values = {
 				'dress': [.6, .75],
 			}
 		},
+		'raidparty': {
+			'background': {
+				'genesis': [.8, .95],
+				'normal': [.7, .9]
+			}
+		},
+		'capsulehouse': {
+			'species': {
+				'humans': [.6, .8],
+				'posthumans': [.65, .85]
+			}
+		},
 		'noodlesnft-official': {
 			'head': {
 				'devil': [1, 1.1],
@@ -314,7 +326,7 @@ const values = {
      'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject',
      'karafuru', 'coolpetsnft', 'boredapeyachtclub', 'azuki', 'nft-worlds', 'hapeprime', 'gutterrats',' gutterdogs',
      'supernormalbyzipcy', 'world-of-women-nft', 'kaiju-kingz', 'raidparty', 'mfers', 'bossbeauties', 'pixelmongen1',
-     'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro','prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'pudgypenguins', 'meebits','onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'lootproject', 'cryptoskulls', 'mekaverse', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
+     'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro','prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'pudgypenguins', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'cryptoskulls', 'mekaverse', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
      ],
 	WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
      'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',

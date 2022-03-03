@@ -7,6 +7,7 @@ const url = require('url');
 const myIp  = require('./what-is-my-ip.js');
 const redis_handler = require('./redis_handler.js')
 const mongo = require('./AssetsMongoHandler.js')
+const utils = require('./utils.js')
 
 const requestListener = function(req, res){
 	    // Set CORS headers
@@ -117,7 +118,7 @@ async function main(){
 		// add option for flat bid, and expiration
 	} else if(command === 'slug'){
 		let slug = readline.question('slug: ')
-		let exp = ''//readline.question('exp: ')
+		let exp = readline.question('exp: ')
 		let bid = ''//readline.question('bid: ')
 		if(exp === ''){
 			exp = 20
@@ -125,8 +126,20 @@ async function main(){
 		if(bid === ''){
 			bid = false
 		}
+		while(true){
+			slug = 'raidpartyfighters'
+			console.log('Adding ' + slug + " to queue.")
+			await manual.manual_queue_add(slug, 'manual', exp/60, bid)
+			console.log('add again in: ' + exp + ' min')
+			slug = 'raidparty'
+			console.log('Adding ' + slug + " to queue.")
+			await manual.manual_queue_add(slug, 'manual', exp/60, bid)
+			console.log('add again in: ' + exp + ' min')
+			await utils.sleep(exp*60000)
+		}
+		// await manual.manual_queue_add(slug, 'manual', exp/60, bid)
 
-		await manual.manual_queue_add(slug, 'manual', exp/60, bid)
+
 
 	} else if(command === 'flash'){
 		flash.start()

@@ -4,14 +4,15 @@ const data_node = require('./data_node.js')
 const utils = require('./utils.js')
 const mongo = require('./AssetsMongoHandler.js')
 
-const TRAITS_DICT = data_node.COLLECTION_TRAIT
+
 
 // Grab assets from database to avoid api rate limits. 
 async function manual_queue_add(slug, event_type, exp, bid){
+	let trait_bids = data_node.COLLECTION_TRAIT
 	console.log('Getting assets for ' + slug + '...')
 	// var assets =  await opensea_handler.get_assets(slug)
 	var assets = await mongo.find({'slug':slug}, {})
-	let collection_traits = TRAITS_DICT[slug]
+	let collection_traits = trait_bids[slug]
 	console.log('Trait bids: ' + collection_traits)
 	for(let asset of assets){
 		let trimmed_asset = {}
@@ -23,15 +24,21 @@ async function manual_queue_add(slug, event_type, exp, bid){
     	trimmed_asset['event_type'] = event_type
     	trimmed_asset['expiration'] = exp
     	trimmed_asset['bid_multi'] = false
+    	trimmed_asset['bid_range'] = false
     	for(trait of asset.traits){
-			if(collection_traits !== undefined && collection_traits[trait.trait_type]){
-				if(collection_traits[trait.trait_type][trait.value]){
+			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
+				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
 					// console.log(trait.value)
 					// console.log(collection_traits[trait.trait_type][trait.value])
-					trimmed_asset['bid_multi'] = collection_traits[trait.trait_type][trait.value]
+					// trimmed_asset['event_type'] = 'trait - ' + trait.value
+					trimmed_asset['trait'] = trait.value
+					trimmed_asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
 				}
 			}
     	}
+    	// if(trimmed_asset['trait']){
+    	// 	continue
+    	// }
     	trimmed_asset['bid_amount'] = bid
     	await redis_handler.redis_push_asset(trimmed_asset)
 	}
@@ -64,9 +71,9 @@ async function get_competitor(address, time_window, exp){
     	asset['bid_multi'] = false
     	asset['bid_amount'] = o.basePrice/1000000000000000000
     	if(wallet_set.includes(asset['slug'])){
-    		console.log(asset)
+    		// console.log(asset)
  			await redis_handler.redis_push_asset(asset)
-    		await redis_handler.print_queue_length('manual')
+    		// await redis_handler.print_queue_length('manual')
     	}	
     }
     var end_time = Math.floor(+new Date())
@@ -90,4 +97,4 @@ async function manual_queue_start(){
 	}
 	manual_queue_add(slug, 'manual')
 }
-module.exports = { TRAITS_DICT, get_competitor, manual_queue_add};
+module.exports = { get_competitor, manual_queue_add};
