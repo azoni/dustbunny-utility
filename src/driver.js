@@ -1,4 +1,6 @@
 const manual = require('./queue/manual_queue.js')
+const staking = require('./queue/staking_queue.js')
+
 const flash = require('./queue/flash_queue.js')
 const transfer = require('./queue/transfer_queue.js')
 const smart = require('./queue/smart_queue.js')
@@ -126,6 +128,8 @@ const readline = require('readline-sync')
 		manual.manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
 	} else if(command === 'flash'){
 		flash.start()
+	} else if(command === 'staking'){
+		staking.start()
 	} else if(command === 'transfer'){
 		transfer.start()
 	} else if(command === 'smart'){
