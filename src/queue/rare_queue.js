@@ -28,7 +28,7 @@ async function start_listener(){
 	    	asset['token_address'] = o.asset.tokenAddress
 	    	asset['slug'] = o.asset.collection.slug
 	    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
-	    	asset['event_type'] = 'competitor ' + username
+	    	asset['event_type'] = 'rare'
 	    	asset['expiration'] = false
 	    	if(exp !== ''){
 	    		asset['expiration'] = exp/60

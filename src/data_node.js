@@ -1,27 +1,4 @@
 const values = {
-	TITLE: 'Home',
-	DEFAULT_DELAY: 150,
-	//DEFAULT_FRACTION: 'firsthalf',
-	//DEFAULT_FRACTION: 'secondhalf',
-	//DEFAULT_FRACTION: 'firstquarter',
-	//DEFAULT_FRACTION: 'secondquarter',
-	//DEFAULT_FRACTION: 'thirdquarter',
-	//DEFAULT_FRACTION: 'fourthquarter',
-	//DEFAULT_FRACTION: 'firsteighth',
-	//DEFAULT_FRACTION: 'secondeighth',
-	//DEFAULT_FRACTION: 'thirdeighth',
-	//DEFAULT_FRACTION: 'fourtheighth',
-	//DEFAULT_FRACTION: 'fiftheighth',
-	//DEFAULT_FRACTION: 'sixtheighth',
-	//DEFAULT_FRACTION: 'seventheighth',
-	//DEFAULT_FRACTION: 'eightheighth',
-	//MULTI_TRAIT: 1,
-	//DEFAULT_BIDS: [.7,.9],
-	//DEFAULT_EXPIRATION: ,
-	//DEFAULT_TRAIT: ['tier', 'cool_1'],
-	//USE_DATA: 1,
-	INFURA_KEY: ['deb8c4096c784171b97a21f7a5b7ba98', '4f3eb54f7bf74889898db355ca586eb1', '7e5d8e2034a840b9b8e6093dca13aa4f', '17c3fb8ed16c4ebe890ca3d22ad6998a'],
-	//ALCHEMY_KEY: 'KwOeJc6S2vvKtLXEpmo2-SFXOws3uZC3',
 	STAKING_WALLETS: {
 		'sneaky-vampire-syndicate' : '0x12753244901f9e612a471c15c7e5336e813d2e0b',
 		'sappy-seals': '0xdf8a88212ff229446e003f8f879e263d3616b57a',
@@ -30,6 +7,42 @@ const values = {
 		'coolmonkes': '0xed6552d7e16922982bf80cf43090d71bb4ec2179',
 		'anonymice': '0x000000000000000000000000000000000000dead',
 		'critterznft': '0x6714de8aa0db267552eb5421167f5d77f0c05c6d'
+	},
+	RARE_TRAITS: {
+		'cool-cats-nft': {
+			'head': {
+				'exotic_1': [1.2,1.3],
+				'exotic_2': [1.5,1.6],
+			},
+			'face': {
+				'exotic_1': [1.2,1.3],
+				'exotic_2': [1.5,1.6],
+			},
+		},
+		'doodles-official': {
+			'tier': {
+				'exotic_1': [1.2,1.3],
+				'exotic_2': [1.5,1.6],
+			},
+		},
+		'clonex': {
+			'tier': {
+				'exotic_1': [1.2,1.3],
+				'exotic_2': [1.5,1.6],
+			},
+		},
+		'mutant-ape-yacht-club': {
+			'tier': {
+				'exotic_1': [1.2,1.3],
+				'exotic_2': [1.5,1.6],
+			},
+		},
+		'azuki': {
+			'tier': {
+				'exotic_1': [1.2,1.3],
+				'exotic_2': [1.5,1.6],
+			},
+		},
 	},
 	COLLECTION_TRAIT: {
 		'cool-cats-nft': {
@@ -308,15 +321,6 @@ const values = {
 			}
 		},
 	},
-	WALLET_SETS: [
-		'cool-cats-nft',
-		'mutant-ape-yacht-club',
-		'cyberkongz',
-		'doodles-official',
-		'clonex',
-		'cryptoadz-by-gremplin',
-	],
-	BACY: '0x5ea09d2E44759C46F8F2a884815B6bD06dcA440F',
 	SMART_WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
      'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',
      'bored-ape-kennel-club', 'desperate-ape-wives', 'bears-deluxe',
@@ -503,9 +507,3 @@ const values = {
 	],
 }
 module.exports = values
-
-//9e72715b3e504813ac3ebc0512d473bf
-//3e994eb084474893abe7842014dbd66c
-//01f5e748ef324524a49ea0bfaecbc3e8
-//183e20b9d8f24da3a3bfdc9bcc384ec3
-//4b7d65a561134155970501edaa04b5d2
