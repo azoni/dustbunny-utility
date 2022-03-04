@@ -185,7 +185,8 @@ async function get_orders_window(address, time_window, token_ids){
   let search_time2 = get_ISOString_now()
   let orders_array = []
   let order = 0
-  let order_api_data = {
+  let username = 'Null'
+  var order_api_data = {
   	side: 0,
   	order_by: 'created_date',
   	listed_after: search_time,
@@ -194,8 +195,9 @@ async function get_orders_window(address, time_window, token_ids){
     offset: offset
   }
   if(address !== 'all'){
-  	order_api_data['address'] = address
+  	order_api_data['maker'] = address
   }
+  console.log(order_api_data)
   if(token_ids){
   	order_api_data['token_ids'] = token_ids
   }
@@ -204,9 +206,9 @@ async function get_orders_window(address, time_window, token_ids){
     try{
     		order = await seaport.api.getOrders(order_api_data)	    
 	    try{
-        let username = order['orders'][0].makerAccount.user.username
+        username = order['orders'][0].makerAccount.user.username
       } catch(ex){
-        username = 'Null'
+
       }
 	    let order_length = order['orders'].length
 	    for(let o of order.orders){
