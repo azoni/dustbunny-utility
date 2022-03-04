@@ -4,7 +4,10 @@ const OpenSeaPort = opensea.OpenSeaPort;
 const Web3ProviderEngine = require("web3-provider-engine");
 const providerEngine = new Web3ProviderEngine();
 const mongoose = require('mongoose');
-
+const API_KEY = '';
+if (API_KEY === '') {
+  throw new Error('You forgot to set the api key.')
+}
 const Asset = new mongoose.Schema({
   name: String,
   token_id: String,
@@ -45,11 +48,11 @@ async function main() {
 // providerEngine.addProvider(mnemonicWalletSubprovider);
 // providerEngine.addProvider(infuraRpcSubprovider);
 
-var seaport = new OpenSeaPort(
+const seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: '578c069362bf4af7aa66b61e844867a9'
+    apiKey: API_KEY,
   },
   (arg) => console.log(arg)
 );
@@ -132,32 +135,6 @@ function createGetAssetURL({ slug, direction = 'desc', limit = 50, cursor }) {
   `&limit=${limit}` +
   `&include_orders=false`
   return resourceUrl
-}
-
-async function testing() {
-  fetch('https://api.opensea.io/api/v1/assets?collection=cryptoadz-by-gremplin&order_by=pk&cursor=LXBrPTQ3Nzg2Mzg1&order_direction=desc&limit=50&include_orders=false', options)
-  .then(response => response.json())
-  .then(response => {
-    console.log(response);
-    //cursor = response.next;
-  })
-  .catch(err => console.error(err));
-}
-//testing();
-
-//getAsset('chainfaces-arena');
-
-async function retrieveAssets() {
-
-  const slug = 'cryptoadz-by-gremplin';
-  const offset = 0;
-  const limit = 50;
-  const assets = await seaport.api.getAssets({
-    'collection': slug,
-    'offset': offset,
-    'limit': limit,
-  });
-  console.log(assets);
 }
 
 async function sleep(ms){
