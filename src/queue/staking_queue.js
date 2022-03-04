@@ -22,7 +22,7 @@ async function staking_queue_add(slug, event_type, exp, bid, run_traits){
 	console.log(staking_wallet)
 	console.log('Trait bids: ' + collection_traits)
 	for(let asset of assets){
-		
+		asset['fee'] = asset.dev_seller_fee_basis_points / 10000
     	asset['event_type'] = 'staking'
     	asset['expiration'] = exp
     	asset['bid_range'] = false
