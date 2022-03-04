@@ -1,10 +1,11 @@
 const opensea = require("opensea-js")
+const values = require('./values.js')
 const Network = opensea.Network;
 const OpenSeaPort = opensea.OpenSeaPort;
 const Web3ProviderEngine = require("web3-provider-engine");
 const providerEngine = new Web3ProviderEngine();
 const mongoose = require('mongoose');
-const API_KEY = '';
+const API_KEY = values.API_KEY;
 if (API_KEY === '') {
   throw new Error('You forgot to set the api key.')
 }
