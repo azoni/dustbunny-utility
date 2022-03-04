@@ -1,4 +1,5 @@
 const data_node = require('../data_node.js')
+const values = require('../values.js')
 // const secret = require('./secret_node.js')
 const opensea = require("opensea-js")
 const Network = opensea.Network;
@@ -15,7 +16,7 @@ const seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
-    apiKey: '3e994eb084474893abe7842014dbd66c'//'9e72715b3e504813ac3ebc0512d473bf'
+    apiKey: values.API_KEY//'9e72715b3e504813ac3ebc0512d473bf'
   },
   (arg) => console.log(arg)
 );
