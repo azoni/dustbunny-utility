@@ -1,23 +1,43 @@
-const data_node = require('../data_node.js')
-const node_redis = require('redis')
-const collection_json = require('../collections/collection_json.json')
+const node_redis = require('redis');
+const collection_json = require('../collections/collection_json.json');
 const url = require('url');
-const fetch = require('node-fetch')
-// const client = node_redis.createClient({
-// 	url: "redis://10.0.0.77:6379",
-// });
-// client.connect();
-// client.on('error', (err) => console.log('Redis Client Error', err));
+const fetch = require('node-fetch');
 
-var block = 0;
-var wallet_set = data_node.WATCH_LIST
-var wallet_orders = [...(data_node.PRIORITY_COMP_WALLET), ...(data_node.COMP_WALLETS)]
-var event_window = 60000
+const client = node_redis.createClient({
+	url: "redis://10.0.0.80:6379",
+});
+client.connect();
+client.on('error', (err) => console.log('Redis Client Error', err));
+
+/**
+ * All the address seen in the last 30 minutes;
+ */
+
+let walletAddressSeenWithinXMins = {};
+const LIMIT_30_MINS = 1_800_000;
+let block = 0;
 let token_address_dict = {}
 let token_fee_dict = {}
 const ETHERSCAN_API_KEY = 'AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ'
 
+/**
+ * Every minute clean up the wallet address map
+ * by removing all items older than 30 minutes.
+ */
+function cleanupWalletAddressMap() {
+	console.log('clean up process');
+	const t = Date.now();
+	for (const key in walletAddressSeenWithinXMins){
+		if (t - walletAddressSeenWithinXMins[key] >= LIMIT_30_MINS) {
+			delete walletAddressSeenWithinXMins[key];
+		}
+	}
+	setTimeout(cleanupWalletAddressMap, 60_000);
+}
+setTimeout(cleanupWalletAddressMap, LIMIT_30_MINS);
+
 const staking_collections = [
+	'0x0000000000000000000000000000000000000000', //null address
 	'0x29205f257f9e3b78bcb27e253d0f3fad9d7522a2', //wolf game
 	'0xd3a316d5fa3811553f67d9974e457c37d1c098b8', //wolf game
 	'0x6ce31a42058f5496005b39272c21c576941dbfe9', // meta heroes
@@ -28,6 +48,7 @@ const staking_collections = [
 	'0xed6552d7e16922982bf80cf43090d71bb4ec2179', // coolmonkes
 	'0x000000000000000000000000000000000000dead', // anonymice
 	'0x6714de8aa0db267552eb5421167f5d77f0c05c6d', // critterznft
+	'0x620b70123fb810f6c653da7644b5dd0b6312e4d8', // doodles
 ]
 
 async function getJSONFromFetch(f) {
@@ -39,6 +60,7 @@ async function get_latest_block(){
 	console.log('Getting lastest block...')
 	const block_response = await fetch("https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=" + current_time + "&closest=before&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
 	const block_data = await block_response.json()
+	console.log(block_data);
 	return block_data.result
 
 
@@ -47,9 +69,11 @@ async function get_latest_block(){
 	// console.log(block.result)
 }
 
+
 async function get_etherscan_transactions(){
 	let ourlatest = await get_latest_block()
 	if(block === ourlatest){
+		await sleep(125);
 		get_etherscan_transactions()
 		return
 	} else {
@@ -57,9 +81,14 @@ async function get_etherscan_transactions(){
 	}	console.log('starting transactions')
 	console.log('block: ' +  block)
 	let tx_count = 0;
-	const walletsToBidOnDict = {};
-
-	for(let collection in collection_json){
+	console.log("coll len" + Object.keys(collection_json).length);
+	const walletAlreadyBidOnInThisLoop = new Set();
+	let callTracer = 0;
+	for(let collection in collection_json) {
+		callTracer = (callTracer + 1) % 10;
+		if (!callTracer) { console.log('went through 10') }
+		const walletsToBidOnDict = {};
+		
 		const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + collection_json[collection]['token_address'] + "&page=1&startblock=" + block + "&offset=100&sort=desc&apikey=" + ETHERSCAN_API_KEY);
 		const data = await response.json()
 		tx_count += data.result.length
@@ -71,11 +100,25 @@ async function get_etherscan_transactions(){
 			} else if (staking_collections.includes(tx.to)) {
 				event_type = 'stake'
 			}
+			if (tx.from === '0x0000000000000000000000000000000000000000') {
+				event_type = 'mint'
+			}
 			walletsToBidOnDict[tx.to] = event_type;
 			walletsToBidOnDict[tx.from] = event_type;
 		}
+		const timestamp = Date.now();
+
 		for (const address in walletsToBidOnDict) {
 			const event_type = walletsToBidOnDict[address];
+			if (walletAlreadyBidOnInThisLoop.has(address)
+				  || (address in walletAddressSeenWithinXMins
+							&& timestamp - walletAddressSeenWithinXMins[address] < LIMIT_30_MINS)
+			) {
+					console.log('skipping some');
+					continue;
+			}
+			walletAddressSeenWithinXMins[address] = timestamp;
+			walletAlreadyBidOnInThisLoop.add(address);
 			await get_nfts_from_wallet(address, event_type);
 		}
 	}
@@ -83,11 +126,11 @@ async function get_etherscan_transactions(){
 	console.log('total nfts found: ' + running_nft_total)
 	block = ourlatest;
 	get_etherscan_transactions()
-
 }
 
 let running_nft_total = 0
 async function get_nfts_from_wallet(interestAddress, event_type) {
+	console.log('get_nfts_from_wallet');
 	if (staking_collections.includes(interestAddress)) {return; }
 	// const interestAddress = "0xcae462347cd2d83f9a548afacb2ca6e0c6063bff";
 	let f = fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&address=" + interestAddress + "&startblock=0&endblock=999999999&sort=asc&apikey=" + ETHERSCAN_API_KEY)
@@ -153,17 +196,11 @@ async function get_nfts_from_wallet(interestAddress, event_type) {
 	}
 	console.log('owned by: ' + interestAddress)
 	running_nft_total += ownCount
-	// console.log(countMap);
-	//console.log(`count: ${count}`);
 	console.log(`total own: ${ownCount}`);
-	get_queue_length('high')
-	//console.log(miniDb);
-	//console.log(Object.keys(miniDb))
-	//console.log(Object.keys(miniDb).length);
 }
 
 async function push_asset_high_priority(asset) {
-	await client.rPush('queue:high', JSON.stringify(asset));
+	await client.rPush('queue:transfer', JSON.stringify(asset));
 }
 async function dump_queue(queue_name){
 	client.DEL('queue:' + queue_name)
@@ -173,7 +210,7 @@ async function get_queue_length(queue_name){
 	console.log('Queue: ' + await client.LLEN("queue:" + queue_name))
 }
 async function transfer_queue_start() {
-	dump_queue('high')
+	dump_queue('transfer')
 	for(let collection in collection_json){
 		// console.log(collection)
 		token_address_dict[collection_json[collection]['token_address']] = collection
@@ -181,7 +218,7 @@ async function transfer_queue_start() {
 	}
 	// console.log(token_address_dict)
 	// console.log(token_fee_dict)
-	block = await get_latest_block();
+	block = await get_latest_block() - 1;
 	// await updateFloorDictionary()	
 	// const data = JSON.stringify(collection_json);
 
@@ -193,8 +230,12 @@ async function transfer_queue_start() {
 	// });
 	get_etherscan_transactions()
 }
-async function start(){
-	dump_queue('high')
+async function start() {
+	dump_queue('transfer')
 	transfer_queue_start()
 }
+async function sleep(ms){
+	await new Promise(resolve => setTimeout(resolve, ms))
+}
+module.exports = {start}
 // start()
