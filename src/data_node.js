@@ -1,5 +1,6 @@
 const values = {
 	STAKING_WALLETS: {
+		'' : '',
 		'sneaky-vampire-syndicate' : '0x12753244901f9e612a471c15c7e5336e813d2e0b',
 		'sappy-seals': '0xdf8a88212ff229446e003f8f879e263d3616b57a',
 		'metroverse': '0xab93f992d9737bd740113643e79fe9f8b6b34696',
