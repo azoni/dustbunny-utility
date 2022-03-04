@@ -2,6 +2,7 @@ const node_redis = require('redis');
 const collection_json = require('../collections/collection_json.json');
 const url = require('url');
 const fetch = require('node-fetch');
+const mongo = require('../AssetsMongoHandler.js')
 
 const client = node_redis.createClient({
 	url: "redis://10.0.0.80:6379",
@@ -34,22 +35,8 @@ function cleanupWalletAddressMap() {
 	}
 	setTimeout(cleanupWalletAddressMap, 60_000);
 }
-setTimeout(cleanupWalletAddressMap, LIMIT_30_MINS);
 
-const staking_collections = [
-	'0x0000000000000000000000000000000000000000', //null address
-	'0x29205f257f9e3b78bcb27e253d0f3fad9d7522a2', //wolf game
-	'0xd3a316d5fa3811553f67d9974e457c37d1c098b8', //wolf game
-	'0x6ce31a42058f5496005b39272c21c576941dbfe9', // meta heroes
-	'0x12753244901f9e612a471c15c7e5336e813d2e0b', //sneaky vamps
-	'0xdf8a88212ff229446e003f8f879e263d3616b57a', // sappy seals
-	'0xab93f992d9737bd740113643e79fe9f8b6b34696', // metroverse
-	'0xc3503192343eae4b435e4a1211c5d28bf6f6a696', // genesis creepz
-	'0xed6552d7e16922982bf80cf43090d71bb4ec2179', // coolmonkes
-	'0x000000000000000000000000000000000000dead', // anonymice
-	'0x6714de8aa0db267552eb5421167f5d77f0c05c6d', // critterznft
-	'0x620b70123fb810f6c653da7644b5dd0b6312e4d8', // doodles
-]
+
 
 async function getJSONFromFetch(f) {
   let r = await f;
@@ -230,8 +217,13 @@ async function transfer_queue_start() {
 	// });
 	get_etherscan_transactions()
 }
+let staking_collections;
 async function start() {
 	dump_queue('transfer')
+	staking_collections = await mongo.readStakingWallets()
+	staking_collections = staking_collections.map(el=>el.address)
+	console.log(staking_collections)
+	setTimeout(cleanupWalletAddressMap, LIMIT_30_MINS);
 	transfer_queue_start()
 }
 async function sleep(ms){
