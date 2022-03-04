@@ -60,7 +60,7 @@ async function redis_queue_pop(){
 	if(manual_queue_data !== null && manual_queue_data !== undefined && manual_queue_data.length > 0){
 		return manual_queue_data
 	}
-	let staking_queue_data = await client.lPopCount('queue:smart', pop_count)
+	let staking_queue_data = await client.lPopCount('queue:staking', pop_count)
 	if(staking_queue_data !== null && staking_queue_data !== undefined && staking_queue_data.length > 0){
 		return staking_queue_data
 	}
