@@ -194,13 +194,13 @@ async function get_orders_window(address, time_window, token_ids){
 		limit: 50,
     offset: offset
   }
-  if(address !== 'all'){
+  if(token_ids){
+  	order_api_data['address'] = address
+  	order_api_data['token_ids'] = token_ids
+  } else if(address !== 'all'){
   	order_api_data['maker'] = address
   }
-  console.log(order_api_data)
-  if(token_ids){
-  	order_api_data['token_ids'] = token_ids
-  }
+  
   do{
   	await sleep(250)
     try{
@@ -210,7 +210,7 @@ async function get_orders_window(address, time_window, token_ids){
       } catch(ex){
 
       }
-	    let order_length = order['orders'].length
+	    var order_length = order['orders'].length
 	    for(let o of order.orders){
 	    	orders_array.push(o)
 	    }
