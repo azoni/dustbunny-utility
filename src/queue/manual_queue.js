@@ -1,13 +1,13 @@
-const opensea_handler = require('./opensea_handler.js')
-const redis_handler = require('./redis_handler.js')
-const data_node = require('./data_node.js')
-const utils = require('./utils.js')
-const mongo = require('./AssetsMongoHandler.js')
+const opensea_handler = require('../handlers/opensea_handler.js')
+const redis_handler = require('../handlers/redis_handler.js')
+const data_node = require('../data_node.js')
+const utils = require('../utility/utils.js')
+const mongo = require('../AssetsMongoHandler.js')
 
 
 
 // Grab assets from database to avoid api rate limits. 
-async function manual_queue_add(slug, event_type, exp, bid){
+async function manual_queue_add(slug, event_type, exp, bid, run_traits){
 	let trait_bids = data_node.COLLECTION_TRAIT
 	console.log('Getting assets for ' + slug + '...')
 	// var assets =  await opensea_handler.get_assets(slug)
@@ -28,6 +28,7 @@ async function manual_queue_add(slug, event_type, exp, bid){
     	for(trait of asset.traits){
 			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
 				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
+
 					// console.log(trait.value)
 					// console.log(collection_traits[trait.trait_type][trait.value])
 					// trimmed_asset['event_type'] = 'trait - ' + trait.value
@@ -36,13 +37,13 @@ async function manual_queue_add(slug, event_type, exp, bid){
 				}
 			}
     	}
-    	// if(trimmed_asset['trait']){
-    	// 	continue
-    	// }
+    	if(trimmed_asset['trait'] && !run_traits){
+    		continue
+    	}
     	trimmed_asset['bid_amount'] = bid
-    	await redis_handler.redis_push_asset(trimmed_asset)
+    	await redis_handler.redis_push(event_type, trimmed_asset)
 	}
-	await redis_handler.print_queue_length('manual')
+	await redis_handler.print_queue_length(event_type)
 	console.log(slug + ' added.')
 }
 var wallet_set = data_node.WATCH_LIST

@@ -1,4 +1,4 @@
-const data_node = require('./data_node.js')
+const data_node = require('../data_node.js')
 // const secret = require('./secret_node.js')
 const opensea = require("opensea-js")
 const Network = opensea.Network;
@@ -10,8 +10,8 @@ const http = require('http')
 const url = require('url');
 
 
-var providerEngine = new Web3ProviderEngine();
-var seaport = new OpenSeaPort(
+const providerEngine = new Web3ProviderEngine();
+const seaport = new OpenSeaPort(
   providerEngine,
   {
     networkName: Network.Main,
@@ -24,42 +24,18 @@ var seaport = new OpenSeaPort(
 function start(){
 	providerEngine.start()
 }
-
-// Return listed of assets listed for sale
-async function get_listed_asset(slug){
-	var listed_assets = []
-	var assets = await get_assets(slug)
-	for(let asset of assets){
-		if(asset.sellOrders !== null){
-			listed_assets.push(asset)
-		}
-	}
-	return listed_assets
-}
-
-// return collection info
-// floor, fee, volume, token addres, etc
-async function get_collection(slug){
-	try{
-		const collect = await seaport.api.get('/api/v1/collection/' + slug)
-		return collect
-	} catch (ex) {
-		console.log("couldn't get collection info")
-	} 
-}
-
 // return all assets from collcetion
 async function get_assets(slug){
-	var offset = 0
-	var limit = 50
-	var assets_length = 0
-	var assets_dict = {}
-	var assets_list = []
+	let offset = 0
+	let limit = 50
+	let assets_length = 0
+	let assets_dict = {}
+	let assets_list = []
 
 	do {
 		try{
 			await sleep(250)
-			var assets = await seaport.api.getAssets({
+			let assets = await seaport.api.getAssets({
 				'collection': slug,
 				'offset': offset,
 				'limit': limit,
@@ -84,16 +60,53 @@ async function get_assets(slug){
 	return assets_list
 	
 }
-async function get_listed_lowered(){
+// Return listed of assets listed for sale
+async function get_listed_asset(slug){
+	let listed_assets = []
+	let assets = await get_assets(slug)
+	for(let asset of assets){
+		if(asset.sellOrders !== null){
+			listed_assets.push(asset)
+		}
+	}
+	return listed_assets
+}
+
+// Get assets by owner, or filter out all assets owned by an owner. Ex. Staking wallet.
+async function get_asset_by_owner(slug, address, isOwned){
+	let listed_assets = []
+	let assets = await get_assets(slug)
+	for(let asset of assets){
+		if(asset.owner.address === address && isOwned){
+			listed_assets.push(asset)
+		} else if(asset.owner.address !== address && !isOwned){
+			listed_assets.push(asset)
+		}
+	}
+	return listed_assets
+}
+// return collection info
+// floor, fee, volume, token addres, etc
+async function get_collection(slug){
+	try{
+		const collect = await seaport.api.get('/api/v1/collection/' + slug)
+		return collect
+	} catch (ex) {
+		console.log("couldn't get collection info")
+	} 
+}
+
+
+async function get_listed_lowered(time_window){
 
 }
 //order['orders'][o].taker !== '0x0000000000000000000000000000000000000000'
 async function get_orders_window(address, time_window, token_ids){
-  var offset = 0
+  let offset = 0
   let search_time = get_ISOString(time_window)
   let search_time2 = get_ISOString_now()
   let orders_array = []
-  var order = 0
+  let order = 0
   let order_api_data = {
   	side: 0,
   	order_by: 'created_date',
@@ -113,11 +126,11 @@ async function get_orders_window(address, time_window, token_ids){
     try{
     		order = await seaport.api.getOrders(order_api_data)	    
 	    try{
-        var username = order['orders'][0].makerAccount.user.username
+        let username = order['orders'][0].makerAccount.user.username
       } catch(ex){
         username = 'Null'
       }
-	    var order_length = order['orders'].length
+	    let order_length = order['orders'].length
 	    for(let o of order.orders){
 	    	orders_array.push(o)
 	    }
@@ -135,7 +148,7 @@ async function get_orders_window(address, time_window, token_ids){
 
 // buy nft with ETH - example code
 async function fulfil_order(){
-	var asset = await seaport.api.getAsset({
+	let asset = await seaport.api.getAsset({
 		'tokenAddress': '0x9508f760833b82cdfc030d66aa278c296e013f57',
 		'tokenId': 1381,
 	})

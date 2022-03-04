@@ -1,13 +1,13 @@
-const manual = require('./manual_queue.js')
-const flash = require('./flash_queue.js')
-const transfer = require('./transfer_queue.js')
-const smart = require('./smart_queue.js')
+const manual = require('./queue/manual_queue.js')
+const flash = require('./queue/flash_queue.js')
+const transfer = require('./queue/transfer_queue.js')
+const smart = require('./queue/smart_queue.js')
 const http = require('http')
 const url = require('url');
-const myIp  = require('./what-is-my-ip.js');
-const redis_handler = require('./redis_handler.js')
+const myIp  = require('./utility/what-is-my-ip.js');
+const redis_handler = require('./handlers/redis_handler.js')
 const mongo = require('./AssetsMongoHandler.js')
-const utils = require('./utils.js')
+const utils = require('./utility/utils.js')
 
 const requestListener = function(req, res){
 	    // Set CORS headers
@@ -21,7 +21,6 @@ const requestListener = function(req, res){
         return;
     }
  	const urlParts = url.parse(req.url, true);
-
 	res.writeHead(200)
 	// console.log(req.url)
 	if(req.url === '/redis_queue_pop'){
@@ -37,7 +36,6 @@ const requestListener = function(req, res){
 					first = false;
 				}
 				res.write(el);
-				
 			}
 			res.end(']');
 		});
@@ -94,22 +92,15 @@ const requestListener = function(req, res){
 	}
 }
 
-if (!myIp) {
-	throw new Error(`cant get ip: "${myIp}"`);
+
+function connect(){
+	const server = http.createServer(requestListener)
+	server.listen(3000, myIp, () => {
+		console.log('Server is running')
+	})
 }
-async function main(){
-	console.log(myIp)
-	if(myIp === '10.0.0.59'){
-		const server = http.createServer(requestListener)
-		server.listen(3000, myIp, () => {
-			console.log('Server is running')
-		})
-		
-	}
-	await redis_handler.start_connection()
-	await mongo.connect()
-	opensea_handler.start()
-	const readline = require('readline-sync')	
+function run_interactive(){
+const readline = require('readline-sync')	
 	let command = readline.question('Run: ')
 	if(command === 'comp'){
 		let address = readline.question('address: ')
@@ -117,9 +108,10 @@ async function main(){
 		let exp = readline.question('expire: ')
 		manual.get_competitor(address, time_window*1000, exp)
 		// add option for flat bid, and expiration
-	} else if(command === 'slug'){
+	} else if(command === 'man'){
 		let slug = readline.question('slug: ')
 		let exp = readline.question('exp: ')
+		let run_traits = readline.question('traits: ')
 		let bid = ''//readline.question('bid: ')
 		if(exp === ''){
 			exp = 20
@@ -127,27 +119,54 @@ async function main(){
 		if(bid === ''){
 			bid = false
 		}
-		while(true){
-			slug = 'raidpartyfighters'
-			console.log('Adding ' + slug + " to queue.")
-			await manual.manual_queue_add(slug, 'manual', exp/60, bid)
-			console.log('add again in: ' + exp + ' min')
-			slug = 'raidparty'
-			console.log('Adding ' + slug + " to queue.")
-			await manual.manual_queue_add(slug, 'manual', exp/60, bid)
-			console.log('add again in: ' + exp + ' min')
-			await utils.sleep(exp*60000)
+		if(run_traits === ''){
+			run_traits = false
 		}
-		// await manual.manual_queue_add(slug, 'manual', exp/60, bid)
 
-
-
+		manual.manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
 	} else if(command === 'flash'){
 		flash.start()
 	} else if(command === 'transfer'){
 		transfer.start()
 	} else if(command === 'smart'){
 		smart.start()
-	}	
+	} else {
+		console.log('Invalid command.')
+	}
+}
+function run_flag(){
+	console.log(process.argv)
+	let queue = process.argv[2]
+	let exp = process.argv[3]
+
+	if(queue === 'smart'){
+		smart.start()
+	} else if(queue === 'flash'){
+		if(exp === undefined){
+			exp = ''
+		}
+		flash.get_competitor_bids(queue, exp)
+	} else {
+		console.log('Invalid command.')
+	}
+
+}
+if (!myIp) {
+	throw new Error(`cant get ip: "${myIp}"`);
+}
+async function main(){
+	console.log(myIp)
+	if(myIp === '10.0.0.59'){
+		connect()
+	}
+	await redis_handler.start_connection()
+	await mongo.connect()
+
+	if(!process.argv[2]){
+		run_interactive()
+	} else {
+		run_flag()
+	}
+	
 } 
 main()

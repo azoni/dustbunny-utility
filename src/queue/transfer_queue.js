@@ -1,6 +1,6 @@
-const data_node = require('./data_node.js')
+const data_node = require('../data_node.js')
 const node_redis = require('redis')
-const collection_json = require('./collections/collection_json.json')
+const collection_json = require('../collections/collection_json.json')
 const url = require('url');
 const fetch = require('node-fetch')
 // const client = node_redis.createClient({

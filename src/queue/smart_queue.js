@@ -1,9 +1,9 @@
 //add to queue based on competition
-const opensea_handler = require('./opensea_handler.js')
-const data_node = require('./data_node.js')
-const etherscan_handler = require('./etherscan_handler.js')
-const redis_handler = require('./redis_handler.js')
-const manual_queue = require('./manual_queue.js')
+const opensea_handler = require('../handlers/opensea_handler.js')
+const data_node = require('../data_node.js')
+const etherscan_handler = require('../handlers/etherscan_handler.js')
+const redis_handler = require('../handlers/redis_handler.js')
+const manual_queue = require('../queue/manual_queue.js')
 
 const smart_list = data_node.SMART_WATCH_LIST
 

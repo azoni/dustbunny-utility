@@ -1,16 +1,13 @@
-const fs = require('fs')
-const data_node = require('./data_node.js')
-const redis_handler = require('./redis_handler.js')
-const utils = require('./utils.js')
-const opensea_handler = require('./opensea_handler.js')
-const rare = require('./rare_queue.js')
+const data_node = require('../data_node.js')
+const redis_handler = require('../handlers/redis_handler.js')
+const utils = require('../utility/utils.js')
+const opensea_handler = require('../handlers/opensea_handler.js')
 
-var wallet_set = data_node.WATCH_LIST
-
+let wallet_set = data_node.WATCH_LIST
 
 let bids_added = 0
 let counter = 0
-var wallet_orders = data_node.COMP_WALLETS
+let wallet_orders = data_node.COMP_WALLETS
 
 async function get_competitor_bids(type, exp){
  	var time_window = wallet_orders.length * 2000
@@ -23,12 +20,12 @@ async function get_competitor_bids(type, exp){
 	
 	console.log('bids added: ' + bids_added)
   bids_added = 0
-  for(var address of wallet_orders){
+  for(let address of wallet_orders){
   	await utils.sleep(250)
   	var orders =  await opensea_handler.get_orders_window(address, time_window)
     try {
 	    try{
-        var username = order['orders'][0].makerAccount.user.username
+        let username = order['orders'][0].makerAccount.user.username
       } catch(ex){
         username = 'Null'
       }
@@ -39,14 +36,14 @@ async function get_competitor_bids(type, exp){
 	    	asset['slug'] = o.asset.collection.slug
 	    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
 	    	asset['event_type'] = type 
-	    	asset['expiration'] = false
+	    	asset['expiration'] = .25
 	    	if(exp !== ''){
 	    		asset['expiration'] = exp/60
 	    	}
 	    	if(wallet_set.includes(asset['slug'])){
 	    		counter += 1
 	    		bids_added += 1
-	    		if (data_node.PRIORITY_COMP_WALLET.includes(wallet_orders[address])) {
+	    		if (data_node.PRIORITY_COMP_WALLET.includes(address)) {
 	    			asset['bid_amount'] = o.basePrice/1000000000000000000
 	    			redis_handler.push_asset_high_priority(asset);
 	    		} else {
@@ -98,4 +95,4 @@ function start(){
 	flash_queue_start()
 }
 // start()
-module.exports = { start };
+module.exports = { start, get_competitor_bids };
