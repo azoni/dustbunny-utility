@@ -52,13 +52,20 @@ async function staking_queue_add(slug, event_type, exp, bid, run_traits){
 async function start(){
 	let exp = 15
 	while(true){
-		staking_queue_add('metahero-generative', 'staking', exp/60, false, false)
-		staking_queue_add('metroverse', 'staking', exp/60, false, false)
-		staking_queue_add('critterznft', 'staking', exp/60, false, false)
-		staking_queue_add('sappy-seals', 'staking', exp/60, false, false)
-		staking_queue_add('anonymice', 'staking', exp/60, false, false)
-		staking_queue_add('genesis-creepz', 'staking', exp/60, false, false)
-		await utils.sleep(exp*60000)
+		let start_time = Math.floor(+new Date())
+		await staking_queue_add('metahero-generative', 'staking', exp/60, false, false)
+		await staking_queue_add('metroverse', 'staking', exp/60, false, false)
+		await staking_queue_add('critterznft', 'staking', exp/60, false, false)
+		await staking_queue_add('sappy-seals', 'staking', exp/60, false, false)
+		await staking_queue_add('anonymice', 'staking', exp/60, false, false)
+		await staking_queue_add('genesis-creepz', 'staking', exp/60, false, false)
+		//await utils.sleep(exp*60000)
+		let end_time = Math.floor(+new Date())
+		if (end_time - start_time < exp*60){
+			let wait_time = exp*60 - (end_time - start_time)
+			console.log('waiting: ' + wait_time + 'ms')
+			await utils.sleep(wait_time)
+		}
 	}
 	
 }
