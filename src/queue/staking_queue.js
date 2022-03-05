@@ -53,12 +53,12 @@ async function start(){
 	let exp = 15
 	while(true){
 		let start_time = Math.floor(+new Date())
-		await staking_queue_add('metahero-generative', 'staking', exp/60, false, false)
-		await staking_queue_add('metroverse', 'staking', exp/60, false, false)
 		await staking_queue_add('critterznft', 'staking', exp/60, false, false)
 		await staking_queue_add('sappy-seals', 'staking', exp/60, false, false)
 		await staking_queue_add('anonymice', 'staking', exp/60, false, false)
 		await staking_queue_add('genesis-creepz', 'staking', exp/60, false, false)
+		await staking_queue_add('metahero-generative', 'staking', exp/60, false, false)
+		await staking_queue_add('metroverse', 'staking', exp/60, false, false)
 		//await utils.sleep(exp*60000)
 		let end_time = Math.floor(+new Date())
 		if (end_time - start_time < exp*60){
