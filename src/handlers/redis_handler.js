@@ -60,15 +60,15 @@ async function redis_queue_pop(){
 	if(transfer_queue_data !== null && transfer_queue_data !== undefined && transfer_queue_data.length > 0){
 		return transfer_queue_data
 	} 
-
-	let manual_queue_data = await client.lPopCount('queue:manual', pop_count)
-	if(manual_queue_data !== null && manual_queue_data !== undefined && manual_queue_data.length > 0){
-		return manual_queue_data
-	}
 	let staking_queue_data = await client.lPopCount('queue:staking', pop_count)
 	if(staking_queue_data !== null && staking_queue_data !== undefined && staking_queue_data.length > 0){
 		return staking_queue_data
 	}
+	let manual_queue_data = await client.lPopCount('queue:manual', pop_count)
+	if(manual_queue_data !== null && manual_queue_data !== undefined && manual_queue_data.length > 0){
+		return manual_queue_data
+	}
+
 	let smart_queue_data = await client.lPopCount('queue:smart', pop_count)
 	if(smart_queue_data !== null && smart_queue_data !== undefined && smart_queue_data.length > 0){
 		return smart_queue_data
