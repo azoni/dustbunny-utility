@@ -258,7 +258,7 @@ async function get_orders_window(address, time_window, token_ids){
       console.log('----error with buy orders')
     }
     offset += 50
-    console.log(orders_array.length)
+    // console.log(orders_array.length)
   } while(order_length === 50)
   console.log(orders_array.length + ' bids made by ' + username)
   return orders_array

@@ -152,26 +152,17 @@ const values = {
 		// },
 		'cyberkongz': {
 			'type': {
-				'genesis': [1.5, 5],
-				'incubator': [1.05, 1.1],
+				'genesis': [.6, 5],
 			},
 		},
 		'metroverse': {
 			'buildings: public': {
-				'town hall': [.95, .975],
 				'metroverse museum': [.95, .975],
-			},
-			'buildings: commercial': {
-				'football stadium': [.975, 1],
 			},
 			'buildings: induistrial': {
 				'wind farm': [.95, .975],
 				'solar farm': [.95, .975],
 				'rocket launch site': [.95, .975],
-				'crypto mining facility': [.95, .975],
-			},
-			'buildings: residential': {
-				'winter mega-mansion': [.975, 1],
 			},
 
 		},

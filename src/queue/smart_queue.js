@@ -38,7 +38,7 @@ async function start(){
 		}
 	}
 	console.log('Getting OpenSea bids...')
-	let orders = await opensea_handler.get_orders_window('all', 30000)
+	let orders = await opensea_handler.get_orders_window('all', 15000)
 	console.log(orders.length)
 	for(let o of orders){
 		try{

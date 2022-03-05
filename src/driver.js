@@ -127,6 +127,9 @@ const readline = require('readline-sync')
 		}
 
 		manual.manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
+		manual.manual_queue_add('coolmans-universe', 'manual', exp/60, bid, false)
+		manual.manual_queue_add('worldwidewebbland', 'manual', exp/60, bid, false)
+		manual.manual_queue_add('lootproject', 'manual', exp/60, bid, false)
 	} else if(command === 'flash'){
 		flash.start()
 	} else if(command === 'staking'){
