@@ -14,7 +14,20 @@ async function connect() {
   _database =  client.db("test");
   _nftassets = _database.collection("nftassets");
 }
-
+async function connect_main() {
+  await client.connect();
+  connected = true;
+  _database =  client.db("test");
+  _nftassets = _database.collection("opensea_keys");
+  let api_key = process.argv[2]
+  if(await findOne({'api_key': api_key})){
+    console.log('api key found')
+  } else {
+    await writeOneAsset({'api_key': api_key, 'in_use': false})
+    console.log('new key found')
+  }
+  console.log(await countDocuments())
+}
 async function close() {
   if (client) {
     return client.close();
@@ -90,7 +103,7 @@ function checkAndThrowIfNotConnected() {
     throw new Error('Did you connect the mongo client!! - Brono')
   }
 }
-
+// connect_main()
 module.exports = {
   countDocuments,
   find,

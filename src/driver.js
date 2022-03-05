@@ -1,7 +1,7 @@
 const manual = require('./queue/manual_queue.js')
 const staking = require('./queue/staking_queue.js')
 const rare = require('./queue/rare_queue.js')
-
+const listed = require('./queue/listed_queue.js')
 const flash = require('./queue/flash_queue.js')
 const transfer = require('./queue/transfer_queue.js')
 const smart = require('./queue/smart_queue.js')
@@ -131,6 +131,8 @@ const readline = require('readline-sync')
 		flash.start()
 	} else if(command === 'staking'){
 		staking.start()
+	} else if(command === 'listed'){
+		listed.start()
 	} else if(command === 'rare'){
 		rare.start_listener()
 	} else if(command === 'transfer'){
@@ -156,7 +158,6 @@ function run_flag(){
 	} else {
 		console.log('Invalid command.')
 	}
-
 }
 if (!myIp) {
 	throw new Error(`cant get ip: "${myIp}"`);

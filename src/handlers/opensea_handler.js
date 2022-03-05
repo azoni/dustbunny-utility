@@ -176,7 +176,43 @@ async function get_collection(slug){
 
 
 async function get_listed_lowered(time_window){
+  let offset = 0
+  let search_time = get_ISOString(time_window)
+  let search_time2 = get_ISOString_now()
+  let orders_array = []
+  let order = 0
+  let username = 'Null'
+  var order_api_data = {
+  	side: 1,
+  	order_by: 'created_date',
+  	listed_after: search_time,
+		listed_before: search_time2,
+		limit: 50,
+    offset: offset
+  }
+  do{
+  	await sleep(250)
+    try{
+    		order = await seaport.api.getOrders(order_api_data)	    
+	    try{
+        username = order['orders'][0].makerAccount.user.username
+      } catch(ex){
 
+      }
+	    var order_length = order['orders'].length
+	    for(let o of order.orders){
+	    	orders_array.push(o)
+	    }
+    }
+    catch(ex) {
+    	order_length = 0
+      console.log(ex.message)
+      console.log('----error with buy orders')
+    }
+    offset += 50
+  } while(order_length === 50)
+  console.log(orders_array.length + ' listing')
+  return orders_array
 }
 //order['orders'][o].taker !== '0x0000000000000000000000000000000000000000'
 async function get_orders_window(address, time_window, token_ids){
@@ -262,5 +298,6 @@ module.exports = {
 	get_collection,
 	get_assets,
 	get_orders_window,
-	get_assets_with_cursor
+	get_assets_with_cursor,
+	get_listed_lowered
 };

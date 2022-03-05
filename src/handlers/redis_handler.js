@@ -52,10 +52,15 @@ async function redis_queue_pop(){
 	if(rare_queue_data !== null && rare_queue_data !== undefined && rare_queue_data.length > 0){
 		return rare_queue_data
 	}
+	let listed_queue_data = await client.lPopCount('queue:listed', pop_count)
+	if(listed_queue_data !== null && listed_queue_data !== undefined && listed_queue_data.length > 0){
+		return listed_queue_data
+	} 
 	let transfer_queue_data = await client.lPopCount('queue:transfer', pop_count)
 	if(transfer_queue_data !== null && transfer_queue_data !== undefined && transfer_queue_data.length > 0){
 		return transfer_queue_data
 	} 
+
 	let manual_queue_data = await client.lPopCount('queue:manual', pop_count)
 	if(manual_queue_data !== null && manual_queue_data !== undefined && manual_queue_data.length > 0){
 		return manual_queue_data
