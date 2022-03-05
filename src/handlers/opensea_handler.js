@@ -222,6 +222,7 @@ async function get_orders_window(address, time_window, token_ids){
   let orders_array = []
   let order = 0
   let username = 'Null'
+  let order_length = 0
   var order_api_data = {
   	side: 0,
   	order_by: 'created_date',
@@ -246,7 +247,7 @@ async function get_orders_window(address, time_window, token_ids){
       } catch(ex){
 
       }
-	    var order_length = order['orders'].length
+	    order_length = order['orders'].length
 	    for(let o of order.orders){
 	    	orders_array.push(o)
 	    }
@@ -257,6 +258,7 @@ async function get_orders_window(address, time_window, token_ids){
       console.log('----error with buy orders')
     }
     offset += 50
+    console.log(orders_array.length)
   } while(order_length === 50)
   console.log(orders_array.length + ' bids made by ' + username)
   return orders_array

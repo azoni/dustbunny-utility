@@ -8,7 +8,7 @@ const manual_queue = require('../queue/manual_queue.js')
 const smart_list = data_node.SMART_WATCH_LIST
 
 async function start(){
-	await redis_handler.dump_queue('manual')
+	await redis_handler.dump_queue('smart')
 	let bid_dict = {}
 	let final_product = []
 	// var orders = await opensea_handler.get_orders_window('all', 60000)
