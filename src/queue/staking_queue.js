@@ -11,22 +11,19 @@ async function staking_queue_add(slug, event_type, exp, bid, run_traits){
 	var assets = await opensea_handler.get_assets_with_cursor(slug)
 	let collection_traits = trait_bids[slug]
 	let staking_wallets = await mongo.readStakingWallets()
-	let staking_wallet;
-	for(let w of staking_wallets){
-		if(w.slug === slug){
-			staking_wallet = w.address
-			break
-		}
-	}
+
+	const slugs_staking_wallets = staking_wallets
+		.filter(el => el.slug === slug)
+		.map(({ address }) => address.toLowerCase());
+
 	let counter = 0
-	console.log(staking_wallet)
 	console.log('Trait bids: ' + collection_traits)
 	for(let asset of assets){
 		asset['fee'] = asset.dev_seller_fee_basis_points / 10000
     	asset['event_type'] = 'staking'
     	asset['expiration'] = exp
     	asset['bid_range'] = false
-    	if(staking_wallet.toLowerCase() === asset.owner_address.toLowerCase()){
+        if (slugs_staking_wallets.includes(asset.owner_address.toLowerCase())) {
     		continue
     	}
     	for(trait of asset.traits){
