@@ -32,10 +32,13 @@ end_timer() - end timer\
 get_ISOString(seconds) - convert current - seconds Math.floor(+new Date()) to ISO\ 
 get_ISOString_now() - convert current Math.floor(+new Date()) to ISO
 
-## Queue priority order - high, rare, transfer, manual, staking, smart, flash
+## Queue priority order - high, rare, listed, transfer, manual, staking, smart, flash
 
 ### Rare Queue
 Handle bid events on specific NFTs of interest. Essentially adds a listener to rare NFTS. Can include up to 30 assets from the same collection per getOrders() call. Add to 'rare' queue.
+
+### Listed Queue
+Bid on any nft that is listed for sale or listing price lowered.
 
 ### Transfer Queue
 Add assets to 'transfer' queue based on etherscan activity. When address transfers or accepts an offer bid on all nfts of interest in both wallets. Skip staking wallets.

@@ -7,12 +7,16 @@ const mongo = require('../AssetsMongoHandler.js')
 //getOrders on 30 token IDs at once, possibly match expiration
 async function start_listener(){
 	let trait_bids = data_node.COLLECTION_TRAIT
-	let collection_traits = trait_bids[slug]
 	var exp = .33
 	let token_ids = []
-	let asset_contract_address = '0x8a90cab2b38dba80c64b7734e58ee1db38b8992e'
 	var assets = await mongo.find({'slug':'doodles-official',  'traits.trait_type': 'face', 'traits.value': 'rainbow puke'}, {})
-	
+	let asset_contract_address = assets[0].token_address
+	let temp_30_array = []
+	for(let asset of assets){
+		temp_30_array.push(asset.token_id)
+		token_ids.push(temp_30_array)
+		
+	}
 	var start_time = Math.floor(+new Date())
 	for(let token_array of token_ids){
 		await utils.sleep(250)
@@ -34,18 +38,17 @@ async function start_listener(){
 	    	if(exp !== ''){
 	    		asset['expiration'] = exp/60
 	    	}
-	    	asset_mongo = mongo.findOne()
-	    	for(trait of asset_mongo.traits){
-			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
-				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-					// console.log(trait.value)
-					// console.log(collection_traits[trait.trait_type][trait.value])
-					// trimmed_asset['event_type'] = 'trait - ' + trait.value
-					trimmed_asset['trait'] = trait.value
-					trimmed_asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+	    	let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
+	    	asset['traits'] = mongo_traits.traits
+	    	for(trait of asset.traits){
+	    		let collection_traits = trait_bids[asset['slug']]
+				if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
+					if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
+						trimmed_asset['trait'] = trait.value
+						trimmed_asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+					}
 				}
-			}
-    	}
+	    	}
 	    	asset['bid_amount'] = o.basePrice/1000000000000000000
 			console.log(asset)
 	    }
