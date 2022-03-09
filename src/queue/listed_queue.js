@@ -15,39 +15,39 @@ async function listed_queue_add(event_type, exp, bid){
 	var orders =  await opensea_handler.get_listed_lowered(time_window)
 	
 	bids_added = 0
-    for(let o of orders){
-    	try{
-	    	let asset = {}
-	    	asset['token_id'] = o.asset.tokenId
-	    	asset['token_address'] = o.asset.tokenAddress
-	    	asset['slug'] = o.asset.collection.slug
-	    	if(wallet_set.includes(asset['slug'])){
-		    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
-		    	asset['event_type'] = event_type 
-		    	asset['expiration'] = .25
-		    	asset['listed_price'] = o.basePrice/1000000000000000000
-		    	let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
-		    	asset['traits'] = mongo_traits.traits
-		    	if(exp !== ''){
-		    		asset['expiration'] = exp/60
-		    	}
-		    	for(trait of asset.traits){
-		    		let collection_traits = trait_bids[asset['slug']]
-					if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
-						if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-							asset['trait'] = trait.value
-							asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
-							console.log('trait found!')
-						}
+	for(let o of orders){
+		try{
+			let asset = {}
+			asset['token_id'] = o.asset.tokenId
+			asset['token_address'] = o.asset.tokenAddress
+			asset['slug'] = o.asset.collection.slug
+			if(wallet_set.includes(asset['slug'])){
+				asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
+				asset['event_type'] = event_type
+				asset['expiration'] = .25
+				asset['listed_price'] = o.basePrice/1000000000000000000
+				let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
+				asset['traits'] = mongo_traits.traits
+				if(exp !== ''){
+					asset['expiration'] = exp/60
+				}
+				for(trait of asset.traits){
+					let collection_traits = trait_bids[asset['slug']]
+				if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
+					if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
+						asset['trait'] = trait.value
+						asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+						console.log('trait found!')
 					}
-		    	}
-	    		bids_added += 1
-	    		redis_handler.redis_push(event_type, asset);	
-	    	}
-    	} catch (e) {
+				}
+				}
+				bids_added += 1
+				redis_handler.redis_push(event_type, asset);
+			}
+		} catch (e) {
 
-    	}
-    }
+		}
+	}
 	await redis_handler.print_queue_length(event_type)
 	console.log('bids added: ' + bids_added)
 	let queue_length = await redis_handler.get_queue_length(event_type)
