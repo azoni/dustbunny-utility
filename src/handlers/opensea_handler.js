@@ -181,31 +181,25 @@ async function get_listed_lowered(time_window){
   let search_time2 = get_ISOString_now()
   let orders_array = []
   let order = 0
-  let username = 'Null'
-  var order_api_data = {
-  	side: 1,
-  	order_by: 'created_date',
-  	listed_after: search_time,
-		listed_before: search_time2,
-		limit: 50,
-    offset: offset
-  }
-  do{
-  	await sleep(250)
-    try{
-    		order = await seaport.api.getOrders(order_api_data)	    
-	    try{
-        username = order['orders'][0].makerAccount.user.username
-      } catch(ex){
+  let order_length = 0;
+  do {
 
+    await sleep(250)
+    try {
+      order = await seaport.api.getOrders({
+        side: 1,
+        order_by: 'created_date',
+        listed_after: search_time,
+        listed_before: search_time2,
+        limit: 50,
+        offset: offset
+      });
+      order_length = order['orders'].length
+      for(let o of order.orders){
+        orders_array.push(o)
       }
-	    var order_length = order['orders'].length
-	    for(let o of order.orders){
-	    	orders_array.push(o)
-	    }
-    }
-    catch(ex) {
-    	order_length = 0
+    } catch(ex) {
+      order_length = 0
       console.log(ex.message)
       console.log('----error with buy orders')
     }
@@ -232,7 +226,7 @@ async function get_orders_window(address, time_window, token_ids){
     offset: offset
   }
   if(token_ids){
-  	order_api_data['address'] = address
+    order_api_data['asset_contract_address'] = address
   	order_api_data['token_ids'] = token_ids
   } else if(address !== 'all'){
   	order_api_data['maker'] = address
@@ -241,6 +235,7 @@ async function get_orders_window(address, time_window, token_ids){
   do{
   	await sleep(250)
     try{
+        order_api_data.offset = offset;
     		order = await seaport.api.getOrders(order_api_data)	    
 	    try{
         username = order['orders'][0].makerAccount.user.username

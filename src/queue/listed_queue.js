@@ -7,7 +7,7 @@ const mongo = require('../AssetsMongoHandler.js')
 let wallet_set = data_node.WATCH_LIST
 let bids_added = 0
 
-async function listed_queue_add(event_type, exp, bid){
+async function listed_queue_add(event_type, exp, bid) {
 	var time_window = 3000
 	let start_time = Math.floor(+new Date())
 	let trait_bids = data_node.COLLECTION_TRAIT
