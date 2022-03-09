@@ -102,7 +102,7 @@ function connect(){
 		console.log('Server is running')
 	})
 }
-function run_interactive(){
+async function run_interactive(){
 const readline = require('readline-sync')	
 	let command = readline.question('Run: ')
 	if(command === 'comp'){
@@ -125,11 +125,15 @@ const readline = require('readline-sync')
 		if(run_traits === ''){
 			run_traits = false
 		}
-
 		manual.manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
-		manual.manual_queue_add('coolmans-universe', 'manual', exp/60, bid, false)
-		manual.manual_queue_add('worldwidewebbland', 'manual', exp/60, bid, false)
-		manual.manual_queue_add('lootproject', 'manual', exp/60, bid, false)
+
+		// while(true){
+		// 	manual.manual_queue_add('coolmans-universe', 'manual', exp/60, bid, false)
+		// 	manual.manual_queue_add('worldwidewebbland', 'manual', exp/60, bid, false)
+		// 	manual.manual_queue_add('lootproject', 'manual', exp/60, bid, false)
+		// 	await utils.sleep(exp*60000)
+		// }
+		
 	} else if(command === 'flash'){
 		flash.start()
 	} else if(command === 'staking'){
@@ -145,6 +149,7 @@ const readline = require('readline-sync')
 	} else if(command === 'dump'){
 		redis_handler.dump_queue('manual')
 		redis_handler.dump_queue('staking')
+		redis_handler.dump_queue('high')
 	} else {
 		console.log('Invalid command.')
 	}
