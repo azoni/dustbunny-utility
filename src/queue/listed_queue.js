@@ -6,33 +6,48 @@ const mongo = require('../AssetsMongoHandler.js')
 
 let wallet_set = data_node.WATCH_LIST
 let bids_added = 0
+let fetch_watch_list_timeout = undefined;
+async function fetch_watch_list_loop() {
+  let w;
+  try {
+    w = await mongo.readWatchList();
+    w = w || [];
+    w = w.map(({ slug }) => slug);
+    console.log(w)
+  } catch (error) {
+    w = data_node.WATCH_LIST;
+  }
+  wallet_set = w;
+  clearTimeout(fetch_watch_list_timeout);
+  fetch_watch_list_timeout = setTimeout(fetch_watch_list_loop, 60_000);
+}
 
-async function listed_queue_add(event_type, exp, bid){
+async function listed_queue_add(event_type, exp, bid) {
 	var time_window = 3000
 	let start_time = Math.floor(+new Date())
 	let trait_bids = data_node.COLLECTION_TRAIT
 	console.log('Getting listings...')
-	var orders =  await opensea_handler.get_listed_lowered(time_window)
+	var orders =  await opensea_handler.get_listed_lowered(time_window);
 	
 	bids_added = 0
-    for(let o of orders){
-    	try{
-	    	let asset = {}
-	    	asset['token_id'] = o.asset.tokenId
-	    	asset['token_address'] = o.asset.tokenAddress
-	    	asset['slug'] = o.asset.collection.slug
-	    	if(wallet_set.includes(asset['slug'])){
-		    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
-		    	asset['event_type'] = event_type 
-		    	asset['expiration'] = .25
-		    	asset['listed_price'] = o.basePrice/1000000000000000000
-		    	let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
-		    	asset['traits'] = mongo_traits.traits
-		    	if(exp !== ''){
-		    		asset['expiration'] = exp/60
-		    	}
-		    	for(trait of asset.traits){
-		    		let collection_traits = trait_bids[asset['slug']]
+	for(let o of orders){
+		try{
+			let asset = {}
+			asset['token_id'] = o.asset.tokenId
+			asset['token_address'] = o.asset.tokenAddress
+			asset['slug'] = o.asset.collection.slug
+			if(wallet_set.includes(asset['slug'])){
+				asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
+				asset['event_type'] = event_type
+				asset['expiration'] = .25
+				asset['listed_price'] = o.basePrice/1000000000000000000
+				let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
+				asset['traits'] = mongo_traits.traits
+				if(exp !== ''){
+					asset['expiration'] = exp/60
+				}
+				for(trait of asset.traits){
+					let collection_traits = trait_bids[asset['slug']]
 					if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
 						if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
 							asset['trait'] = trait.value
@@ -40,14 +55,13 @@ async function listed_queue_add(event_type, exp, bid){
 							console.log('trait found!')
 						}
 					}
-		    	}
-	    		bids_added += 1
-	    		redis_handler.redis_push(event_type, asset);	
-	    	}
-    	} catch (e) {
-
-    	}
-    }
+				}
+				bids_added += 1
+				redis_handler.redis_push(event_type, asset);
+			}
+		} catch (e) {
+		}
+	}
 	await redis_handler.print_queue_length(event_type)
 	console.log('bids added: ' + bids_added)
 	let queue_length = await redis_handler.get_queue_length(event_type)
@@ -62,7 +76,8 @@ async function listed_queue_add(event_type, exp, bid){
 }
 
 async function start() {
-	listed_queue_add('listed', 15, false)
+  await fetch_watch_list_loop();
+  listed_queue_add('listed', 15, false)
 }
 
 module.exports = { start, listed_queue_add };

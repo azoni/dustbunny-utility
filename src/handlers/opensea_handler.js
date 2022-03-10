@@ -181,31 +181,25 @@ async function get_listed_lowered(time_window){
   let search_time2 = get_ISOString_now()
   let orders_array = []
   let order = 0
-  let username = 'Null'
-  var order_api_data = {
-  	side: 1,
-  	order_by: 'created_date',
-  	listed_after: search_time,
-		listed_before: search_time2,
-		limit: 50,
-    offset: offset
-  }
-  do{
-  	await sleep(250)
-    try{
-    		order = await seaport.api.getOrders(order_api_data)	    
-	    try{
-        username = order['orders'][0].makerAccount.user.username
-      } catch(ex){
+  let order_length = 0;
+  do {
 
+    await sleep(250)
+    try {
+      order = await seaport.api.getOrders({
+        side: 1,
+        order_by: 'created_date',
+        listed_after: search_time,
+        listed_before: search_time2,
+        limit: 50,
+        offset: offset
+      });
+      order_length = order['orders'].length
+      for(let o of order.orders){
+        orders_array.push(o)
       }
-	    var order_length = order['orders'].length
-	    for(let o of order.orders){
-	    	orders_array.push(o)
-	    }
-    }
-    catch(ex) {
-    	order_length = 0
+    } catch(ex) {
+      order_length = 0
       console.log(ex.message)
       console.log('----error with buy orders')
     }
@@ -215,6 +209,10 @@ async function get_listed_lowered(time_window){
   return orders_array
 }
 //order['orders'][o].taker !== '0x0000000000000000000000000000000000000000'
+let blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556','0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
+for(let w in blacklist_wallets){
+	blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
+}
 async function get_orders_window(address, time_window, token_ids){
   let offset = 0
   let search_time = get_ISOString(time_window)
@@ -232,7 +230,7 @@ async function get_orders_window(address, time_window, token_ids){
     offset: offset
   }
   if(token_ids){
-  	order_api_data['address'] = address
+  	order_api_data['asset_contract_address'] = address
   	order_api_data['token_ids'] = token_ids
   } else if(address !== 'all'){
   	order_api_data['maker'] = address
@@ -241,6 +239,7 @@ async function get_orders_window(address, time_window, token_ids){
   do{
   	await sleep(250)
     try{
+        order_api_data.offset = offset;
     		order = await seaport.api.getOrders(order_api_data)	    
 	    try{
         username = order['orders'][0].makerAccount.user.username
@@ -249,7 +248,10 @@ async function get_orders_window(address, time_window, token_ids){
       }
 	    order_length = order['orders'].length
 	    for(let o of order.orders){
-	    	orders_array.push(o)
+	    	if(!blacklist_wallets.includes(o.makerAccount.address.toLowerCase())){
+	    		orders_array.push(o)
+	    	}
+	    	
 	    }
     }
     catch(ex) {
