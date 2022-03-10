@@ -232,7 +232,7 @@ async function get_orders_window(address, time_window, token_ids){
     offset: offset
   }
   if(token_ids){
-  	order_api_data['address'] = address
+  	order_api_data['asset_contract_address'] = address
   	order_api_data['token_ids'] = token_ids
   } else if(address !== 'all'){
   	order_api_data['maker'] = address

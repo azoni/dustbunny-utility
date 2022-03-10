@@ -64,7 +64,7 @@ const values = {
 				// 'mad note': [.85, .95],
 				// 'sad note': [.775, .95],
 				// 'skelton': [.95, 1],
-				'rainbow puke': [2.52, 2.26],
+				'rainbow puke': [1, 2],
 				'puffer up': [3, 3.5],
 				'ape': [4.25, 4.1],
 				'shark': [4.15, 4.25],
@@ -152,17 +152,26 @@ const values = {
 		// },
 		'cyberkongz': {
 			'type': {
-				'genesis': [.6, 5],
+				'genesis': [1.5, 5],
+				'incubator': [1.05, 1.1],
 			},
 		},
 		'metroverse': {
 			'buildings: public': {
+				'town hall': [.95, .975],
 				'metroverse museum': [.95, .975],
+			},
+			'buildings: commercial': {
+				'football stadium': [.975, 1],
 			},
 			'buildings: induistrial': {
 				'wind farm': [.95, .975],
 				'solar farm': [.95, .975],
 				'rocket launch site': [.95, .975],
+				'crypto mining facility': [.95, .975],
+			},
+			'buildings: residential': {
+				'winter mega-mansion': [.975, 1],
 			},
 
 		},
@@ -314,7 +323,7 @@ const values = {
 		},
 	},
 	SMART_WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
-     'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',
+     'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',
      'bored-ape-kennel-club', 'desperate-ape-wives', 'bears-deluxe',
      'clonex', 'collectvox', 
      'meebits', 'guttercatgang', 'veefriends', 'rumble-kong-league',
@@ -325,7 +334,7 @@ const values = {
      'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro','prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'pudgypenguins', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'cryptoskulls', 'mekaverse', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
      ],
 	WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
-     'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',
+     'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',
      'bored-ape-kennel-club', 'desperate-ape-wives', 'bears-deluxe',
      'clonex', 'decentraland', 'collectvox', 'creatureworld',
      'meebits', 'guttercatgang', 'veefriends', 'rumble-kong-league',
