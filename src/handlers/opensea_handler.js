@@ -209,6 +209,10 @@ async function get_listed_lowered(time_window){
   return orders_array
 }
 //order['orders'][o].taker !== '0x0000000000000000000000000000000000000000'
+let blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556','0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
+for(let w in blacklist_wallets){
+	blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
+}
 async function get_orders_window(address, time_window, token_ids){
   let offset = 0
   let search_time = get_ISOString(time_window)
@@ -244,7 +248,10 @@ async function get_orders_window(address, time_window, token_ids){
       }
 	    order_length = order['orders'].length
 	    for(let o of order.orders){
-	    	orders_array.push(o)
+	    	if(!blacklist_wallets.includes(o.makerAccount.address.toLowerCase())){
+	    		orders_array.push(o)
+	    	}
+	    	
 	    }
     }
     catch(ex) {
