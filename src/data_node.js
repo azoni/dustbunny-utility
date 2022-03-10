@@ -152,130 +152,120 @@ const values = {
 		// },
 		'cyberkongz': {
 			'type': {
-				'genesis': [1.5, 5],
-				'incubator': [1.05, 1.1],
+				'genesis': [.6, 5],
+				// 'incubator': [1.05, 1.1],
 			},
 		},
 		'metroverse': {
 			'buildings: public': {
-				'town hall': [.95, .975],
 				'metroverse museum': [.95, .975],
-			},
-			'buildings: commercial': {
-				'football stadium': [.975, 1],
 			},
 			'buildings: induistrial': {
 				'wind farm': [.95, .975],
 				'solar farm': [.95, .975],
-				'rocket launch site': [.95, .975],
-				'crypto mining facility': [.95, .975],
 			},
-			'buildings: residential': {
-				'winter mega-mansion': [.975, 1],
-			},
+		},
+		// 'onchainmonkey': {
+		// 	'fur': {
+		// 		'17': [2, 2.1],
+		// 		//gold fur
+		// 		'18': [2, 3],
+		// 	},
+		// 	'hat': {
+		// 		'34': [.925, 1],
+		// 		//gold fur
+		// 		'36': [.95, 1],
+		// 	},
+		// 	'mouth': {
+		// 		'31': [.925, 1],
+		// 		//gold fur
+		// 		'32': [.95, 1],
+		// 	},
+		// },
+		// 'alienfrensnft': {
+        //     '1 of 1': {
+        //         'albino': [3, 4],
+        //         'electric': [3, 4],
+        //         'holo': [3, 4],
+        //         'melted': [3, 4],
+        //         'monochrome': [3, 4],
+        //         'peaceful demon': [3, 4],
+        //     },
+        //     'background': {
+        //         'blue camo': [.9, .925],
+        //         'green camo': [.9, .925],
+        //         'red camo': [.9, .925],
+        //     },
+        //     'body': {
+        //         'olu': [.925, .95],
+        //         'zombie': [2, 3],
+        //     },
+        //     'clothes': {
+        //         'yellow hi': [.9, .925],
+        //         'space suit': [.9, .95],
+        //         'white tux': [.9, .925],
+        //         'abstract hoodie': [.9, .925],
+        //         'dark ninja': [.9, .925],
+        //         'imperial': [.9, .925],
+        //         'scuba': [.9, .925],
+        //         'biohazard': [.9, .925],
+        //         'imperial': [.9, .925],
+        //         'armor': [.9, .925],
+        //         'super gm': [1, 1.25],
+        //     },
+        //     'eyes': {
+        //         'glasses': [.9, .925],
+        //         'patches': [.9, .925],
+        //     },
+        //     'hats': {
+        //         'halo': [.9, .925],
+        //         'toad': [.9, .925],
+        //         'armor': [.925, .95],
+        //         'biohazard': [.925, .95],
+        //         'dark halo': [.925, .95],
+        //         'dark ninja master': [.925, .95],
+        //         'electric ears': [.925, .95],
+        //         'scuba': [.925, .95],
+        //         'space helmet': [.925, .95],
+        //         'crown': [.95, .975],
+        //         'dark crown': [.95, .975],
+        //         'blob blue': [2, 2.5],
+        //         'blob red': [2, 2.5],
+        //         'blob yellow': [2, 2.5],
+        //     },
+        //     'mouth': {
+        //         'braces': [.9, .925],
+        //         'sucker': [.9, .925],
+        //         'sewn shut': [.9, .925],
+        //         'monster': [.9, .925],
+        //         'drugz': [.9, .925],
+        //         'abduction': [.9, .925],
+        //     },
+        // },
+		// 'chain-runners-nft': {
+		// 	'background': {
+		// 		'sun': [1.2, 1.5],
+		// 		'codelines': [.95, 1],
+		// 		'beam': [.95, 1],
+		// 	},
+		// 	'eye accessory': {
+		// 		'nouns': [1, 1.1],
+		// 		'chainspace deck elite': [9, .95],
+		// 	},
+		// 	'eyes': {
+		// 		'skull glowing blue': [2, 3],
+		// 		'skull yellow dot': [1.5, 2],
+		// 		'skull red dot': [.95, 1],
+		// 	},
 
-		},
-		'onchainmonkey': {
-			'fur': {
-				'17': [2, 2.1],
-				//gold fur
-				'18': [2, 3],
-			},
-			'hat': {
-				'34': [.925, 1],
-				//gold fur
-				'36': [.95, 1],
-			},
-			'mouth': {
-				'31': [.925, 1],
-				//gold fur
-				'32': [.95, 1],
-			},
-		},
-		'alienfrensnft': {
-            '1 of 1': {
-                'albino': [3, 4],
-                'electric': [3, 4],
-                'holo': [3, 4],
-                'melted': [3, 4],
-                'monochrome': [3, 4],
-                'peaceful demon': [3, 4],
-            },
-            'background': {
-                'blue camo': [.9, .925],
-                'green camo': [.9, .925],
-                'red camo': [.9, .925],
-            },
-            'body': {
-                'olu': [.925, .95],
-                'zombie': [2, 3],
-            },
-            'clothes': {
-                'yellow hi': [.9, .925],
-                'space suit': [.9, .95],
-                'white tux': [.9, .925],
-                'abstract hoodie': [.9, .925],
-                'dark ninja': [.9, .925],
-                'imperial': [.9, .925],
-                'scuba': [.9, .925],
-                'biohazard': [.9, .925],
-                'imperial': [.9, .925],
-                'armor': [.9, .925],
-                'super gm': [1, 1.25],
-            },
-            'eyes': {
-                'glasses': [.9, .925],
-                'patches': [.9, .925],
-            },
-            'hats': {
-                'halo': [.9, .925],
-                'toad': [.9, .925],
-                'armor': [.925, .95],
-                'biohazard': [.925, .95],
-                'dark halo': [.925, .95],
-                'dark ninja master': [.925, .95],
-                'electric ears': [.925, .95],
-                'scuba': [.925, .95],
-                'space helmet': [.925, .95],
-                'crown': [.95, .975],
-                'dark crown': [.95, .975],
-                'blob blue': [2, 2.5],
-                'blob red': [2, 2.5],
-                'blob yellow': [2, 2.5],
-            },
-            'mouth': {
-                'braces': [.9, .925],
-                'sucker': [.9, .925],
-                'sewn shut': [.9, .925],
-                'monster': [.9, .925],
-                'drugz': [.9, .925],
-                'abduction': [.9, .925],
-            },
-        },
-		'chain-runners-nft': {
-			'background': {
-				'sun': [1.2, 1.5],
-				'codelines': [.95, 1],
-				'beam': [.95, 1],
-			},
-			'eye accessory': {
-				'nouns': [1, 1.1],
-				'chainspace deck elite': [9, .95],
-			},
-			'eyes': {
-				'skull glowing blue': [2, 3],
-				'skull yellow dot': [1.5, 2],
-				'skull red dot': [.95, 1],
-			},
-
-		},
-		'larva-lads': {
-			'type': {
-				'alien': [10, 2, .2],
-				'zombie': [4, 1.1, .1],
-				'ape': [5,2]
-			},
-		},
+		// },
+		// 'larva-lads': {
+		// 	'type': {
+		// 		'alien': [10, 2, .2],
+		// 		'zombie': [4, 1.1, .1],
+		// 		'ape': [5,2]
+		// 	},
+		// },
 		'mutant-ape-yacht-club': {
 			'background': {
 				'm2': [1.2, 1.3],
@@ -285,65 +275,55 @@ const values = {
 			'clothes': {
 				'dress': [.6, .75],
 			}
-		},
-		'raidparty': {
-			'background': {
-				'genesis': [.8, .95],
-				'normal': [.7, .9]
-			}
-		},
-		'capsulehouse': {
-			'species': {
-				'humans': [.6, .8],
-				'posthumans': [.65, .85]
-			}
-		},
-		'noodlesnft-official': {
-			'head': {
-				'devil': [1, 1.1],
-				'spicy': [1, 1.1],
-				'rainbow': [1, 1.1],
-				'balloon': [1.5, 1.6],
-				'pickle': [1.2, 1.3],
-				'coffee': [2, 2.1],
-				'popsicle': [2, 2.1],
-				'flower': [2, 2.1],
-				'ice cream': [2, 2.1],
-				'skelly': [3, 3.1],
-				'ape': [3, 3.1],
-				'cat': [4, 4.1],
-				'dino': [4, 4.1],
-			},
-			'face': {
-				'alien': [4, 4.1],
-				'skelly cig': [4, 4.1],
-				'cat': [4, 4.1],
-				'ape': [3, 3.1],
-			}
-		},
+		// },
+		// 'raidparty': {
+		// 	'background': {
+		// 		'genesis': [.8, .95],
+		// 		'normal': [.7, .9]
+		// 	}
+		// },
+		// 'capsulehouse': {
+		// 	'species': {
+		// 		'humans': [.6, .8],
+		// 		'posthumans': [.65, .85]
+		// 	}
+		// },
+		// 'noodlesnft-official': {
+		// 	'head': {
+		// 		'devil': [1, 1.1],
+		// 		'spicy': [1, 1.1],
+		// 		'rainbow': [1, 1.1],
+		// 		'balloon': [1.5, 1.6],
+		// 		'pickle': [1.2, 1.3],
+		// 		'coffee': [2, 2.1],
+		// 		'popsicle': [2, 2.1],
+		// 		'flower': [2, 2.1],
+		// 		'ice cream': [2, 2.1],
+		// 		'skelly': [3, 3.1],
+		// 		'ape': [3, 3.1],
+		// 		'cat': [4, 4.1],
+		// 		'dino': [4, 4.1],
+		// 	},
+		// 	'face': {
+		// 		'alien': [4, 4.1],
+		// 		'skelly cig': [4, 4.1],
+		// 		'cat': [4, 4.1],
+		// 		'ape': [3, 3.1],
+		// 	}
+		// },
 	},
 	SMART_WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
      'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',
      'bored-ape-kennel-club', 'desperate-ape-wives', 'bears-deluxe',
-     'clonex', 'collectvox', 
-     'meebits', 'guttercatgang', 'veefriends', 'rumble-kong-league',
+     'clonex', 'collectvox', 'meebits', 'guttercatgang', 'veefriends', 'rumble-kong-league',
      'deadfellaz', 'lazy-lions', 'pudgypenguins', 'forgottenruneswizardscult',
      'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject',
      'karafuru', 'coolpetsnft', 'boredapeyachtclub', 'azuki', 'nft-worlds', 'hapeprime', 'gutterrats',' gutterdogs',
      'supernormalbyzipcy', 'world-of-women-nft', 'kaiju-kingz', 'raidparty', 'mfers', 'bossbeauties', 'pixelmongen1',
      'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro','prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'pudgypenguins', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'cryptoskulls', 'mekaverse', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
      ],
-	WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
-     'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',
-     'bored-ape-kennel-club', 'desperate-ape-wives', 'bears-deluxe',
-     'clonex', 'decentraland', 'collectvox', 'creatureworld',
-     'meebits', 'guttercatgang', 'veefriends', 'rumble-kong-league',
-     'deadfellaz', 'lazy-lions', 'pudgypenguins', 'forgottenruneswizardscult',
-     'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject', 
-     'karafuru', 'coolpetsnft', 'boredapeyachtclub', 'azuki', 'nft-worlds', 'hapeprime', 'gutterrats',' gutterdogs', 
-     'supernormalbyzipcy', 'world-of-women-nft', 'kaiju-kingz', 'winterbears',
-     'raidparty', 'mfers', 'bossbeauties', 'pixelmongen1',
-     'genesis-creepz', 'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro', 'beans-dumb-ways-to-die', 'prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'metroverse', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'sappy-seals', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'jrny-club-official', 'superplastic-supergucci', 'thehabibiz', 'pudgypenguins', 'meebits', 'wolf-game-migrated', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'lootproject', 'rumble-kong-league', 'cryptoskulls', 'metahero-generative', 'mekaverse', 'sneaky-vampire-syndicate', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
+	WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin','cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 'invisiblefriends',
+     'bored-ape-kennel-club', 'desperate-ape-wives', 'bears-deluxe','clonex', 'decentraland', 'collectvox', 'creatureworld','meebits', 'guttercatgang', 'veefriends', 'rumble-kong-league','deadfellaz', 'lazy-lions', 'pudgypenguins', 'forgottenruneswizardscult','supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject', 'karafuru', 'coolpetsnft', 'boredapeyachtclub', 'azuki', 'nft-worlds', 'hapeprime', 'gutterrats',' gutterdogs', 'supernormalbyzipcy', 'world-of-women-nft', 'kaiju-kingz', 'winterbears','raidparty', 'mfers', 'bossbeauties', 'pixelmongen1','genesis-creepz', 'killergf', 'capsulehouse', 'chromie-squiggle-by-snowfro', 'beans-dumb-ways-to-die', 'prime-kong-planet-by-pap', 'raidpartyfighters', 'metacard-by-fullsend', 'the-crypto-chicks', 'cyberkongz-vx', 'metroverse', 'fluf-world', 'worldwidewebbland', 'alienfrensnft', 'alpacadabraz', 'slotienft', 'coolmans-universe', 'sappy-seals', 'generativedungeon', 'cryptocoven', 'fluf-world-burrows', 'coolmonkes', 'cryptobatz-by-ozzy-osbourne', 'neotokyo-outer-identities', 'slimhoods', 'adam-bomb-squad', 'deadfellaz', 'projectnanopass', 'mypethooligan', 'supducks', 'lil-heroes-by-edgar-plans', 'smilesssvrs', 'jrny-club-official', 'superplastic-supergucci', 'thehabibiz', 'pudgypenguins', 'meebits', 'wolf-game-migrated', 'onchainmonkey', 'clonex-mintvial', 'little-lemon-friends', 'phantabear', 'inbetweeners', 'lazy-lions', 'cryptoadz-by-gremplin', 'creatureworld', 'primeapeplanetpap', 'foxfam', 'cryptomories', 'partybear', 'rumble-kong-league', 'cryptoskulls', 'metahero-generative', 'mekaverse', 'sneaky-vampire-syndicate', 'theshiboshis', 'robotos-official', 'cryptoongoonz', '0n1-force', 'lucky-zeros-purebase', 'galaxy-fight-club'
      ],
 	WATCH_LIST_LOW: ['meebits', 'lootproject', 'boredapeyachtclub'],
 	COMP_WALLETS: [

@@ -58,7 +58,8 @@ async function start(){
 		await staking_queue_add('anonymice', 'staking', exp/60, false, false)
 		await staking_queue_add('genesis-creepz', 'staking', exp/60, false, false)
 		await staking_queue_add('metahero-generative', 'staking', exp/60, false, false)
-		await staking_queue_add('metroverse', 'staking', exp/60, false, false)
+		await staking_queue_add('metroverse', 'staking', exp/60, false, true)
+		await staking_queue_add('ether-orcs', 'staking', exp/60, false, true)
 		//await utils.sleep(exp*60000)
 		let end_time = Math.floor(+new Date())
 		if (end_time - start_time < exp*60){
@@ -67,7 +68,6 @@ async function start(){
 			await utils.sleep(wait_time)
 		}
 	}
-	
 }
 
 module.exports = { start, staking_queue_add};

@@ -33,7 +33,7 @@ async function start(){
 		//floor*asset_count < total_weth * 1000
 		//exp based on run time (750bids/min)
 		// subtract fee from .9
-		if((floor * .9) < total_weth/10 && floor > 1){
+		if((floor * .9) < total_weth/10 && floor > .9){
 			allowed_collections.push(slug)
 		}
 	}

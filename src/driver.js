@@ -95,7 +95,6 @@ const requestListener = function(req, res){
 	}
 }
 
-
 function connect(){
 	const server = http.createServer(requestListener)
 	server.listen(3000, myIp, () => {
@@ -126,13 +125,6 @@ const readline = require('readline-sync')
 			run_traits = false
 		}
 		manual.manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
-
-		// while(true){
-		// 	manual.manual_queue_add('coolmans-universe', 'manual', exp/60, bid, false)
-		// 	manual.manual_queue_add('worldwidewebbland', 'manual', exp/60, bid, false)
-		// 	manual.manual_queue_add('lootproject', 'manual', exp/60, bid, false)
-		// 	await utils.sleep(exp*60000)
-		// }
 		
 	} else if(command === 'flash'){
 		flash.start()
@@ -186,6 +178,5 @@ async function main(){
 	} else {
 		run_flag()
 	}
-	
 } 
 main()
