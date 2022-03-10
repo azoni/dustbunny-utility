@@ -13,7 +13,9 @@ async function connect() {
   connected = true;
   _database =  client.db("test");
   _nftassets = _database.collection("nftassets");
+  _watchlists = _database.collection("watch_lists");
 }
+
 async function connect_main() {
   await client.connect();
   connected = true;
@@ -53,6 +55,10 @@ async function find(query, options) {
 
 async function readAssetsBySlug(slug) {
   return find({ slug: slug });
+}
+
+async function readWatchList() {
+  return _watchlists.find().toArray();
 }
 
 async function writeOneAsset(document) {
@@ -115,6 +121,7 @@ module.exports = {
   deleteOneStakingWallet,
   readAssetsBySlug,
   readAssets: find,
+  readWatchList,
   writeOneAsset,
   findAndDeleteManyAssets,
   deleteAllAssetsWithSlug,
