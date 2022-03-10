@@ -7,12 +7,27 @@ const mongo = require('../AssetsMongoHandler.js')
 let wallet_set = data_node.WATCH_LIST
 let bids_added = 0
 
+let fetch_watch_list_timeout = undefined;
+async function fetch_watch_list_loop() {
+  let w;
+  try {
+    w = await mongo.readWatchList();
+    w = w || [];
+    w.map(({ slug }) => slug);
+  } catch (error) {
+    w = data_node.WATCH_LIST;
+  }
+  wallet_set = w;
+  clearTimeout(fetch_watch_list_timeout);
+  fetch_watch_list_timeout = setTimeout(fetch_watch_list_loop, 60_000);
+}
+
 async function listed_queue_add(event_type, exp, bid) {
 	var time_window = 3000
 	let start_time = Math.floor(+new Date())
 	let trait_bids = data_node.COLLECTION_TRAIT
 	console.log('Getting listings...')
-	var orders =  await opensea_handler.get_listed_lowered(time_window)
+	var orders =  await opensea_handler.get_listed_lowered(time_window);
 	
 	bids_added = 0
 	for(let o of orders){
@@ -62,7 +77,8 @@ async function listed_queue_add(event_type, exp, bid) {
 }
 
 async function start() {
-	listed_queue_add('listed', 15, false)
+  await fetch_watch_list_loop();
+  listed_queue_add('listed', 15, false)
 }
 
 module.exports = { start, listed_queue_add };
