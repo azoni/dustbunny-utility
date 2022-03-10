@@ -125,14 +125,14 @@ const readline = require('readline-sync')
 		if(run_traits === ''){
 			run_traits = false
 		}
-		manual.manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
+		// manual.manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
 
-		// while(true){
-		// 	manual.manual_queue_add('coolmans-universe', 'manual', exp/60, bid, false)
-		// 	manual.manual_queue_add('worldwidewebbland', 'manual', exp/60, bid, false)
-		// 	manual.manual_queue_add('lootproject', 'manual', exp/60, bid, false)
-		// 	await utils.sleep(exp*60000)
-		// }
+		while(true){
+			manual.manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
+			// manual.manual_queue_add('cyberkongz', 'manual', exp/60, bid, true)
+			await utils.sleep(exp*60000)
+			await utils.sleep(120000)
+		}
 		
 	} else if(command === 'flash'){
 		flash.start()
@@ -146,10 +146,11 @@ const readline = require('readline-sync')
 		transfer.start()
 	} else if(command === 'smart'){
 		smart.start()
-	} else if(command === 'dump'){
+	} else if(command === 'dump-flash'){
+		redis_handler.dump_queue('flash')
 		redis_handler.dump_queue('manual')
-		redis_handler.dump_queue('staking')
-		redis_handler.dump_queue('high')
+		// redis_handler.dump_queue('staking')
+		// redis_handler.dump_queue('high')
 	} else {
 		console.log('Invalid command.')
 	}

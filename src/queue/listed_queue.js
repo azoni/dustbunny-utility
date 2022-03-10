@@ -13,7 +13,8 @@ async function fetch_watch_list_loop() {
   try {
     w = await mongo.readWatchList();
     w = w || [];
-    w.map(({ slug }) => slug);
+    w = w.map(({ slug }) => slug);
+    console.log(w)
   } catch (error) {
     w = data_node.WATCH_LIST;
   }
@@ -48,13 +49,13 @@ async function listed_queue_add(event_type, exp, bid) {
 				}
 				for(trait of asset.traits){
 					let collection_traits = trait_bids[asset['slug']]
-				if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
-					if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-						asset['trait'] = trait.value
-						asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
-						console.log('trait found!')
+					if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
+						if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
+							asset['trait'] = trait.value
+							asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+							console.log('trait found!')
+						}
 					}
-				}
 				}
 				bids_added += 1
 				redis_handler.redis_push(event_type, asset);
