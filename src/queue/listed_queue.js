@@ -12,7 +12,8 @@ async function fetch_watch_list_loop() {
   try {
     w = await mongo.readWatchList();
     w = w || [];
-    w.map(({ slug }) => slug);
+    w = w.map(({ slug }) => slug);
+    console.log(w)
   } catch (error) {
     w = data_node.WATCH_LIST;
   }

@@ -138,10 +138,11 @@ const readline = require('readline-sync')
 		transfer.start()
 	} else if(command === 'smart'){
 		smart.start()
-	} else if(command === 'dump'){
+	} else if(command === 'dump-flash'){
+		redis_handler.dump_queue('flash')
 		redis_handler.dump_queue('manual')
-		redis_handler.dump_queue('staking')
-		redis_handler.dump_queue('high')
+		// redis_handler.dump_queue('staking')
+		// redis_handler.dump_queue('high')
 	} else {
 		console.log('Invalid command.')
 	}
