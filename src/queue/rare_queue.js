@@ -8,21 +8,27 @@ const redis_handler = require('../handlers/redis_handler.js')
 //getOrders on 30 token IDs at once, possibly match expiration
 async function start_listener(){
 	let trait_bids = data_node.COLLECTION_TRAIT
-	var exp = 20
+	var exp = 30
 	let token_ids = []
-	var assets = await mongo.find({'slug':'doodles-official',  'traits.trait_type': 'face', 'traits.value': 'rainbow puke'}, {})
+	var assets = await mongo.find({'slug':'doodles-official', 'traits.trait_type': 'face', 'traits.value': 'rainbow puke'}, {})
+	var assets2 = await mongo.find({'slug':'doodles-official', 'traits.trait_type': 'face', 'traits.value': 'shark'}, {})
+	var assets3 = await mongo.find({'slug':'doodles-official', 'traits.trait_type': 'face', 'traits.value': 'puffer up'}, {})
+	var assets4 = await mongo.find({'slug':'doodles-official', 'traits.trait_type': 'face', 'traits.value': 'ape'}, {})
 
+	const arr = [...assets, ...assets2, ...assets3, ...assets4];
+	console.log(arr.length)
 	let asset_contract_address = assets[0].token_address
+	let slug = assets[0].slug
 	let temp_30_array = []
 	let asset_count = 0
-	for(let asset of assets){
+	for(let asset of arr){
 		asset_count += 1
 		temp_30_array.push(asset.token_id)
 		if(temp_30_array.length === 30){
 			token_ids.push(temp_30_array)
 			temp_30_array = []
 		}
-		if(asset_count === assets.length){
+		if(asset_count === arr.length){
 			token_ids.push(temp_30_array)
 		}
 	}
@@ -31,7 +37,7 @@ async function start_listener(){
 	for(let token_array of token_ids){
 		await utils.sleep(250)
 		var orders =  await opensea_handler.get_orders_window(asset_contract_address, 30000, token_array)
-		console.log('Getting orders for ' + asset_contract_address + '...')
+		console.log('Getting orders for ' + slug + '...')
 	    for(let o of orders){
 	    	let asset = {}
 	    	try{
@@ -54,13 +60,22 @@ async function start_listener(){
 	    		let collection_traits = trait_bids[asset['slug']]
 				if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
 					if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-						asset['trait'] = trait.value
-						asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+						let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+						if(!asset['bid_range']){
+							asset['bid_range'] = range
+							asset['trait'] = trait.value
+						}
+						if(range[1] > asset['bid_range'][1]){
+							asset['trait'] = trait.value
+							asset['bid_range'] = range
+						}
+
 					}
 				}
 	    	}
-	    	asset['bid_amount'] = o.basePrice/1000000000000000000
-			console.log(asset['slug'] + ' ' + asset['token_id'] + ' ' + asset['trait'] + ' ' + asset['bid_range'])
+	    	//asset['bid_amount'] = o.basePrice/1000000000000000000
+	    	console.log(o.expirationTime - Math.floor(+new Date())/1000)
+			console.log(asset['slug'] + ' ' + asset['token_id'] + ' ' + o.basePrice/1000000000000000000 + ' ' + asset['trait'] + ' ' + asset['bid_range'])
 			await redis_handler.redis_push('rare', asset)
 	    }
 	}

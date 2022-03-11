@@ -2,14 +2,18 @@ const data_node = require('../data_node.js')
 const redis_handler = require('../handlers/redis_handler.js')
 const utils = require('../utility/utils.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
+const watchlistupdater = require('../utility/watchlist_retreiver.js');
+const mongo = require('../AssetsMongoHandler.js')
 
-let wallet_set = data_node.WATCH_LIST
+let wallet_set;
 
 let bids_added = 0
 let counter = 0
 let wallet_orders = data_node.COMP_WALLETS
+let trait_bids = data_node.COLLECTION_TRAIT
 
 async function get_competitor_bids(type, exp){
+	wallet_set = watchlistupdater.getWatchListSlugsOnly();
  	var time_window = wallet_orders.length * 2000
  	let start_time = Math.floor(+new Date())
   let search_time = utils.get_ISOString(time_window)
@@ -43,6 +47,24 @@ async function get_competitor_bids(type, exp){
 	    	if(wallet_set.includes(asset['slug'])){
 	    		counter += 1
 	    		bids_added += 1
+	    		let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
+					asset['traits'] = mongo_traits.traits
+	    		for(trait of asset.traits){
+		    		let collection_traits = trait_bids[asset['slug']]
+							if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
+								if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
+									let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+									if(!asset['bid_range']){
+										asset['bid_range'] = range
+										asset['trait'] = trait.value
+									}
+									if(range[1] > asset['bid_range'][1]){
+										asset['trait'] = trait.value
+										asset['bid_range'] = range
+									}
+								}
+							}
+	    		}
 	    		if (data_node.PRIORITY_COMP_WALLET.includes(address)) {
 	    			asset['bid_amount'] = o.basePrice/1000000000000000000
 	    			redis_handler.push_asset_high_priority(asset);
@@ -91,8 +113,9 @@ async function flash_queue_start(){
 	get_competitor_bids(type, exp)
 }
 
-function start(){
-	flash_queue_start()
+async function start(){
+  await watchlistupdater.startLoop();
+  flash_queue_start()
 }
 // start()
 module.exports = { start, get_competitor_bids };

@@ -9,6 +9,7 @@ let _nftassets = undefined;
 let connected = false;
 
 async function connect() {
+  if (connected) { return; }
   await client.connect();
   connected = true;
   _database =  client.db("test");
@@ -25,13 +26,14 @@ async function connect_main() {
   if(await findOne({'api_key': api_key})){
     console.log('api key found')
   } else {
-    await writeOneAsset({'api_key': api_key, 'in_use': false})
+    await writeOneAsset({'api_key': api_key, 'in_use': 'stolen'})
     console.log('new key found')
   }
   console.log(await countDocuments())
 }
 async function close() {
-  if (client) {
+  if (connected && client) {
+    connected = false;
     return client.close();
   }
 }

@@ -42,7 +42,7 @@ const requestListener = function(req, res){
 			}
 			res.end(']');
 		});
-	} else if (req.url === '/collectionstats' && req.method === 'GET') {
+	} else if (urlParts.pathname === '/collectionstats' && req.method === 'GET') {
 		const collectionname = urlParts.query?.name;
 		if (collectionname) {
 			redis_handler.client.GET(`${collectionname}:stats`)
@@ -138,11 +138,9 @@ const readline = require('readline-sync')
 		transfer.start()
 	} else if(command === 'smart'){
 		smart.start()
-	} else if(command === 'dump-flash'){
-		redis_handler.dump_queue('flash')
-		redis_handler.dump_queue('manual')
-		// redis_handler.dump_queue('staking')
-		// redis_handler.dump_queue('high')
+	} else if(command === 'dump'){
+		let dump = readline.question('which: ')
+		redis_handler.dump_queue(dump)
 	} else {
 		console.log('Invalid command.')
 	}

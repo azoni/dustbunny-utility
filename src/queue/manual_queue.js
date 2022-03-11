@@ -3,8 +3,8 @@ const redis_handler = require('../handlers/redis_handler.js')
 const data_node = require('../data_node.js')
 const utils = require('../utility/utils.js')
 const mongo = require('../AssetsMongoHandler.js')
-
-
+const watchlistupdater = require('../utility/watchlist_retreiver.js');
+let watchlistLoopStarted = false;
 
 // Grab assets from database to avoid api rate limits. 
 async function manual_queue_add(slug, event_type, exp, bid, run_traits){
@@ -23,21 +23,26 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
     	trimmed_asset['fee'] = asset.dev_seller_fee_basis_points / 10000
     	trimmed_asset['event_type'] = event_type
     	trimmed_asset['expiration'] = exp
-    	trimmed_asset['bid_multi'] = false
     	trimmed_asset['bid_range'] = false
     	for(trait of asset.traits){
 			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
 				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-
-					// console.log(trait.value)
-					// console.log(collection_traits[trait.trait_type][trait.value])
-					// trimmed_asset['event_type'] = 'trait - ' + trait.value
-					trimmed_asset['trait'] = trait.value
-					trimmed_asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+					let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+					if(!trimmed_asset['bid_range']){
+						trimmed_asset['bid_range'] = range
+						trimmed_asset['trait'] = trait.value
+					}
+					if(range[1] > trimmed_asset['bid_range'][1]){
+						trimmed_asset['trait'] = trait.value
+						trimmed_asset['bid_range'] = range
+					}
 				}
 			}
     	}
-    	if(trimmed_asset['trait'] && !run_traits){
+    	if(trimmed_asset['trait'] && run_traits === 'skip'){
+    		continue
+    	}
+    	if(!trimmed_asset['trait'] && run_traits === 'only'){
     		continue
     	}
     	trimmed_asset['bid_amount'] = bid
@@ -46,10 +51,15 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
 	await redis_handler.print_queue_length(event_type)
 	console.log(slug + ' added.')
 }
-var wallet_set = data_node.WATCH_LIST
+let wallet_set = undefined;
 
 //No traits from orders :(
 async function get_competitor(address, time_window, exp){
+	if (!watchlistLoopStarted) {
+		await watchlistupdater.startLoop();
+		watchlistLoopStarted = true;
+	}
+	wallet_set = watchlistupdater.getWatchListSlugsOnly();
 	var start_time = Math.floor(+new Date())
 	var orders =  await opensea_handler.get_orders_window(address, time_window)
 	console.log('Getting orders for ' + address + '...')

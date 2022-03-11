@@ -29,8 +29,15 @@ async function staking_queue_add(slug, event_type, exp, bid, run_traits){
     	for(trait of asset.traits){
 			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
 				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-					asset['trait'] = trait.value
-					asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+					let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+					if(!asset['bid_range']){
+						asset['bid_range'] = range
+						asset['trait'] = trait.value
+					}
+					if(range[1] > asset['bid_range'][1]){
+						asset['trait'] = trait.value
+						asset['bid_range'] = range
+					}
 				}
 			}
     	}
