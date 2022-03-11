@@ -10,6 +10,8 @@ let wallet_set;
 let bids_added = 0
 let counter = 0
 let wallet_orders = data_node.COMP_WALLETS
+let trait_bids = data_node.COLLECTION_TRAIT
+
 async function get_competitor_bids(type, exp){
 	wallet_set = watchlistupdater.getWatchListSlugsOnly();
  	var time_window = wallet_orders.length * 2000
