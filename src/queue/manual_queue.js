@@ -3,8 +3,8 @@ const redis_handler = require('../handlers/redis_handler.js')
 const data_node = require('../data_node.js')
 const utils = require('../utility/utils.js')
 const mongo = require('../AssetsMongoHandler.js')
-
-
+const watchlistupdater = require('../utility/watchlist_retreiver.js');
+let watchlistLoopStarted = false;
 
 // Grab assets from database to avoid api rate limits. 
 async function manual_queue_add(slug, event_type, exp, bid, run_traits){
@@ -46,10 +46,15 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
 	await redis_handler.print_queue_length(event_type)
 	console.log(slug + ' added.')
 }
-var wallet_set = data_node.WATCH_LIST
+let wallet_set = undefined;
 
 //No traits from orders :(
 async function get_competitor(address, time_window, exp){
+	if (!watchlistLoopStarted) {
+		await watchlistupdater.startLoop();
+		watchlistLoopStarted = true;
+	}
+	wallet_set = watchlistupdater.getWatchListSlugsOnly();
 	var start_time = Math.floor(+new Date())
 	var orders =  await opensea_handler.get_orders_window(address, time_window)
 	console.log('Getting orders for ' + address + '...')

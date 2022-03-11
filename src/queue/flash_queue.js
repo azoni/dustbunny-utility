@@ -2,14 +2,16 @@ const data_node = require('../data_node.js')
 const redis_handler = require('../handlers/redis_handler.js')
 const utils = require('../utility/utils.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
+const watchlistupdater = require('../utility/watchlist_retreiver.js');
 
-let wallet_set = data_node.WATCH_LIST
+let wallet_set;
 
 let bids_added = 0
 let counter = 0
 let wallet_orders = data_node.COMP_WALLETS
 
 async function get_competitor_bids(type, exp){
+	wallet_set = watchlistupdater.getWatchListSlugsOnly();
  	var time_window = wallet_orders.length * 2000
  	let start_time = Math.floor(+new Date())
   let search_time = utils.get_ISOString(time_window)
@@ -91,8 +93,9 @@ async function flash_queue_start(){
 	get_competitor_bids(type, exp)
 }
 
-function start(){
-	flash_queue_start()
+async function start(){
+  await watchlistupdater.startLoop();
+  flash_queue_start()
 }
 // start()
 module.exports = { start, get_competitor_bids };
