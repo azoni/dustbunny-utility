@@ -275,6 +275,7 @@ const values = {
 			'clothes': {
 				'dress': [.6, .75],
 			}
+		}
 		// },
 		// 'raidparty': {
 		// 	'background': {
@@ -486,6 +487,6 @@ const values = {
 			address: '0x0a6Ae359E2dB55ACa4537f950BE13A73F461cEAA'
 		}, 
 	],
-	}
+	
 }
 module.exports = values
