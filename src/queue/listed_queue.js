@@ -3,24 +3,10 @@ const redis_handler = require('../handlers/redis_handler.js')
 const data_node = require('../data_node.js')
 const utils = require('../utility/utils.js')
 const mongo = require('../AssetsMongoHandler.js')
+const watchlistupdater = require('../utility/watchlist_retreiver.js');
 
-let wallet_set = data_node.WATCH_LIST
+let wallet_set;
 let bids_added = 0
-let fetch_watch_list_timeout = undefined;
-async function fetch_watch_list_loop() {
-  let w;
-  try {
-    w = await mongo.readWatchList();
-    w = w || [];
-    w = w.map(({ slug }) => slug);
-    console.log(w)
-  } catch (error) {
-    w = data_node.WATCH_LIST;
-  }
-  wallet_set = w;
-  clearTimeout(fetch_watch_list_timeout);
-  fetch_watch_list_timeout = setTimeout(fetch_watch_list_loop, 60_000);
-}
 
 async function listed_queue_add(event_type, exp, bid) {
 	var time_window = 3000
@@ -36,6 +22,7 @@ async function listed_queue_add(event_type, exp, bid) {
 			asset['token_id'] = o.asset.tokenId
 			asset['token_address'] = o.asset.tokenAddress
 			asset['slug'] = o.asset.collection.slug
+			wallet_set = watchlistupdater.getWatchListSlugsOnly();
 			if(wallet_set.includes(asset['slug'])){
 				asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
 				asset['event_type'] = event_type
@@ -76,7 +63,7 @@ async function listed_queue_add(event_type, exp, bid) {
 }
 
 async function start() {
-  await fetch_watch_list_loop();
+  await watchlistupdater.startLoop();
   listed_queue_add('listed', 15, false)
 }
 

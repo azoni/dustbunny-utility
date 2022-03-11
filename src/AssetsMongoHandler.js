@@ -9,6 +9,7 @@ let _nftassets = undefined;
 let connected = false;
 
 async function connect() {
+  if (connected) { return; }
   await client.connect();
   connected = true;
   _database =  client.db("test");
@@ -31,7 +32,8 @@ async function connect_main() {
   console.log(await countDocuments())
 }
 async function close() {
-  if (client) {
+  if (connected && client) {
+    connected = false;
     return client.close();
   }
 }
