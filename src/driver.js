@@ -42,7 +42,7 @@ const requestListener = function(req, res){
 			}
 			res.end(']');
 		});
-	} else if (req.url === '/collectionstats' && req.method === 'GET') {
+	} else if (urlParts.pathname === '/collectionstats' && req.method === 'GET') {
 		const collectionname = urlParts.query?.name;
 		if (collectionname) {
 			redis_handler.client.GET(`${collectionname}:stats`)
