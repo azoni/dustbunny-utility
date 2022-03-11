@@ -66,7 +66,7 @@ const values = {
 				// 'skelton': [.95, 1],
 				'rainbow puke': [1.75, 2.1],
 				'puffer up': [2, 2.3],
-				// 'ape': [4.25, 4.1],
+				'ape': [2.2, 3],
 				'shark': [2, 2.3],
 				// 'duck': [4.15, 4.25],
 				// 'skelly cig': [5.5, 5.6],

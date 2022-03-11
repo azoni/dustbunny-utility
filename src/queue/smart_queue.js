@@ -72,7 +72,7 @@ async function start(){
 	for(let coll of final_product){
 		//check for when queue length === 0 and add next.
 		//dump queue if it becomes too competitive.
-		await manual_queue.manual_queue_add(coll.slug, 'smart', .33, false)
+		await manual_queue.manual_queue_add(coll.slug, 'smart', .33, false, true)
 	}
 }
 

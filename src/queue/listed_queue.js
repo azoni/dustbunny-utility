@@ -37,8 +37,15 @@ async function listed_queue_add(event_type, exp, bid) {
 					let collection_traits = trait_bids[asset['slug']]
 					if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
 						if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-							asset['trait'] = trait.value
-							asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+							let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+							if(!asset['bid_range']){
+								asset['bid_range'] = range
+								asset['trait'] = trait.value
+							}
+							if(range[1] > asset['bid_range'][1]){
+								asset['trait'] = trait.value
+								asset['bid_range'] = range
+							}
 							console.log('trait found!')
 						}
 					}

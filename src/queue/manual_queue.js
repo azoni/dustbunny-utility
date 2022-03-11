@@ -27,8 +27,15 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
     	for(trait of asset.traits){
 			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
 				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-					trimmed_asset['trait'] = trait.value
-					trimmed_asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+					let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+					if(!trimmed_asset['bid_range']){
+						trimmed_asset['bid_range'] = range
+						trimmed_asset['trait'] = trait.value
+					}
+					if(range[1] > trimmed_asset['bid_range'][1]){
+						trimmed_asset['trait'] = trait.value
+						trimmed_asset['bid_range'] = range
+					}
 				}
 			}
     	}
