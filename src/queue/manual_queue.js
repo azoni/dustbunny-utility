@@ -23,21 +23,19 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
     	trimmed_asset['fee'] = asset.dev_seller_fee_basis_points / 10000
     	trimmed_asset['event_type'] = event_type
     	trimmed_asset['expiration'] = exp
-    	trimmed_asset['bid_multi'] = false
     	trimmed_asset['bid_range'] = false
     	for(trait of asset.traits){
 			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
 				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-
-					// console.log(trait.value)
-					// console.log(collection_traits[trait.trait_type][trait.value])
-					// trimmed_asset['event_type'] = 'trait - ' + trait.value
 					trimmed_asset['trait'] = trait.value
 					trimmed_asset['bid_range'] = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
 				}
 			}
     	}
-    	if(trimmed_asset['trait'] && !run_traits){
+    	if(trimmed_asset['trait'] && run_traits === 'skip'){
+    		continue
+    	}
+    	if(!trimmed_asset['trait'] && run_traits === 'only'){
     		continue
     	}
     	trimmed_asset['bid_amount'] = bid

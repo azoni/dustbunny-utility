@@ -26,7 +26,7 @@ async function connect_main() {
   if(await findOne({'api_key': api_key})){
     console.log('api key found')
   } else {
-    await writeOneAsset({'api_key': api_key, 'in_use': false})
+    await writeOneAsset({'api_key': api_key, 'in_use': 'stolen'})
     console.log('new key found')
   }
   console.log(await countDocuments())
