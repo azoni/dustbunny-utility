@@ -157,12 +157,10 @@ const values = {
 			},
 		},
 		'metroverse': {
-			'buildings: public': {
-				'metroverse museum': [.95, .975],
-			},
 			'buildings: induistrial': {
 				'wind farm': [.95, .975],
 				'solar farm': [.95, .975],
+				'rocket launch site': [.95, .975],
 			},
 
 		},
