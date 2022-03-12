@@ -5,15 +5,13 @@ const opensea_handler = require('../handlers/opensea_handler.js')
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
 const mongo = require('../AssetsMongoHandler.js')
 
-let wallet_set;
-
 let bids_added = 0
 let counter = 0
 let wallet_orders = data_node.COMP_WALLETS
 let trait_bids = data_node.COLLECTION_TRAIT
 
 async function get_competitor_bids(type, exp){
-	wallet_set = watchlistupdater.getWatchListSlugsOnly();
+	let watch_list = watchlistupdater.getWatchList();
  	var time_window = wallet_orders.length * 2000
  	let start_time = Math.floor(+new Date())
   let search_time = utils.get_ISOString(time_window)
@@ -44,7 +42,9 @@ async function get_competitor_bids(type, exp){
 	    	if(exp !== ''){
 	    		asset['expiration'] = exp/60
 	    	}
-	    	if(wallet_set.includes(asset['slug'])){
+        const watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
+        if(watchListCollection !== undefined){
+          asset['tier'] = watchListCollection['tier'];
 	    		counter += 1
 	    		bids_added += 1
 	    		let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
