@@ -6,7 +6,6 @@ const Network = opensea.Network;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
 const OpenSeaPort = opensea.OpenSeaPort;
-const throttledQueue = require('throttled-queue');
 const http = require('http')
 const url = require('url');
 

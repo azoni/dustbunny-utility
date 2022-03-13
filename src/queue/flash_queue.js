@@ -48,23 +48,29 @@ async function get_competitor_bids(type, exp){
 	    		counter += 1
 	    		bids_added += 1
 	    		let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
-					asset['traits'] = mongo_traits.traits
-	    		for(trait of asset.traits){
-		    		let collection_traits = trait_bids[asset['slug']]
-							if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
-								if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-									let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
-									if(!asset['bid_range']){
-										asset['bid_range'] = range
-										asset['trait'] = trait.value
-									}
-									if(range[1] > asset['bid_range'][1]){
-										asset['trait'] = trait.value
-										asset['bid_range'] = range
+	    		try{
+	    			asset['traits'] = mongo_traits.traits
+	    			for(trait of asset.traits){
+			    		let collection_traits = trait_bids[asset['slug']]
+								if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
+									if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
+										let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+										if(!asset['bid_range']){
+											asset['bid_range'] = range
+											asset['trait'] = trait.value
+										}
+										if(range[1] > asset['bid_range'][1]){
+											asset['trait'] = trait.value
+											asset['bid_range'] = range
+										}
 									}
 								}
-							}
+		    		}
+	    		} catch (e) {
+	    			console.log(asset)
 	    		}
+					
+	    		
 	    		if (data_node.PRIORITY_COMP_WALLET.includes(address)) {
 	    			asset['bid_amount'] = o.basePrice/1000000000000000000
 	    			redis_handler.push_asset_high_priority(asset);
