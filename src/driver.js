@@ -133,7 +133,7 @@ const readline = require('readline-sync')
 	} else if(command === 'listed'){
 		listed.start()
 	} else if(command === 'rare'){
-		rare.start_listener()
+		rare.start()
 	} else if(command === 'transfer'){
 		transfer.start()
 	} else if(command === 'smart'){
