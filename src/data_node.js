@@ -50,12 +50,12 @@ const values = {
 			'tier': {
 				// 'cool_1': [.7,.8],
 				// 'cool_2': [.7, .825],
-				'wild_1': [.9,.925],
-				'wild_2': [.95,.975],
-				'classy_1': [1.0 ,1.05],
-				'classy_2': [1.1, 1.2],
-				'exotic_1': [1.2,1.3],
-				'exotic_2': [1.5,1.6],
+				'wild_1': [.85,.925],
+				'wild_2': [.925,.975],
+				'classy_1': [.95 ,1.05],
+				'classy_2': [1, 1.1],
+				'exotic_1': [1.1,1.2],
+				'exotic_2': [1.2,1.6],
 			},
 		},
 		'doodles-official': {
@@ -152,8 +152,8 @@ const values = {
 		// },
 		'cyberkongz': {
 			'type': {
-				'genesis': [1.5, 5],
-				'incubator': [1.05, 1.1],
+				'genesis': [.8 , 5],
+				'incubator': [.7, 1.1],
 			},
 		},
 		'metroverse': {
@@ -268,6 +268,11 @@ const values = {
 				'm2 aquamarine': [.7, 1],
 				'm2 gray': [.7, 1],
 				'm2 yellow': [.7, 1],
+			},
+			'fur': {
+				'm1 solid gold': [1, 1.5],
+				'm2 solid gold': [1.75, 2.25],
+				'm2 trippy': [1.1, 1.3],
 			}
 		},
 		'boredapeyachtclub': {
