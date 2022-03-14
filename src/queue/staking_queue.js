@@ -4,7 +4,7 @@ const data_node = require('../data_node.js')
 const utils = require('../utility/utils.js')
 const mongo = require('../AssetsMongoHandler.js')
 
-async function staking_queue_add(slug, event_type, exp, bid, run_traits){
+async function staking_queue_add(slug, event_type, tier, exp, bid, run_traits){
 	let trait_bids = data_node.COLLECTION_TRAIT
 	console.log('Getting unstaked assets for ' + slug + '...')
 	// var assets =  await opensea_handler.get_assets(slug)
@@ -23,6 +23,7 @@ async function staking_queue_add(slug, event_type, exp, bid, run_traits){
     	asset['event_type'] = 'staking'
     	asset['expiration'] = exp
     	asset['bid_range'] = false
+    	asset['tier'] = tier
         if (slugs_staking_wallets.includes(asset.owner_address.toLowerCase())) {
     		continue
     	}
@@ -57,14 +58,14 @@ async function start(){
 	let exp = 30
 	while(true){
 		let start_time = Math.floor(+new Date())
-		await staking_queue_add('critterznft', 'staking', exp/60, false, false)
-		await staking_queue_add('sappy-seals', 'staking', exp/60, false, false)
-		await staking_queue_add('anonymice', 'staking', exp/60, false, false)
-		await staking_queue_add('genesis-creepz', 'staking', exp/60, false, false)
-		await staking_queue_add('metahero-generative', 'staking', exp/60, false, false)
-		await staking_queue_add('metroverse', 'staking', exp/60, false, true)
-		await staking_queue_add('ether-orcs', 'staking', exp/60, false, false)
-		await staking_queue_add('nft-worlds', 'staking', exp/60, false, false)
+		await staking_queue_add('critterznft', 'staking', 'medium', exp/60, false, false)
+		await staking_queue_add('sappy-seals', 'staking', 'medium', exp/60, false, false)
+		await staking_queue_add('anonymice', 'staking', 'medium', exp/60, false, false)
+		await staking_queue_add('genesis-creepz', 'staking', 'medium', exp/60, false, false)
+		await staking_queue_add('metahero-generative', 'staking', 'medium', exp/60, false, false)
+		await staking_queue_add('metroverse', 'staking', 'medium', exp/60, false, true)
+		await staking_queue_add('ether-orcs', 'staking', 'medium', exp/60, false, false)
+		await staking_queue_add('nft-worlds', 'staking', 'medium', exp/60, false, false)
 		//await utils.sleep(exp*60000)
 		let end_time = Math.floor(+new Date())
 		if (end_time - start_time < exp*60){
