@@ -40,6 +40,15 @@ async function push_asset_high_priority(asset) {
 	await client.rPush('queue:high', JSON.stringify(asset));
 }
 
+async function redis_command_pop() {
+	let data = await client.lPopCount('focus:commands', 30);
+	return data;
+}
+
+async function redis_push_command(command) {
+	return client.rPush('focus:commands', JSON.stringify(command));
+}
+
 //http method - client pull
 async function redis_queue_pop(){
 	let pop_count = 2
@@ -76,4 +85,16 @@ async function redis_queue_pop(){
 	return await client.lPopCount('queue:flash', pop_count)
 }
 
-module.exports = { client, start_connection, redis_push, print_queue_length, dump_queue, push_asset_high_priority, redis_push_asset, redis_queue_pop , get_queue_length, redis_push_asset_flash };
+module.exports = {
+	redis_push_command,
+	redis_command_pop,
+	client,
+	start_connection, redis_push,
+	print_queue_length,
+	dump_queue,
+	push_asset_high_priority,
+	redis_push_asset,
+	redis_queue_pop,
+	get_queue_length,
+	redis_push_asset_flash
+};
