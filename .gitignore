@@ -26,3 +26,4 @@ yarn-error.log*
 /src/secret.js
 /src/secret_node.js
 /src/values.js
+/tempfiles
