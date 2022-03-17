@@ -12,6 +12,7 @@ async function listed_queue_add(event_type, exp, bid) {
 	var time_window = 3000
 	let start_time = Math.floor(+new Date())
 	let trait_bids = data_node.COLLECTION_TRAIT
+	let watch_list = watchlistupdater.getWatchList();
 	console.log('Getting listings...')
 	var orders =  await opensea_handler.get_listed_lowered(time_window);
 	
@@ -23,7 +24,9 @@ async function listed_queue_add(event_type, exp, bid) {
 			asset['token_address'] = o.asset.tokenAddress
 			asset['slug'] = o.asset.collection.slug
 			wallet_set = watchlistupdater.getWatchListSlugsOnly();
-			if(wallet_set.includes(asset['slug'])){
+			const watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
+			if(watchListCollection !== undefined){
+				asset['tier'] = watchListCollection['tier'];
 				asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
 				asset['event_type'] = event_type
 				asset['expiration'] = .25

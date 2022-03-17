@@ -5,6 +5,7 @@ const listed = require('./queue/listed_queue.js')
 const flash = require('./queue/flash_queue.js')
 const transfer = require('./queue/transfer_queue.js')
 const smart = require('./queue/smart_queue.js')
+const focus = require('./queue/focus_queue.js');
 const http = require('http')
 const url = require('url');
 const myIp  = require('./utility/what-is-my-ip.js');
@@ -141,6 +142,8 @@ const readline = require('readline-sync')
 	} else if(command === 'dump'){
 		let dump = readline.question('which: ')
 		redis_handler.dump_queue(dump)
+	} else if (command === 'focus') {
+		focus.start();
 	} else {
 		console.log('Invalid command.')
 	}
