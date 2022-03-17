@@ -43,7 +43,7 @@ async function get_competitor_bids(type, exp){
 	    		asset['expiration'] = exp/60
 	    	}
         const watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
-        if(watchListCollection !== undefined){
+        if(watchListCollection !== undefined && watchListCollection['tier'] !== 'skip'){
           asset['tier'] = watchListCollection['tier'];
 	    		counter += 1
 	    		bids_added += 1
