@@ -16,7 +16,7 @@ async function start_listener(){
 		console.log(collection.token_ids)
 		await utils.sleep(500)
 		for(let token_array of collection.token_ids){
-			await utils.sleep(250)
+			await utils.sleep(500)
 			var orders =  await opensea_handler.get_orders_window(collection.asset_contract_address, 30000, token_array)
 			console.log('Getting orders for ' + collection.slug + '...')
 		    for(let o of orders){
