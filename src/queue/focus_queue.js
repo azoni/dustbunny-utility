@@ -1,20 +1,11 @@
 const throttledQueue = require('throttled-queue');
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
-const opensea = require("opensea-js")
-const Network = opensea.Network;
-const OpenSeaPort = opensea.OpenSeaPort;
-const Web3ProviderEngine = require("web3-provider-engine");
-const providerEngine = new Web3ProviderEngine();
+
 const redis_handler = require('../handlers/redis_handler.js');
+const opensea_handler = require('../handlers/opensea_handler.js');
 
-const seaport = new OpenSeaPort(
-  providerEngine,
-  {
-    networkName: Network.Main,
+const seaport = opensea_handler.seaport;
 
-  },
-  (arg) => console.log(arg)
-);
 const TIME_LIMIT = 2_000; //ms
 const CALLS_PER_TIME_LIMIT = 2;
 const openSeaThrottle = throttledQueue(CALLS_PER_TIME_LIMIT, TIME_LIMIT);
@@ -136,21 +127,20 @@ function limitListenSet(toListenTo, slugMap) {
   return arr.slice(0, 5);
 }
 
-function randomlyThrow() {
-  if (Math.random() < 0.05) {
-    throw new Error('random error!!!!');
-  }
-}
-
-const blacklist = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556','0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'];
+const blacklist = new Set([
+  '0x4d64bdb86c7b50d8b2935ab399511ba9433a3628',
+  '0x18a73aaee970af9a797d944a7b982502e1e71556',
+  '0x1aec9c6912d7da7a35803f362db5ad38207d4b4a',
+  '0x35c25ff925a61399a3b69e8c95c9487a1d82e7df',
+]);
 async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTimeStamp, retry = 3) {
   //console.log(`lastTimeStamp: ${fromTimeStamp}`);
   //console.log(`contract: ${constract_address}`);
   //console.log('tokenIds:');
   //console.log(token_ids);
-
+  const w = watchlistupdater.getWatchList();
+  let collectionDbData = w.find(({slug}) => slug === command.slug);
   try {
-    randomlyThrow();
     let orders = await seaport.api.getOrders({
       order_by: 'created_date',
       token_ids: token_ids,
@@ -163,7 +153,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
     const topOrderMap = {};
     const orderArr = orders?.orders || [];
     for (o of orderArr) {
-      if (!blacklist.includes(o?.makerAccount?.address && o?.asset?.tokenId !== undefined)) {
+      if (!blacklist.has(o?.makerAccount?.address?.toLowerCase()) && o?.asset?.tokenId !== undefined) {
         const someBid = topOrderMap[o?.asset?.tokenId] || 0;
         const orderBid = o.currentPrice / 1e18;
         topOrderMap[o?.asset?.tokenId] = Math.max(someBid, orderBid);
@@ -176,6 +166,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
         "slug": slug,
         "event_type": "focus",
         "bid_amount": topOrderMap[key],
+        "tier": collectionDbData.tier || '',
       });
       console.log(`sending => top: ${topOrderMap[key]}, token_id:${key}, contract: ${contract_address}, slugs: ${slug}`)
     }
