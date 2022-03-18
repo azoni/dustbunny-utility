@@ -338,31 +338,59 @@ async function send_wallet_nfts_to_focus(interestAddress, collectionToFocusOn) {
     }
 	}
 	watch_list = watchlistupdater.getWatchList();
+	const focusList = watch_list.filter(({focus, address}) => focus && address !== collectionToFocusOn);
 	const collectionMetaData = watch_list.find(({address}) => address === collectionToFocusOn);
 
-	if (!collectionMetaData) { return; }
-	const command = {
-		hash: `${interestAddress}:${collectionToFocusOn}`,
-		slug: collectionMetaData['slug'],
-		collection_address: collectionMetaData['address'],
-		token_ids: [],
+	if (collectionMetaData) {
+		const command = {
+			hash: `${interestAddress}:${collectionToFocusOn}`,
+			slug: collectionMetaData['slug'],
+			collection_address: collectionMetaData['address'],
+			token_ids: [],
+		}
+		let t_list = [];
+		if (collectionToFocusOn in miniDb) {
+			for (id in miniDb[collectionToFocusOn]) {
+		  const boughtTime = miniDb[collectionToFocusOn][id].toTime || -Infinity;
+		  const soldTime = miniDb[collectionToFocusOn][id].fromTime || -Infinity;
+		  if (boughtTime > soldTime) {
+			t_list.push(id);
+		  }
+		}
+	  }
+		if (t_list.length != 0) {
+			command.token_ids = t_list;
+			console.log('sending a command!!!::')
+			console.log(command);
+			redis_handler.redis_push_command(command)
+				.catch(e => console.error(e));
+		}
 	}
-	let t_list = [];
-	if (collectionToFocusOn in miniDb) {
-		for (id in miniDb[collectionToFocusOn]) {
-      const boughtTime = miniDb[collectionToFocusOn][id].toTime || -Infinity;
-      const soldTime = miniDb[collectionToFocusOn][id].fromTime || -Infinity;
-      if (boughtTime > soldTime) {
-        t_list.push(id);
-      }
-    }
-  }
-	if (t_list.length === 0) { return; }
-	command.token_ids = t_list;
-	console.log('sending a command!!!::')
-	console.log(command);
-	redis_handler.redis_push_command(command)
-		.catch(e => console.error(e));
+  for (const el of focusList) {
+		if (el.address in miniDb) {
+			let t_list = [];
+			for (let id in miniDb[el.address]) {
+				const boughtTime = miniDb[el.address][id].toTime || -Infinity;
+				const soldTime = miniDb[el.address][id].fromTime || -Infinity;
+				if (boughtTime > soldTime) {
+					t_list.push(id);
+				}
+			}
+		}
+		if (t_list.length != 0) {
+			const command = {
+				hash: `${interestAddress}:${el['address']}`,
+				slug: el['slug'],
+				collection_address: el['address'],
+				token_ids: t_list,
+			}
+			console.log('sending more stuff!!')
+			console.log(command);
+			redis_handler.redis_push_command(command)
+				.catch(e => console.error(e));
+		}
+	}
+
 }
 
 
