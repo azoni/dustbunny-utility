@@ -142,6 +142,9 @@ const readline = require('readline-sync')
 	} else if(command === 'dump'){
 		let dump = readline.question('which: ')
 		redis_handler.dump_queue(dump)
+	} else if(command === 'len'){
+		let len = readline.question('which: ')
+		redis_handler.print_queue_length(len)
 	} else if (command === 'focus') {
 		focus.start();
 	} else {
