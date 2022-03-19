@@ -171,6 +171,7 @@ if (!myIp) {
 	throw new Error(`cant get ip: "${myIp}"`);
 }
 async function main(){
+	
 	console.log(myIp)
 	if(myIp === '10.0.0.59'){
 		connect()

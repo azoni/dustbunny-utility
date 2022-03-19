@@ -276,8 +276,12 @@ const values = {
 			}
 		},
 		'boredapeyachtclub': {
-			'clothes': {
-				'dress': [.6, .75],
+			'fur': {
+				// 'dmt': [.9, .95], //215
+				// 'death bot': [.925, .95], //175
+				// 'noise': [.9, .95], //155
+				'trippy': [1, 1.1], //77
+
 			}
 		},
 		// 'raidparty': {
@@ -364,7 +368,8 @@ const values = {
 	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
 	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98',
 	 '0xdeef55689a46931754ff18d76ccda30459786bc0',
-	 '0x1a5355f31ee2652f0040151856ff60ddd23d81cc'
+	 '0x1a5355f31ee2652f0040151856ff60ddd23d81cc',
+	 '0xfb97122d5096226f6c664df0cbc6c78862a978aa',
 	],
 	PRIORITY_COMP_WALLET1: [
 	 '0xee87f1579c7743683ad41aa3ca2477f5f40a4b34',
@@ -375,12 +380,7 @@ const values = {
 	 '0x1a5355f31ee2652f0040151856ff60ddd23d81cc'
 	],
 	PRIORITY_COMP_WALLET2: [
-	 '0xee87f1579c7743683ad41aa3ca2477f5f40a4b34',
-	 '0x0e78c12ad4c2e31ff38c4c0ce2fea1e57b838d47',
-	 '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
-	 '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98',
-	 '0xdeef55689a46931754ff18d76ccda30459786bc0',
-	 '0x1a5355f31ee2652f0040151856ff60ddd23d81cc'
+		'0xfb97122d5096226f6c664df0cbc6c78862a978aa'
 	],
 	OWNER_ADDRESS: [
 		{
