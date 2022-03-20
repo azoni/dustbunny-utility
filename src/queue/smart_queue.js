@@ -1,13 +1,17 @@
-//add to queue based on competition
+//add to queue based on competition if its been longer than expiration restart otherwise wait
 const opensea_handler = require('../handlers/opensea_handler.js')
 const data_node = require('../data_node.js')
 const etherscan_handler = require('../handlers/etherscan_handler.js')
 const redis_handler = require('../handlers/redis_handler.js')
 const manual_queue = require('../queue/manual_queue.js')
+const watchlistupdater = require('../utility/watchlist_retreiver.js');
 
-const smart_list = data_node.SMART_WATCH_LIST
+
 
 async function start(){
+	await watchlistupdater.startLoop();
+	const smart_list = await watchlistupdater.getWatchListSlugsOnly()
+	console.log(smart_list)
 	await redis_handler.dump_queue('smart')
 	let bid_dict = {}
 	let final_product = []

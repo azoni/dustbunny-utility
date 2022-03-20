@@ -6,6 +6,7 @@ const flash = require('./queue/flash_queue.js')
 const transfer = require('./queue/transfer_queue.js')
 const smart = require('./queue/smart_queue.js')
 const focus = require('./queue/focus_queue.js');
+const collection = require('./queue/collection_queue.js');
 const http = require('http')
 const url = require('url');
 const myIp  = require('./utility/what-is-my-ip.js');
@@ -112,21 +113,7 @@ const readline = require('readline-sync')
 		manual.get_competitor(address, time_window*1000, exp)
 		// add option for flat bid, and expiration
 	} else if(command === 'man'){
-		let slug = readline.question('slug: ')
-		let exp = readline.question('exp: ')
-		let run_traits = readline.question('traits: ')
-		let bid = ''//readline.question('bid: ')
-		if(exp === ''){
-			exp = 20
-		}
-		if(bid === ''){
-			bid = false
-		}
-		if(run_traits === ''){
-			run_traits = false
-		}
-		manual.manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
-		
+		manual.start()
 	} else if(command === 'flash'){
 		flash.start()
 	} else if(command === 'staking'){
@@ -135,6 +122,8 @@ const readline = require('readline-sync')
 		listed.start()
 	} else if(command === 'rare'){
 		rare.start()
+	} else if(command === 'collection'){
+		collection.start()
 	} else if(command === 'transfer'){
 		transfer.start()
 	} else if(command === 'smart'){

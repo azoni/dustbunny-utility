@@ -8,7 +8,9 @@ let watchlistLoopStarted = false;
 
 // Grab assets from database to avoid api rate limits. 
 async function manual_queue_add(slug, event_type, exp, bid, run_traits){
+	await watchlistupdater.startLoop();
 	let trait_bids = data_node.COLLECTION_TRAIT
+	let watch_list = watchlistupdater.getWatchList();
 	console.log('Getting assets for ' + slug + '...')
 	// var assets =  await opensea_handler.get_assets(slug)
 	var assets = await mongo.find({'slug':slug}, {})
@@ -24,6 +26,13 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
     	trimmed_asset['event_type'] = event_type
     	trimmed_asset['expiration'] = exp
     	trimmed_asset['bid_range'] = false
+    	let watchListCollection = watch_list.find(({address}) => address === trimmed_asset['token_address']);
+    	try{
+    		trimmed_asset['tier'] = watchListCollection['tier'];
+    	} catch(e){
+    		console.log(trimmed_asset['slug'])
+    	}
+    	
     	for(trait of asset.traits){
 			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
 				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
@@ -96,7 +105,6 @@ async function get_competitor(address, time_window, exp){
 }
 
 async function manual_queue_start(){
-	
 	await redis_handler.print_queue_length('manual')
 	const readline = require('readline-sync')	
 	let slug = readline.question('collection: ')
@@ -108,4 +116,32 @@ async function manual_queue_start(){
 	}
 	manual_queue_add(slug, 'manual')
 }
-module.exports = { get_competitor, manual_queue_add};
+async function start(){
+	// await watchlistupdater.startLoop();
+	const readline = require('readline-sync')
+	let slug = readline.question('slug: ')
+	let exp = readline.question('exp: ')
+	let run_traits = readline.question('traits: ')
+	let bid = ''//readline.question('bid: ')
+	if(exp === ''){
+		exp = 20
+	}
+	if(bid === ''){
+		bid = false
+	}
+	if(run_traits === ''){
+		run_traits = false
+	}
+	while(true){
+		let start_time = Math.floor(+new Date())
+		manual_queue_add(slug, 'manual', exp/60, bid, run_traits)
+		//await utils.sleep(exp*60000)
+		let end_time = Math.floor(+new Date())
+		if (end_time - start_time < exp*60000){
+			let wait_time = exp*60000 - (end_time - start_time)
+			console.log('waiting: ' + (wait_time/60000).toFixed(2) + 'min')
+			await utils.sleep(wait_time)
+		}
+	}
+}
+module.exports = { start, get_competitor, manual_queue_add};

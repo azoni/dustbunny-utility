@@ -1,5 +1,6 @@
 const node_redis = require('redis')
 const utils = require('../utility/utils.js')
+const watchlistupdater = require('../utility/watchlist_retreiver.js');
 
 const client = node_redis.createClient({
 	url: "redis://10.0.0.80:6379",
@@ -64,6 +65,10 @@ async function redis_queue_pop(){
 	let listed_queue_data = await client.lPopCount('queue:listed', pop_count)
 	if(listed_queue_data !== null && listed_queue_data !== undefined && listed_queue_data.length > 0){
 		return listed_queue_data
+	}
+	let alone_queue_data = await client.lPopCount('queue:alone', pop_count)
+	if(alone_queue_data !== null && alone_queue_data !== undefined && alone_queue_data.length > 0){
+		return alone_queue_data
 	} 
 	let transfer_queue_data = await client.lPopCount('queue:transfer', pop_count)
 	if(transfer_queue_data !== null && transfer_queue_data !== undefined && transfer_queue_data.length > 0){
@@ -72,6 +77,10 @@ async function redis_queue_pop(){
 	let staking_queue_data = await client.lPopCount('queue:staking', pop_count)
 	if(staking_queue_data !== null && staking_queue_data !== undefined && staking_queue_data.length > 0){
 		return staking_queue_data
+	}
+	let flash_queue_data = await client.lPopCount('queue:flash', pop_count)
+	if(flash_queue_data !== null && flash_queue_data !== undefined && flash_queue_data.length > 0){
+		return flash_queue_data
 	}
 	let manual_queue_data = await client.lPopCount('queue:manual', pop_count)
 	if(manual_queue_data !== null && manual_queue_data !== undefined && manual_queue_data.length > 0){
