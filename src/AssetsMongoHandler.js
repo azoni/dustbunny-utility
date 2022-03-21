@@ -15,6 +15,7 @@ async function connect() {
   _database =  client.db("test");
   _nftassets = _database.collection("nftassets");
   _watchlists = _database.collection("watch_lists");
+  // await update_asset('metroverse-genesis', '1')
 }
 
 async function connect_main() {
@@ -77,6 +78,18 @@ async function findAndDeleteManyAssets(query = {}) {
   return _nftassets.deleteMany(query);
 }
 
+async function update_asset(slug, token_id) {
+  return _nftassets.updateOne(
+    {slug:slug, token_id:token_id},
+    {
+      $set: 
+      {
+        owner: 'No one'
+      }
+    }
+  )
+}
+
 async function deleteAllAssetsWithSlug(slug) {
   if (!slug) {
     throw new Error('no slug specified');
@@ -124,6 +137,7 @@ module.exports = {
   readAssetsBySlug,
   readAssets: find,
   readWatchList,
+  update_asset,
   writeOneAsset,
   findAndDeleteManyAssets,
   deleteAllAssetsWithSlug,

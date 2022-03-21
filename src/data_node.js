@@ -281,7 +281,9 @@ const values = {
 				// 'death bot': [.925, .95], //175
 				// 'noise': [.9, .95], //155
 				'trippy': [1, 1.1], //77
-
+			},
+			'eyes': {
+				'blue beams': [1.2, 1.5], //52
 			}
 		},
 		// 'raidparty': {
@@ -358,9 +360,13 @@ const values = {
 	// '0x41f01d8f02c569be620e13c9b33ce803bed84e90',
 	// '0x26054c824ff0a6225dfa24a1eebd6a18de6b5f7d',
 	// '0x5bcfc791b9baa68e9aa50eb98e555304ad53d697',
-	'0x429cdc4baf9d216fbff22a8eeb56bc7a225329c0',
-	'0x277371339da18e8c5c4dc4c799fa556df62c6b71',
-	'0x16f98ff6bb49d329bc92ed5051c7e901c8ee976e',
+	// '0x429cdc4baf9d216fbff22a8eeb56bc7a225329c0',
+	// '0x277371339da18e8c5c4dc4c799fa556df62c6b71',
+	// '0x16f98ff6bb49d329bc92ed5051c7e901c8ee976e',
+	'0x685d276efc73090af1321ec46fda2086f21ad71e', //some bayc bidder
+	'0x3352d3b06e76830dc79732135230d84605207f5c', //some bayc bidder
+	'0x0b603f944d03e37424f8bb29d1f1c9d788f4771f', //kj 51
+	'0xfe3afb4b54046d90746769fb3ff7c49480f3438c' // some guy on alien friends, slow
 	],
 	PRIORITY_COMP_WALLET: [
 	 '0xee87f1579c7743683ad41aa3ca2477f5f40a4b34',
