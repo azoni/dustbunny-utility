@@ -8,7 +8,6 @@ let watchlistLoopStarted = false;
 
 // Grab assets from database to avoid api rate limits. 
 async function manual_queue_add(slug, event_type, exp, bid, run_traits){
-	await watchlistupdater.startLoop();
 	let trait_bids = data_node.COLLECTION_TRAIT
 	let watch_list = watchlistupdater.getWatchList();
 	console.log('Getting assets for ' + slug + '...')
@@ -117,7 +116,7 @@ async function manual_queue_start(){
 	manual_queue_add(slug, 'manual')
 }
 async function start(){
-	// await watchlistupdater.startLoop();
+	await watchlistupdater.startLoop();
 	const readline = require('readline-sync')
 	let slug = readline.question('slug: ')
 	let exp = readline.question('exp: ')

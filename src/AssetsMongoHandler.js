@@ -15,7 +15,7 @@ async function connect() {
   _database =  client.db("test");
   _nftassets = _database.collection("nftassets");
   _watchlists = _database.collection("watch_lists");
-  // await update_asset('metroverse-genesis', '1')
+  await update_asset('metroverse-genesis', '2')
 }
 
 async function connect_main() {
@@ -79,15 +79,19 @@ async function findAndDeleteManyAssets(query = {}) {
 }
 
 async function update_asset(slug, token_id) {
-  return _nftassets.updateOne(
+  _nftassets.updateOne(
     {slug:slug, token_id:token_id},
     {
       $set: 
       {
-        owner: 'No one'
+        owner: 'Bruno was right.'
       }
     }
   )
+}
+async function read_traits(slug) {
+  checkAndThrowIfNotConnected();
+  return _database.collection("trait_bids").findOne({'slug':slug});
 }
 
 async function deleteAllAssetsWithSlug(slug) {
@@ -127,6 +131,7 @@ function checkAndThrowIfNotConnected() {
 // connect_main()
 module.exports = {
   countDocuments,
+  read_traits,
   find,
   findOne,
   close,

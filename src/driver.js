@@ -104,7 +104,10 @@ function connect(){
 	})
 }
 async function run_interactive(){
-const readline = require('readline-sync')	
+	let traits = await mongo.read_traits('boredapeyachtclub')
+	console.log(traits.traits.fur)
+	console.log(traits.traits.hat)
+	const readline = require('readline-sync')	
 	let command = readline.question('Run: ')
 	if(command === 'comp'){
 		let address = readline.question('address: ')
