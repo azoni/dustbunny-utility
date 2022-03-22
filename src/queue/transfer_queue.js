@@ -367,8 +367,8 @@ async function send_wallet_nfts_to_focus(interestAddress, collectionToFocusOn) {
 		}
 	}
   for (const el of focusList) {
+		let t_list = [];
 		if (el.address in miniDb) {
-			let t_list = [];
 			for (let id in miniDb[el.address]) {
 				const boughtTime = miniDb[el.address][id].toTime || -Infinity;
 				const soldTime = miniDb[el.address][id].fromTime || -Infinity;
