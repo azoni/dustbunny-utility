@@ -59,6 +59,9 @@ async function find(query, options) {
 async function readAssetsBySlug(slug) {
   return find({ slug: slug });
 }
+async function readAssetBySlug(slug, token_id) {
+  return findOne({ slug: slug, token_id:token_id });
+}
 
 async function readWatchList() {
   return _watchlists.find().toArray();
@@ -140,6 +143,7 @@ module.exports = {
   writeOneStakingWallet,
   deleteOneStakingWallet,
   readAssetsBySlug,
+  readAssetBySlug,
   readAssets: find,
   readWatchList,
   update_asset,

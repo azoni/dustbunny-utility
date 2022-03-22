@@ -31,6 +31,7 @@ async function listed_queue_add(event_type, exp, bid) {
 				asset['event_type'] = event_type
 				asset['expiration'] = .25
 				asset['listed_price'] = o.basePrice/1000000000000000000
+				console.log(asset)
 				let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
 				asset['traits'] = mongo_traits.traits
 				if(exp !== ''){
@@ -54,7 +55,19 @@ async function listed_queue_add(event_type, exp, bid) {
 					}
 				}
 				bids_added += 1
+				const command = {
+					hash: `${asset['slug']}:${asset['token_id']}`,
+					slug: asset['slug'],
+					collection_address: asset['token_address'],
+					token_ids: [asset['token_id']],
+					time_suggestion: 30*60_000
+				}
 				redis_handler.redis_push(event_type, asset);
+				let focus_list = ['boredapeyachtclub', 'doodles-official', 'mutant-ape-yacht-club', 'azuki', 'cloneX']
+				if(focus_list.includes(asset['slug'])){
+					redis_handler.redis_push_command(command)
+				}
+				
 			}
 		} catch (e) {
 		}

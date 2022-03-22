@@ -104,9 +104,25 @@ function connect(){
 	})
 }
 async function run_interactive(){
-	let traits = await mongo.read_traits('boredapeyachtclub')
-	console.log(traits.traits.fur)
-	console.log(traits.traits.hat)
+	// let asset = await mongo.readAssetBySlug('boredapeyachtclub', '999')
+	// let trimmed_asset = {}
+	// trimmed_asset['token_id'] = asset.token_id
+	// trimmed_asset['traits'] = asset.traits
+	// trimmed_asset['token_address'] = asset.token_address
+	// trimmed_asset['slug'] = asset.slug
+	// trimmed_asset['fee'] = asset.dev_seller_fee_basis_points / 10000
+	// trimmed_asset['event_type'] = 'hyper'
+	// trimmed_asset['expiration'] = .25
+	// trimmed_asset['bid_range'] = false
+	// trimmed_asset['tier'] = 'high';
+	// const command1 = {
+	// 	hash: `${trimmed_asset['slug']}:${trimmed_asset['token_id']}`,
+	// 	slug: trimmed_asset['slug'],
+	// 	collection_address: trimmed_asset['token_address'],
+	// 	token_ids: [trimmed_asset['token_id']],
+	// }
+	// console.log(trimmed_asset)
+	// redis_handler.redis_push_command(command1)
 	const readline = require('readline-sync')	
 	let command = readline.question('Run: ')
 	if(command === 'comp'){
