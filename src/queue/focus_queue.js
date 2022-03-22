@@ -6,7 +6,7 @@ const opensea_handler = require('../handlers/opensea_handler.js');
 
 const seaport = opensea_handler.seaport;
 
-const TIME_LIMIT = 2_000; //ms
+const TIME_LIMIT = 3_100; //ms
 const CALLS_PER_TIME_LIMIT = 2;
 const openSeaThrottle = throttledQueue(CALLS_PER_TIME_LIMIT, TIME_LIMIT);
 const redis_self_throttle = throttledQueue(2, 1_000);
@@ -78,7 +78,7 @@ function removeCollisionsAndExpirations(hashes = []) {
         if (time_suggestion !== undefined && 0 < time_suggestion && time_suggestion < 6e7) {
           passesTimeCheck = timestamp > (t - time_suggestion);
         }
-        console.log(`${timestamp - ( time_suggestion ? t - time_suggestion : X_MINUTES_AGO )}ms to go for EXP`);
+        console.log(`${hash} |  ${((timestamp - ( time_suggestion ? t - time_suggestion : X_MINUTES_AGO )) / 60_000).toFixed(2)} minutes to go for expire`);
         return !hashes.includes(hash) && passesTimeCheck;
       }
     );
@@ -124,7 +124,7 @@ function limitListenSet(toListenTo, slugMap) {
     })
   }
   arr.sort((a, b) => b.token_ids.length - a.token_ids.length);
-  return arr.slice(0, 5);
+  return arr.slice(0, 8);
 }
 
 const blacklist = new Set([
@@ -133,52 +133,85 @@ const blacklist = new Set([
   '0x1aec9c6912d7da7a35803f362db5ad38207d4b4a',
   '0x35c25ff925a61399a3b69e8c95c9487a1d82e7df',
 ]);
+
+const slugFocusIteration = {}
+
 async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTimeStamp, retry = 3) {
   //console.log(`lastTimeStamp: ${fromTimeStamp}`);
   //console.log(`contract: ${constract_address}`);
   //console.log('tokenIds:');
   //console.log(token_ids);
+  const mySlug = slug;
   const w = watchlistupdater.getWatchList();
-  let collectionDbData = w.find(({slug}) => slug === command.slug);
+  let collectionDbData = w.find(({slug}) => slug === mySlug);
+  slugFocusIteration[mySlug] = slugFocusIteration[mySlug] || 0;
+  slugFocusIteration[mySlug] = (slugFocusIteration[mySlug] + 1) % 60;
+
   try {
-    let orders = await seaport.api.getOrders({
-      order_by: 'created_date',
+    const query = {
+      order_by: 'eth_price',
       token_ids: token_ids,
       order_direction: 'desc',
       side: 0,
       asset_contract_address: contract_address,
       limit: 50,
-      offset: 0
-    });
-    const topOrderMap = {};
+      offset: 0,
+    };
+    if (slugFocusIteration[mySlug] !== 0) {
+      query.listed_after = (Date.now() - 30_000);
+    }
+    let orders = await seaport.api.getOrders(query);
+    const tokenIdToTopOrderDict = {};
+
     const orderArr = orders?.orders || [];
+    console.log()
+    console.log()
+    console.log(`slug: ${slug} ids:`);
+    console.log(token_ids);
+    console.log(`orders fetched ${orderArr.length}`);
     for (o of orderArr) {
-      if (!blacklist.has(o?.makerAccount?.address?.toLowerCase()) && o?.asset?.tokenId !== undefined) {
-        const someBid = topOrderMap[o?.asset?.tokenId] || 0;
-        const orderBid = o.currentPrice / 1e18;
-        topOrderMap[o?.asset?.tokenId] = Math.max(someBid, orderBid);
+      console.log(`tokenId: ${o?.asset?.tokenId}, ${o.makerAccount?.address} bid: ${o.currentPrice/1e18}`);
+      if (o?.asset?.tokenId === undefined) { continue; } // skip if theres no tokenId
+      if (o?.asset?.tokenId in tokenIdToTopOrderDict) { continue; } // skip if we already found top bid
+
+      tokenIdToTopOrderDict[o?.asset?.tokenId] = {
+        address: o?.makerAccount?.address?.toLowerCase(),
+        topBid: o.currentPrice / 1e18,
       }
     }
-    for (key in topOrderMap) {
-      redis_handler.push_asset_high_priority({
-        "token_id": key,
-        "token_address": contract_address,
-        "slug": slug,
-        "event_type": "focus",
-        "bid_amount": topOrderMap[key],
-        "tier": collectionDbData.tier || '',
-      });
-      console.log(`sending => top: ${topOrderMap[key]}, token_id:${key}, contract: ${contract_address}, slugs: ${slug}`)
+    if (slugFocusIteration === 0) {
+      for (const id of token_ids) {
+        if (tokenIdToTopOrderDict[id] === undefined) {
+          console.log(`found no bids so sending => token_id:${id}, contract: ${contract_address}, slugs: ${slug}`);
+          redis_handler.push_asset_high_priority({
+            "token_id": id,
+            "token_address": contract_address,
+            "slug": slug,
+            "event_type": "focus",
+            "tier": collectionDbData.tier || '',
+          });
+        }
+      }
     }
-    //for ()
-    //console.log(`len: ${orders?.orders?.length}, ${listenSet.length}`);
-    //if (orders?.orders?.length) {
-    //  console.log(JSON.stringify(orders.orders[0], null, 2));
-    //}
+    for (key in tokenIdToTopOrderDict) {
+      if (blacklist.has(tokenIdToTopOrderDict[key].address)) {
+        console.log(`We are top bid ${slug} : id: ${key}, ${tokenIdToTopOrderDict[key].topBid}`);
+      } else {
+        console.log(`sending => top: ${tokenIdToTopOrderDict[key].topBid}, token_id:${key}, contract: ${contract_address}, slugs: ${slug}`);
+        redis_handler.push_asset_high_priority({
+          "token_id": key,
+          "token_address": contract_address,
+          "slug": slug,
+          "event_type": "focus",
+          "bid_amount": tokenIdToTopOrderDict[key].topBid,
+          "tier": collectionDbData.tier || '',
+        });
+      }
+    }
   } catch (error) {
     console.error(error);
     if (retry > 0) {
-      return await getOrdersForFocusGroup(slug, contract_address, token_ids, fromTimeStamp, retry - 1);
+      return await openSeaThrottle(() => getOrdersForFocusGroup(slug, contract_address, token_ids, fromTimeStamp, retry - 1));
     }
     throw error;
   }
