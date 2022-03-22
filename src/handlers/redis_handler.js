@@ -1,12 +1,16 @@
 const node_redis = require('redis')
 const utils = require('../utility/utils.js')
+const mongo = require('../AssetsMongoHandler.js')
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
+let watch_list;
 
 const client = node_redis.createClient({
 	url: "redis://10.0.0.80:6379",
 });
 
 async function start_connection(){
+	await watchlistupdater.startLoop();
+	watch_list = watchlistupdater.getWatchList();
 	client.connect();
 	client.on('error', (err) => console.log('Redis Client Error', err));
 }
@@ -26,7 +30,25 @@ async function get_queue_length(queue_name){
 }
 
 async function redis_push(queue_name ,asset) {
+	// let traits = mongo.read_traits(asset['slug'])
+	// let watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
+	// try{
+	// 	trimmed_asset['tier'] = watchListCollection['tier'];
+	// } catch(e){
+	// 	console.log(trimmed_asset['slug'])
+	// }
+	// console.log(traits.traits.fur)
+	// let max_bid = asset['bid_range']
+	// let floor_price = await redis_handler.client.GET(`${'cool-cats-nft'}:stats`)
+	// floor_price = JSON.parse(floor_price)
+	// console.log(floor_price.floor_price)
+	// console.log(floor_price.dev_seller_fee_basis_points/10000)
+	// //if asset[bid_range] use that && asset['bid_amount]
+	// if(watchListCollection !== undefined && watchListCollection['tier'] !== 'skip'){
+	// 	await client.rPush('queue:' + queue_name, JSON.stringify(asset));
+	// }
 	await client.rPush('queue:' + queue_name, JSON.stringify(asset));
+
 }
 
 async function redis_push_asset(asset) {
@@ -65,10 +87,6 @@ async function redis_queue_pop(){
 	let listed_queue_data = await client.lPopCount('queue:listed', pop_count)
 	if(listed_queue_data !== null && listed_queue_data !== undefined && listed_queue_data.length > 0){
 		return listed_queue_data
-	}
-	let alone_queue_data = await client.lPopCount('queue:alone', pop_count)
-	if(alone_queue_data !== null && alone_queue_data !== undefined && alone_queue_data.length > 0){
-		return alone_queue_data
 	} 
 	let transfer_queue_data = await client.lPopCount('queue:transfer', pop_count)
 	if(transfer_queue_data !== null && transfer_queue_data !== undefined && transfer_queue_data.length > 0){
@@ -77,6 +95,10 @@ async function redis_queue_pop(){
 	let staking_queue_data = await client.lPopCount('queue:staking', pop_count)
 	if(staking_queue_data !== null && staking_queue_data !== undefined && staking_queue_data.length > 0){
 		return staking_queue_data
+	}
+	let collection_queue_data = await client.lPopCount('queue:collection', pop_count)
+	if(collection_queue_data !== null && collection_queue_data !== undefined && collection_queue_data.length > 0){
+		return collection_queue_data
 	}
 	let flash_queue_data = await client.lPopCount('queue:flash', pop_count)
 	if(flash_queue_data !== null && flash_queue_data !== undefined && flash_queue_data.length > 0){

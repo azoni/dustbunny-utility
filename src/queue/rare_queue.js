@@ -9,7 +9,6 @@ const redis_handler = require('../handlers/redis_handler.js')
 let collections = []
 let trait_bids = data_node.COLLECTION_TRAIT
 async function start_listener(){
-	
 	var start_time = Math.floor(+new Date())
 	var exp = 30
 	for(let collection of collections){

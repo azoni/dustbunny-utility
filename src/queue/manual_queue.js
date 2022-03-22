@@ -12,49 +12,63 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
 	let watch_list = watchlistupdater.getWatchList();
 	console.log('Getting assets for ' + slug + '...')
 	// var assets =  await opensea_handler.get_assets(slug)
-	var assets = await mongo.find({'slug':slug}, {})
-	let collection_traits = trait_bids[slug]
-	console.log('Trait bids: ' + collection_traits)
+	let query = {'slug':slug}
+	if(run_traits === 'single'){
+		query = {slug:'boredapeyachtclub', traits: {'$elemMatch': { 'value': 'Trippy', 'trait_type': 'Fur'}}}			
+	}
+	var assets = await mongo.find(query, {})
+	// let collection_traits = trait_bids[slug]
+	let mongo_traits =  await mongo.read_traits(slug)
+	let collection_traits = false
+	try{
+		collection_traits = mongo_traits.traits
+		console.log('Trait bids: ' + collection_traits)
+	} catch(e){
+		console.log('No traits found.')
+	}
+	
 	for(let asset of assets){
 		let trimmed_asset = {}
 		trimmed_asset['token_id'] = asset.token_id
 		trimmed_asset['traits'] = asset.traits
-    	trimmed_asset['token_address'] = asset.token_address
-    	trimmed_asset['slug'] = asset.slug
-    	trimmed_asset['fee'] = asset.dev_seller_fee_basis_points / 10000
-    	trimmed_asset['event_type'] = event_type
-    	trimmed_asset['expiration'] = exp
-    	trimmed_asset['bid_range'] = false
-    	let watchListCollection = watch_list.find(({address}) => address === trimmed_asset['token_address']);
-    	try{
-    		trimmed_asset['tier'] = watchListCollection['tier'];
-    	} catch(e){
-    		console.log(trimmed_asset['slug'])
-    	}
-    	
-    	for(trait of asset.traits){
-			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
-				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-					let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
-					if(!trimmed_asset['bid_range']){
-						trimmed_asset['bid_range'] = range
-						trimmed_asset['trait'] = trait.value
-					}
-					if(range[1] > trimmed_asset['bid_range'][1]){
-						trimmed_asset['trait'] = trait.value
-						trimmed_asset['bid_range'] = range
+		trimmed_asset['token_address'] = asset.token_address
+		trimmed_asset['slug'] = asset.slug
+		trimmed_asset['fee'] = asset.dev_seller_fee_basis_points / 10000
+		trimmed_asset['event_type'] = event_type
+		trimmed_asset['expiration'] = exp
+		trimmed_asset['bid_range'] = false
+		let watchListCollection = watch_list.find(({address}) => address === trimmed_asset['token_address']);
+		try{
+			trimmed_asset['tier'] = watchListCollection['tier'];
+		} catch(e){
+			console.log(trimmed_asset['slug'])
+		}
+		if(collection_traits !== false){
+			for(trait of asset.traits){
+				if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
+					if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
+						let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+						if(!trimmed_asset['bid_range']){
+							trimmed_asset['bid_range'] = range
+							trimmed_asset['trait'] = trait.value
+						}
+						if(range[1] > trimmed_asset['bid_range'][1]){
+							trimmed_asset['trait'] = trait.value
+							trimmed_asset['bid_range'] = range
+						}
 					}
 				}
 			}
-    	}
-    	if(trimmed_asset['trait'] && run_traits === 'skip'){
-    		continue
-    	}
-    	if(!trimmed_asset['trait'] && run_traits === 'only'){
-    		continue
-    	}
-    	trimmed_asset['bid_amount'] = bid
-    	await redis_handler.redis_push(event_type, trimmed_asset)
+		}
+		
+		if(trimmed_asset['trait'] && run_traits === 'skip'){
+			continue
+		}
+		if(!trimmed_asset['trait'] && run_traits === 'only'){
+			continue
+		}
+		trimmed_asset['bid_amount'] = false
+		await redis_handler.redis_push(event_type, trimmed_asset)
 	}
 	await redis_handler.print_queue_length(event_type)
 	console.log(slug + ' added.')

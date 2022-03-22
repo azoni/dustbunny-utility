@@ -140,7 +140,7 @@ async function get_assets(slug){
 // Return listed of assets listed for sale
 async function get_listed_asset(slug){
 	let listed_assets = []
-	let assets = await get_assets(slug)
+	let assets = await get_assets_with_cursor(slug)
 	for(let asset of assets){
 		if(asset.sellOrders !== null){
 			listed_assets.push(asset)
@@ -228,6 +228,15 @@ async function get_orders_window(address, time_window, token_ids){
 		limit: 50,
     offset: offset
   }
+  if(time_window === false) {
+    order_api_data = {
+      side: 0,
+      order_by: 'eth_price',
+      order_direction: 'desc',
+      limit: 50,
+      offset: offset
+    }
+  }
   if(token_ids){
   	order_api_data['asset_contract_address'] = address
   	order_api_data['token_ids'] = token_ids
@@ -250,7 +259,6 @@ async function get_orders_window(address, time_window, token_ids){
 	    	if(!blacklist_wallets.includes(o.makerAccount.address.toLowerCase())){
 	    		orders_array.push(o)
 	    	}
-	    	
 	    }
     }
     catch(ex) {
@@ -261,7 +269,9 @@ async function get_orders_window(address, time_window, token_ids){
     offset += 50
     // console.log(orders_array.length)
   } while(order_length === 50)
-  console.log(orders_array.length + ' bids made by ' + username)
+  if(time_window === false){
+    console.log(orders_array.length + ' bids made by ' + username)
+  }
   return orders_array
 }
 

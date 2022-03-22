@@ -15,7 +15,8 @@ async function connect() {
   _database =  client.db("test");
   _nftassets = _database.collection("nftassets");
   _watchlists = _database.collection("watch_lists");
-  await update_asset('metroverse-genesis', '2')
+  // await update_asset('metroverse-genesis', '2')
+  // find({slug:'boredapeyachtclub', traits: {'$elemMatch': { 'value': 'Zombie', 'trait_type': 'Fur'}}})
 }
 
 async function connect_main() {

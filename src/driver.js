@@ -13,6 +13,7 @@ const myIp  = require('./utility/what-is-my-ip.js');
 const redis_handler = require('./handlers/redis_handler.js')
 const mongo = require('./AssetsMongoHandler.js')
 const utils = require('./utility/utils.js')
+const opensea_handler = require('./handlers/opensea_handler.js')
 
 const requestListener = function(req, res){
 	    // Set CORS headers
@@ -103,26 +104,35 @@ function connect(){
 		console.log('Server is running')
 	})
 }
+async function add_focus(){
+	//basePrice/1000000000000000000
+	// let assets = await opensea_handler.get_assets_with_cursor('boredapeyachtclub')
+	let token_array = ['3405']
+	for(let token of token_array){
+		let asset = await mongo.readAssetBySlug('azuki', token)
+		let trimmed_asset = {}
+		trimmed_asset['token_id'] = asset.token_id
+		trimmed_asset['traits'] = asset.traits
+		trimmed_asset['token_address'] = asset.token_address
+		trimmed_asset['slug'] = asset.slug
+		trimmed_asset['fee'] = asset.dev_seller_fee_basis_points / 10000
+		trimmed_asset['event_type'] = 'hyper'
+		trimmed_asset['expiration'] = .25
+		trimmed_asset['bid_range'] = false
+		trimmed_asset['tier'] = 'high';
+		const command1 = {
+			hash: `${trimmed_asset['slug']}:${trimmed_asset['token_id']}`,
+			slug: trimmed_asset['slug'],
+			collection_address: trimmed_asset['token_address'],
+			token_ids: [trimmed_asset['token_id']],
+			time_suggestion: 300*60_000
+		}
+		await redis_handler.redis_push_command(command1)
+		console.log(token + ' added.')
+	}
+}
 async function run_interactive(){
-	// let asset = await mongo.readAssetBySlug('boredapeyachtclub', '999')
-	// let trimmed_asset = {}
-	// trimmed_asset['token_id'] = asset.token_id
-	// trimmed_asset['traits'] = asset.traits
-	// trimmed_asset['token_address'] = asset.token_address
-	// trimmed_asset['slug'] = asset.slug
-	// trimmed_asset['fee'] = asset.dev_seller_fee_basis_points / 10000
-	// trimmed_asset['event_type'] = 'hyper'
-	// trimmed_asset['expiration'] = .25
-	// trimmed_asset['bid_range'] = false
-	// trimmed_asset['tier'] = 'high';
-	// const command1 = {
-	// 	hash: `${trimmed_asset['slug']}:${trimmed_asset['token_id']}`,
-	// 	slug: trimmed_asset['slug'],
-	// 	collection_address: trimmed_asset['token_address'],
-	// 	token_ids: [trimmed_asset['token_id']],
-	// }
-	// console.log(trimmed_asset)
-	// redis_handler.redis_push_command(command1)
+
 	const readline = require('readline-sync')	
 	let command = readline.question('Run: ')
 	if(command === 'comp'){
@@ -133,6 +143,8 @@ async function run_interactive(){
 		// add option for flat bid, and expiration
 	} else if(command === 'man'){
 		manual.start()
+	} else if(command === 'add focus'){
+		add_focus()
 	} else if(command === 'flash'){
 		flash.start()
 	} else if(command === 'staking'){

@@ -60,10 +60,10 @@ async function listed_queue_add(event_type, exp, bid) {
 					slug: asset['slug'],
 					collection_address: asset['token_address'],
 					token_ids: [asset['token_id']],
-					time_suggestion: 30*60_000
+					time_suggestion: 300*60_000
 				}
 				redis_handler.redis_push(event_type, asset);
-				let focus_list = ['boredapeyachtclub', 'doodles-official', 'mutant-ape-yacht-club', 'azuki', 'cloneX']
+				let focus_list = ['boredapeyachtclub']//, 'bored-ape-kennel-club', 'doodles-official', 'mutant-ape-yacht-club', 'azuki', 'cloneX']
 				if(focus_list.includes(asset['slug'])){
 					redis_handler.redis_push_command(command)
 				}
