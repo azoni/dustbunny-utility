@@ -84,6 +84,9 @@ async function get_collection_bids(slug, exp){
 					if(exp !== ''){
 						asset['expiration'] = exp/60
 					}
+					if(exp < 15){
+						asset['expiration'] = .25
+					}
 					asset_map[asset['token_id']] = asset
 				}
 			}
@@ -110,12 +113,12 @@ async function get_collection_bids(slug, exp){
 	console.log('Queue collection: ' + queue_length)
 	var end_time = Math.floor(+new Date())
 	console.log('run time: ' + ((end_time - start_time)/60000).toFixed(2) + ' minutes')
-	if (end_time - start_time < exp*60000){
-		let wait_time = (end_time - start_time)
-		console.log('Queue collection: ' + queue_length)
-		// console.log('waiting: ' + wait_time/60000 + ' min')
-		// await utils.sleep(wait_time)
-	}
+	// if (end_time - start_time < exp*60000){
+	// 	let wait_time = (end_time - start_time)
+	// 	console.log('Queue collection: ' + queue_length)
+	// 	// console.log('waiting: ' + wait_time/60000 + ' min')
+	// 	// await utils.sleep(wait_time)
+	// }
 	exp = (end_time - start_time)/60000
   get_collection_bids(slug, exp)
 }
