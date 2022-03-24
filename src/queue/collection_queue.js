@@ -58,9 +58,6 @@ async function get_collection_bids(slug, exp){
 	    	if(exp !== ''){
 	    		asset['expiration'] = exp/60
 	    	}
-				if(exp < 15){
-					asset['expiration'] = .25
-				}
 				order_count += 1
 				asset['bid_amount'] = o.basePrice/1000000000000000000	
 				if(!asset_map[asset['token_id']]){
@@ -83,9 +80,6 @@ async function get_collection_bids(slug, exp){
 					asset['expiration'] = .25
 					if(exp !== ''){
 						asset['expiration'] = exp/60
-					}
-					if(exp < 15){
-						asset['expiration'] = .25
 					}
 					asset_map[asset['token_id']] = asset
 				}
@@ -119,7 +113,6 @@ async function get_collection_bids(slug, exp){
 	// 	// console.log('waiting: ' + wait_time/60000 + ' min')
 	// 	// await utils.sleep(wait_time)
 	// }
-	exp = (end_time - start_time)/60000
   get_collection_bids(slug, exp)
 }
 async function start(){
