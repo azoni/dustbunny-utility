@@ -21,7 +21,9 @@ async function get_collection_bids(slug, exp){
 	let asset_contract_address = assets[0].token_address
 	let temp_30_array = []
 	let asset_count = 0
+	let trait_dict = {}
 	for(let asset of assets){
+		trait_dict[asset.token_id] = asset.traits
 		asset_count += 1
 		temp_30_array.push(asset.token_id)
 		if(temp_30_array.length === 30){
@@ -38,7 +40,7 @@ async function get_collection_bids(slug, exp){
 		let has_bids = {}
 		let top_bids = 0
 		let no_bids = 0
-  	await utils.sleep(250)
+  	await utils.sleep(500)
 		let asset_map = {}
   	var orders =  await opensea_handler.get_orders_window(asset_contract_address, false, token_array)
     try {	
@@ -46,6 +48,7 @@ async function get_collection_bids(slug, exp){
 				has_bids[o.asset.tokenId] = true
 	    	let asset = {}
 	    	asset['token_id'] = o.asset.tokenId
+				asset['traits'] = trait_dict[asset['token_id']]
 	    	asset['token_address'] = o.asset.tokenAddress
 	    	asset['slug'] = o.asset.collection.slug
 	    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
@@ -55,6 +58,9 @@ async function get_collection_bids(slug, exp){
 	    	if(exp !== ''){
 	    		asset['expiration'] = exp/60
 	    	}
+				if(exp < 15){
+					asset['expiration'] = .25
+				}
 				order_count += 1
 				asset['bid_amount'] = o.basePrice/1000000000000000000	
 				if(!asset_map[asset['token_id']]){
@@ -69,7 +75,6 @@ async function get_collection_bids(slug, exp){
 			for(let id of token_array){
 				if(!has_bids[id]){
 					no_bids += 1
-					console.log('No bids for: ' + id)
 					let asset = {}
 					asset['token_id'] = id
 					asset['token_address'] = asset_contract_address
@@ -82,7 +87,7 @@ async function get_collection_bids(slug, exp){
 					asset_map[asset['token_id']] = asset
 				}
 			}
-			console.log('No bids for: ' + no_bids)
+			console.log('No bids: ' + no_bids)
 			for(let a in asset_map){
 				if(!blacklist_wallets.includes(asset_map[a]['owner_address'])){
 					bids_added += 1
@@ -91,7 +96,7 @@ async function get_collection_bids(slug, exp){
 					top_bids += 1
 				}
 			}
-			console.log('Top bids on: ' + top_bids)
+			console.log('Top bids: ' + top_bids)
     }
     catch(ex) {
     	console.log(ex)
@@ -105,14 +110,14 @@ async function get_collection_bids(slug, exp){
 	console.log('Queue collection: ' + queue_length)
 	var end_time = Math.floor(+new Date())
 	console.log('run time: ' + ((end_time - start_time)/60000).toFixed(2) + ' minutes')
-	// if (end_time - start_time < exp*60000){
-	// 	let wait_time = exp*60000 - (end_time - start_time)
-	// 	console.log('Queue collection: ' + queue_length)
-	// 	console.log('waiting: ' + wait_time + 'ms')
-	// 	await utils.sleep(wait_time)
-	// }
-	
-  //get_collection_bids(type, exp)
+	if (end_time - start_time < exp*60000){
+		let wait_time = (end_time - start_time)
+		console.log('Queue collection: ' + queue_length)
+		// console.log('waiting: ' + wait_time/60000 + ' min')
+		// await utils.sleep(wait_time)
+	}
+	exp = (end_time - start_time)/60000
+  get_collection_bids(slug, exp)
 }
 async function start(){
 	// const readline = require('readline-sync')
