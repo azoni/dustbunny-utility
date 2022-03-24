@@ -40,7 +40,7 @@ async function get_collection_bids(slug, exp){
 		let has_bids = {}
 		let top_bids = 0
 		let no_bids = 0
-  	await utils.sleep(500)
+  	//await utils.sleep(250)
 		let asset_map = {}
   	var orders =  await opensea_handler.get_orders_window(asset_contract_address, false, token_array)
     try {	
@@ -87,7 +87,7 @@ async function get_collection_bids(slug, exp){
 					asset_map[asset['token_id']] = asset
 				}
 			}
-			console.log('No bids: ' + no_bids)
+			console.log('assets with no bids: ' + no_bids)
 			for(let a in asset_map){
 				if(!blacklist_wallets.includes(asset_map[a]['owner_address'])){
 					bids_added += 1
@@ -96,7 +96,7 @@ async function get_collection_bids(slug, exp){
 					top_bids += 1
 				}
 			}
-			console.log('Top bids: ' + top_bids)
+			console.log('added to queue: ' + (30 - top_bids))
     }
     catch(ex) {
     	console.log(ex)
