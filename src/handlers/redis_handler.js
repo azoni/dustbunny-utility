@@ -3,16 +3,19 @@ const utils = require('../utility/utils.js')
 const mongo = require('../AssetsMongoHandler.js')
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
 let watch_list;
-
+let blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556','0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
+for(let w in blacklist_wallets){
+	blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
+}
 const client = node_redis.createClient({
 	url: "redis://10.0.0.80:6379",
 });
 
 async function start_connection(){
-	await watchlistupdater.startLoop();
-	watch_list = watchlistupdater.getWatchList();
 	client.connect();
 	client.on('error', (err) => console.log('Redis Client Error', err));
+	await watchlistupdater.startLoop();
+	watch_list = watchlistupdater.getWatchList();
 }
 
 async function dump_queue(queue_name){
@@ -30,25 +33,73 @@ async function get_queue_length(queue_name){
 }
 
 async function redis_push(queue_name ,asset) {
-	// let traits = mongo.read_traits(asset['slug'])
-	// let watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
-	// try{
-	// 	trimmed_asset['tier'] = watchListCollection['tier'];
-	// } catch(e){
-	// 	console.log(trimmed_asset['slug'])
-	// }
-	// console.log(traits.traits.fur)
-	// let max_bid = asset['bid_range']
-	// let floor_price = await redis_handler.client.GET(`${'cool-cats-nft'}:stats`)
-	// floor_price = JSON.parse(floor_price)
-	// console.log(floor_price.floor_price)
-	// console.log(floor_price.dev_seller_fee_basis_points/10000)
-	// //if asset[bid_range] use that && asset['bid_amount]
-	// if(watchListCollection !== undefined && watchListCollection['tier'] !== 'skip'){
-	// 	await client.rPush('queue:' + queue_name, JSON.stringify(asset));
-	// }
-	await client.rPush('queue:' + queue_name, JSON.stringify(asset));
+	try{
+		if(!asset['traits']){
+			let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
+			asset['traits'] = mongo_traits.traits
+		}
+	} catch(e) {
+		console.log('No traits on asset.')
+	}
+	let watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
+	if(watchListCollection === undefined || watchListCollection['tier'] === 'skip' || (blacklist_wallets.includes(asset['owner_address']))){
+		console.log('already top bid')
+		return
+	}
+	try{
+		asset['tier'] = watchListCollection['tier'];
+	} catch(e){
+		console.log(asset['slug'])
+	}
+	if(asset['tier']){
+		if(asset['tier'] === 'medium'){
+			min_range = .66
+			max_range = .86
+		} else if(asset['tier'] === 'high'){
+			min_range = .71
+			max_range = .91
+		} else if(asset['tier'] === 'low'){
+			min_range = .61
+			max_range = .81
+		} else if(asset['tier'] === 'medium-low'){
+			min_range = .685
+			max_range = .835
+		}
+	}
+	asset['bid_range'] = [min_range, max_range]
+	let traits = await mongo.read_traits(asset['slug'])
+	if(traits){
+		let collection_traits = traits.traits
+		for(trait of asset.traits){
+			if(collection_traits[trait.trait_type.toLowerCase()]){
+				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
+					let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+					if(!asset['bid_range']){
+						asset['bid_range'] = range
+						asset['trait'] = trait.value
+					}
+					if(range[1] > asset['bid_range'][1]){
+						asset['trait'] = trait.value
+						asset['bid_range'] = range
+					}
+				}
+			}
+		}
+	}
 
+	if(asset['bid_amount']){
+		let max_range = asset['bid_range'][1]
+		let collection_stats = await client.GET(`${asset['slug']}:stats`)
+		let data = JSON.parse(collection_stats)
+		let floor_price = data.floor_price
+		let fee = data.dev_seller_fee_basis_points/10000
+		if(asset['bid_amount'] > floor_price*(max_range-fee)){
+			console.log('TOO HIGH ' + asset)
+			return
+		}
+	}
+
+	await client.rPush('queue:' + queue_name, JSON.stringify(asset));
 }
 
 async function redis_push_asset(asset) {
@@ -75,8 +126,8 @@ async function redis_push_command(command) {
 //http method - client pull
 async function redis_queue_pop(){
 	let pop_count = 2
-	let high_queue_data = await client.lPopCount('queue:high', pop_count)
 
+	let high_queue_data = await client.lPopCount('queue:high', pop_count)
 	if(high_queue_data !== null && high_queue_data !== undefined && high_queue_data.length > 0){
 		return high_queue_data
 	} 

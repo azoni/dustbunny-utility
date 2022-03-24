@@ -4,13 +4,15 @@ const data_node = require('../data_node.js')
 const etherscan_handler = require('../handlers/etherscan_handler.js')
 const redis_handler = require('../handlers/redis_handler.js')
 const manual_queue = require('../queue/manual_queue.js')
+const collection_queue = require('../queue/collection_queue.js')
+
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
 
 
 
 async function start(){
 	await watchlistupdater.startLoop();
-	const smart_list = await watchlistupdater.getWatchListSlugsOnly()
+	const smart_list = data_node.SMART_WATCH_LIST//await watchlistupdater.getWatchListSlugsOnly()
 	console.log(smart_list)
 	await redis_handler.dump_queue('smart')
 	let bid_dict = {}
@@ -37,7 +39,7 @@ async function start(){
 		//floor*asset_count < total_weth * 1000
 		//exp based on run time (750bids/min)
 		// subtract fee from .9
-		if((floor * .9) < total_weth/10 && floor > .9){
+		if((floor * .9) < total_weth/10 && floor > .8){
 			allowed_collections.push(slug)
 		}
 	}
@@ -76,7 +78,7 @@ async function start(){
 	for(let coll of final_product){
 		//check for when queue length === 0 and add next.
 		//dump queue if it becomes too competitive.
-		await manual_queue.manual_queue_add(coll.slug, 'smart', .33, false, true)
+		await collection_queue.get_collection_bids(coll.slug, 30)
 	}
 }
 

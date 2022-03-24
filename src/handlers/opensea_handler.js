@@ -256,7 +256,7 @@ async function get_orders_window(address, time_window, token_ids){
       }
 	    order_length = order['orders'].length
 	    for(let o of order.orders){
-	    	if(!blacklist_wallets.includes(o.makerAccount.address.toLowerCase())){
+	    	if(o.paymentTokenContract.symbol === 'WETH'){
 	    		orders_array.push(o)
 	    	}
 	    }
@@ -269,9 +269,7 @@ async function get_orders_window(address, time_window, token_ids){
     offset += 50
     // console.log(orders_array.length)
   } while(order_length === 50)
-  if(time_window === false){
-    console.log(orders_array.length + ' bids made by ' + username)
-  }
+  console.log(orders_array.length + ' bids made by ' + username)
   return orders_array
 }
 

@@ -1,93 +1,125 @@
 //add assets without reasonable bids into queue
-const data_node = require('../data_node.js')
 const redis_handler = require('../handlers/redis_handler.js')
 const utils = require('../utility/utils.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
-const watchlistupdater = require('../utility/watchlist_retreiver.js');
 const mongo = require('../AssetsMongoHandler.js')
 
-let bids_added = 0
-
-async function get_collection_bids(type, exp){
-	let watch_list = watchlistupdater.getWatchList();
+async function get_collection_bids(slug, exp){
+	let blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556','0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
+	for(let w in blacklist_wallets){
+		blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
+	}
  	let start_time = Math.floor(+new Date())
-  console.log('Adding to queue...' + ' event widnow: ' + time_window)
-	let queue_length = await redis_handler.get_queue_length(type)
-	console.log('bids added: ' + bids_added)
-  bids_added = 0
-  for(let address of wallet_orders){
+  console.log('Adding to queue...' + slug)
+	
+  let bids_added = 0
+	let order_count = 0
+	let loop_counter = 0
+	var assets = await mongo.find({'slug':slug}, {})
+	// token_ids = assets.map(({ token_id }) => token_id);
+	let token_ids = []
+	let asset_contract_address = assets[0].token_address
+	let temp_30_array = []
+	let asset_count = 0
+	for(let asset of assets){
+		asset_count += 1
+		temp_30_array.push(asset.token_id)
+		if(temp_30_array.length === 30){
+			token_ids.push(temp_30_array)
+			temp_30_array = []
+		}
+		if(asset_count === assets.length){
+			token_ids.push(temp_30_array)
+		}
+	}
+  for(let token_array of token_ids){
+		console.log(loop_counter + '/' + assets.length + ' for ' + assets[0].slug)
+		loop_counter += 30
+		let has_bids = {}
+		let top_bids = 0
+		let no_bids = 0
   	await utils.sleep(250)
-  	var orders =  await opensea_handler.get_orders_window(address, false, token_ids)
-    try {
+		let asset_map = {}
+  	var orders =  await opensea_handler.get_orders_window(asset_contract_address, false, token_array)
+    try {	
 	    for(let o of orders){
+				has_bids[o.asset.tokenId] = true
 	    	let asset = {}
 	    	asset['token_id'] = o.asset.tokenId
 	    	asset['token_address'] = o.asset.tokenAddress
 	    	asset['slug'] = o.asset.collection.slug
 	    	asset['fee'] = o.asset.collection.devSellerFeeBasisPoints / 10000
-	    	asset['event_type'] = type 
+	    	asset['event_type'] = 'collection' 
 	    	asset['expiration'] = .25
+				asset['owner_address'] = o.makerAccount.address.toLowerCase()
 	    	if(exp !== ''){
 	    		asset['expiration'] = exp/60
 	    	}
-        const watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
-        if(watchListCollection !== undefined && watchListCollection['tier'] !== 'skip'){
-          asset['tier'] = watchListCollection['tier'];
-	    		bids_added += 1
-	    		let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
-	    		try{
-	    			asset['traits'] = mongo_traits.traits
-	    			for(trait of asset.traits){
-			    		let collection_traits = trait_bids[asset['slug']]
-								if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
-									if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-										let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
-										if(!asset['bid_range']){
-											asset['bid_range'] = range
-											asset['trait'] = trait.value
-										}
-										if(range[1] > asset['bid_range'][1]){
-											asset['trait'] = trait.value
-											asset['bid_range'] = range
-										}
-									}
-								}
-		    		}
-	    		} catch (e) {
-	    			console.log(asset)
-	    		}
-
-	    		if (data_node.PRIORITY_COMP_WALLET.includes(address)) {
-	    			asset['bid_amount'] = o.basePrice/1000000000000000000
-	    			redis_handler.push_asset_high_priority(asset);
-	    		} else {
-	    			if(queue_length < 1000){
-	    				asset['bid_amount'] = o.basePrice/1000000000000000000
-	    			}
-	    			redis_handler.redis_push_asset_flash(asset);
-	    		}
-	    	}
+				order_count += 1
+				asset['bid_amount'] = o.basePrice/1000000000000000000	
+				if(!asset_map[asset['token_id']]){
+					asset_map[o.asset.tokenId] = asset
+				}
+				else {
+					if(asset['bid_amount'] > asset_map[asset['token_id']]['bid_amount']){
+						asset_map[asset['token_id']] = asset
+					}
+				}
 	    }
+			for(let id of token_array){
+				if(!has_bids[id]){
+					no_bids += 1
+					console.log('No bids for: ' + id)
+					let asset = {}
+					asset['token_id'] = id
+					asset['token_address'] = asset_contract_address
+					asset['slug'] = slug
+					asset['event_type'] = 'no bids' 
+					asset['expiration'] = .25
+					if(exp !== ''){
+						asset['expiration'] = exp/60
+					}
+					asset_map[asset['token_id']] = asset
+				}
+			}
+			console.log('No bids for: ' + no_bids)
+			for(let a in asset_map){
+				if(!blacklist_wallets.includes(asset_map[a]['owner_address'])){
+					bids_added += 1
+					await redis_handler.redis_push('collection', asset_map[a]); 
+				} else{
+					top_bids += 1
+				}
+			}
+			console.log('Top bids on: ' + top_bids)
     }
     catch(ex) {
     	console.log(ex)
       console.log(ex.message)
-      console.log('error ' + type + ' queue')
+      console.log('error ')
     }
 	}
+	let queue_length = await redis_handler.get_queue_length('collection')
+	console.log('orders found: ' + order_count)
+	console.log('bids added: ' + bids_added)
+	console.log('Queue collection: ' + queue_length)
 	var end_time = Math.floor(+new Date())
-	if (end_time - start_time < time_window){
-		let wait_time = time_window - (end_time - start_time)
-		console.log('Queue ' + type + ': ' + queue_length)
-		console.log('waiting: ' + wait_time + 'ms')
-		await utils.sleep(wait_time)
-	}
-  get_competitor_bids(type, exp)
+	console.log('run time: ' + ((end_time - start_time)/60000).toFixed(2) + ' minutes')
+	// if (end_time - start_time < exp*60000){
+	// 	let wait_time = exp*60000 - (end_time - start_time)
+	// 	console.log('Queue collection: ' + queue_length)
+	// 	console.log('waiting: ' + wait_time + 'ms')
+	// 	await utils.sleep(wait_time)
+	// }
+	
+  //get_collection_bids(type, exp)
 }
-
 async function start(){
-  await watchlistupdater.startLoop();
-  get_collection_bids()
+	// const readline = require('readline-sync')
+	// let slug = readline.question('slug: ')
+	// let exp = readline.question('exp: ')
+  // get_collection_bids(slug, exp)
+	get_collection_bids(process.argv[3], process.argv[4])
 }
 // start()
 module.exports = { start, get_collection_bids };

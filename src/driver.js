@@ -107,9 +107,9 @@ function connect(){
 async function add_focus(){
 	//basePrice/1000000000000000000
 	// let assets = await opensea_handler.get_assets_with_cursor('boredapeyachtclub')
-	let token_array = ['3405']
+	let token_array = ['7330', '4141', '7671', '7247', '4445', '5298']
 	for(let token of token_array){
-		let asset = await mongo.readAssetBySlug('azuki', token)
+		let asset = await mongo.readAssetBySlug('boredapeyachtclub', token)
 		let trimmed_asset = {}
 		trimmed_asset['token_id'] = asset.token_id
 		trimmed_asset['traits'] = asset.traits
@@ -134,7 +134,7 @@ async function add_focus(){
 async function run_interactive(){
 
 	const readline = require('readline-sync')	
-	let command = readline.question('Run: ')
+	let command = process.argv[2]
 	if(command === 'comp'){
 		let address = readline.question('address: ')
 		let time_window = readline.question('window: ')
@@ -153,7 +153,7 @@ async function run_interactive(){
 		listed.start()
 	} else if(command === 'rare'){
 		rare.start()
-	} else if(command === 'collection'){
+	} else if(command === 'coll'){
 		collection.start()
 	} else if(command === 'transfer'){
 		transfer.start()
@@ -198,11 +198,11 @@ async function main(){
 	}
 	await redis_handler.start_connection()
 	await mongo.connect()
-
-	if(!process.argv[2]){
-		run_interactive()
-	} else {
-		run_flag()
-	}
+	run_interactive()
+	// if(!process.argv[2]){
+	// 	run_interactive()
+	// } else {
+	// 	run_flag()
+	// }
 } 
 main()
