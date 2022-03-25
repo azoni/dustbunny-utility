@@ -95,7 +95,7 @@ async function redis_push(queue_name ,asset) {
 		let floor_price = data.floor_price
 		let fee = data.dev_seller_fee_basis_points/10000
 		if(asset['bid_amount'] > floor_price*(max_range-fee)){
-			console.log('TOO HIGH ' + asset.bid_amount.toFixed(2) + ' ' + asset.slug + ' ' + asset.token_id + ' ' + asset.trait)
+			console.log('TOO HIGH ' + asset.bid_amount.toFixed(2) + ' ' + floor_price + ' ' + asset.slug + ' ' + asset.token_id + ' ' + asset.trait)
 			return
 		}
 		if(asset['bid_amount'] < floor_price*(min_range-fee)){
