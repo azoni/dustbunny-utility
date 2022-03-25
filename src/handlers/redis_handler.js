@@ -68,24 +68,30 @@ async function redis_push(queue_name ,asset) {
 	}
 	asset['bid_range'] = [min_range, max_range]
 	let traits = await mongo.read_traits(asset['slug'])
-	if(traits){
-		let collection_traits = traits.traits
-		for(trait of asset.traits){
-			if(collection_traits[trait.trait_type.toLowerCase()]){
-				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-					let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
-					if(!asset['bid_range']){
-						asset['bid_range'] = range
-						asset['trait'] = trait.value
-					}
-					if(range[1] > asset['bid_range'][1]){
-						asset['trait'] = trait.value
-						asset['bid_range'] = range
+	try{
+		if(traits){
+			let collection_traits = traits.traits
+			for(trait of asset.traits){
+				if(collection_traits[trait.trait_type.toLowerCase()]){
+					if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
+						let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+						if(!asset['bid_range']){
+							asset['bid_range'] = range
+							asset['trait'] = trait.value
+						}
+						if(range[1] > asset['bid_range'][1]){
+							asset['trait'] = trait.value
+							asset['bid_range'] = range
+						}
 					}
 				}
 			}
 		}
+	} catch(e){
+		console.log(e.message)
+		console.log('Asset doesnt exist')
 	}
+	
 
 	if(asset['bid_amount']){
 		let min_range = asset['bid_range'][0]
