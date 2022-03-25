@@ -57,7 +57,7 @@ async function redis_push(queue_name ,asset) {
 			max_range = .86
 		} else if(asset['tier'] === 'high'){
 			min_range = .71
-			max_range = .91
+			max_range = .925
 		} else if(asset['tier'] === 'low'){
 			min_range = .61
 			max_range = .81

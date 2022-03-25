@@ -3,9 +3,14 @@ const redis_handler = require('../handlers/redis_handler.js')
 const utils = require('../utility/utils.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
 const mongo = require('../AssetsMongoHandler.js')
+const { STAKING_WALLETS } = require('../data_node.js')
 
 async function get_collection_bids(slug, exp, run_traits){
 	let blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556','0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
+	let staking_wallets = await mongo.readStakingWallets()
+	const slugs_staking_wallets = staking_wallets
+		.filter(el => el.slug === slug)
+		.map(({ address }) => address.toLowerCase());
 	for(let w in blacklist_wallets){
 		blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
 	}
@@ -16,18 +21,24 @@ async function get_collection_bids(slug, exp, run_traits){
 	let order_count = 0
 	let loop_counter = 0
 	let query = {'slug':slug}
+	var assets;
 	if(run_traits === 'only'){
 		let traits = await mongo.read_traits(slug)
+		assets = []
 		console.log(traits.traits)
-		let trait_dict = traits.traits
-		for(let trait in trait_dict){
-			console.log(trait)
-			console.log(Object.keys(trait_dict[trait])[0])
+		let traits_dict = traits.traits
+		for(let trait in traits_dict){
+			query = {slug:slug, traits: {'$elemMatch': { 'value': { "$regex" : Object.keys(traits_dict[trait])[0] , "$options" : "i"}, 'trait_type': { "$regex" : trait , "$options" : "i"}}}} 
+			let temp_assets = await mongo.find(query, {$caseSensitive: false})
+			console.log(trait + ' '  + traits_dict[trait])
+			for(let a of temp_assets){
+				assets.push(a)
+			}
 		}
-		return
-		query = {slug:slug, traits: {'$elemMatch': { 'value': 'Circ-o-verse', 'trait_type': trait}}}
-	} 
-	var assets = await mongo.find(query, {})
+	} else {
+		assets = await mongo.find(query, {})
+	}
+	
 	// token_ids = assets.map(({ token_id }) => token_id);
 	let token_ids = []
 	let asset_contract_address = assets[0].token_address
@@ -67,6 +78,7 @@ async function get_collection_bids(slug, exp, run_traits){
 	    	asset['event_type'] = 'collection' 
 	    	asset['expiration'] = .25
 				asset['owner_address'] = o.makerAccount.address.toLowerCase()
+				asset['owner'] = o.asset.owner.address.toLowerCase()
 	    	if(exp !== ''){
 	    		asset['expiration'] = exp/60
 	    	}
@@ -92,6 +104,7 @@ async function get_collection_bids(slug, exp, run_traits){
 					asset['token_address'] = asset_contract_address
 					asset['slug'] = slug
 					asset['event_type'] = 'no bids' 
+					asset['bid_amount'] = .01
 					asset['expiration'] = .25
 					if(exp !== ''){
 						asset['expiration'] = exp/60
@@ -104,7 +117,7 @@ async function get_collection_bids(slug, exp, run_traits){
 			}
 			console.log('assets with no bids: ' + no_bids)
 			for(let a in asset_map){
-				if(!blacklist_wallets.includes(asset_map[a]['owner_address'])){
+				if(!blacklist_wallets.includes(asset_map[a]['owner_address']) && !slugs_staking_wallets.includes(a['owner'])){
 					bids_added += 1
 					await redis_handler.redis_push('collection', asset_map[a], run_traits); 
 				} else{
@@ -132,8 +145,7 @@ async function get_collection_bids(slug, exp, run_traits){
 	// 	// await utils.sleep(wait_time)
 	// }
 	exp = (end_time - start_time)/60000
-	console.log(exp)
-  get_collection_bids(slug, exp)
+  get_collection_bids(slug, exp, run_traits)
 }
 async function start(){
 	// const readline = require('readline-sync')
