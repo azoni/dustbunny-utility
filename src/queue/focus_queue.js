@@ -183,7 +183,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
       for (const id of token_ids) {
         if (tokenIdToTopOrderDict[id] === undefined) {
           console.log(`found no bids so sending => token_id:${id}, contract: ${contract_address}, slugs: ${slug}`);
-          redis_handler.push_asset_high_priority({
+          redis_handler.redis_push('high', {
             "token_id": id,
             "token_address": contract_address,
             "slug": slug,
@@ -198,7 +198,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
         console.log(`We are top bid ${slug} : id: ${key}, ${tokenIdToTopOrderDict[key].topBid}`);
       } else {
         console.log(`sending => top: ${tokenIdToTopOrderDict[key].topBid}, token_id:${key}, contract: ${contract_address}, slugs: ${slug}`);
-        redis_handler.push_asset_high_priority({
+        redis_handler.redis_push('high', {
           "token_id": key,
           "token_address": contract_address,
           "slug": slug,
