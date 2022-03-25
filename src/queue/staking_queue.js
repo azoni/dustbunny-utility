@@ -4,7 +4,7 @@ const data_node = require('../data_node.js')
 const utils = require('../utility/utils.js')
 const mongo = require('../AssetsMongoHandler.js')
 
-async function staking_queue_add(slug, event_type, tier, exp, bid, run_traits){
+async function staking_queue_add(slug, exp){
 	let trait_bids = data_node.COLLECTION_TRAIT
 	console.log('Getting unstaked assets for ' + slug + '...')
 	// var assets =  await opensea_handler.get_assets(slug)
@@ -20,37 +20,17 @@ async function staking_queue_add(slug, event_type, tier, exp, bid, run_traits){
 	console.log('Trait bids: ' + collection_traits)
 	for(let asset of assets){
 		asset['fee'] = asset.dev_seller_fee_basis_points / 10000
-    	asset['event_type'] = 'staking'
-    	asset['expiration'] = exp
-    	asset['bid_range'] = false
-    	asset['tier'] = tier
-        if (slugs_staking_wallets.includes(asset.owner_address.toLowerCase())) {
-    		continue
-    	}
-    	for(trait of asset.traits){
-			if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
-				if(collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-					let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
-					if(!asset['bid_range']){
-						asset['bid_range'] = range
-						asset['trait'] = trait.value
-					}
-					if(range[1] > asset['bid_range'][1]){
-						asset['trait'] = trait.value
-						asset['bid_range'] = range
-					}
-				}
-			}
-    	}
-    	if(asset['trait'] && !run_traits){
-    		continue
-    	}
-    	counter += 1
-    	asset['bid_amount'] = bid
-    	await redis_handler.redis_push(event_type, asset)
+		asset['event_type'] = 'staking'
+		asset['expiration'] = exp
+			if (slugs_staking_wallets.includes(asset.owner_address.toLowerCase())) {
+			continue
+		}
+		counter += 1
+		asset['bid_amount'] = false
+		await redis_handler.redis_push('staking', asset)
 	}
 	console.log('counter: ' + counter)
-	await redis_handler.print_queue_length(event_type)
+	await redis_handler.print_queue_length('staking')
 	console.log(slug + ' added.')
 }
 
@@ -58,14 +38,15 @@ async function start(){
 	let exp = 30
 	while(true){
 		let start_time = Math.floor(+new Date())
-		await staking_queue_add('critterznft', 'staking', 'medium', exp/60, false, false)
-		await staking_queue_add('sappy-seals', 'staking', 'medium', exp/60, false, false)
-		await staking_queue_add('anonymice', 'staking', 'medium', exp/60, false, false)
-		await staking_queue_add('genesis-creepz', 'staking', 'medium', exp/60, false, false)
-		await staking_queue_add('metahero-generative', 'staking', 'medium', exp/60, false, false)
-		await staking_queue_add('metroverse', 'staking', 'medium', exp/60, false, true)
-		await staking_queue_add('ether-orcs', 'staking', 'medium', exp/60, false, false)
-		await staking_queue_add('nft-worlds', 'staking', 'medium', exp/60, false, false)
+		await staking_queue_add('critterznft', exp/60)
+		await staking_queue_add('sappy-seals', exp/60)
+		await staking_queue_add('anonymice', exp/60)
+		await staking_queue_add('genesis-creepz', exp/60)
+		await staking_queue_add('metahero-generative', exp/60)
+		await staking_queue_add('metroverse-genesis', exp/60)
+		await staking_queue_add('metroverse-blackout', exp/60)
+		await staking_queue_add('ether-orcs', exp/60)
+		await staking_queue_add('nft-worlds', exp/60)
 		//await utils.sleep(exp*60000)
 		let end_time = Math.floor(+new Date())
 		if (end_time - start_time < exp*60){

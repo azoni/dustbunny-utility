@@ -107,9 +107,9 @@ function connect(){
 async function add_focus(){
 	//basePrice/1000000000000000000
 	// let assets = await opensea_handler.get_assets_with_cursor('boredapeyachtclub')
-	let token_array = ['7330', '4141', '7671', '7247', '4445', '5298']
+	let token_array = ['3132']//, '2874', '3485', '4865', '4019', '7165', '5536', '7184']
 	for(let token of token_array){
-		let asset = await mongo.readAssetBySlug('boredapeyachtclub', token)
+		let asset = await mongo.readAssetBySlug('azuki', token)
 		let trimmed_asset = {}
 		trimmed_asset['token_id'] = asset.token_id
 		trimmed_asset['traits'] = asset.traits
@@ -125,7 +125,7 @@ async function add_focus(){
 			slug: trimmed_asset['slug'],
 			collection_address: trimmed_asset['token_address'],
 			token_ids: [trimmed_asset['token_id']],
-			time_suggestion: 300*60_000
+			time_suggestion: 600*60_000
 		}
 		await redis_handler.redis_push_command(command1)
 		console.log(token + ' added.')
@@ -143,7 +143,7 @@ async function run_interactive(){
 		// add option for flat bid, and expiration
 	} else if(command === 'man'){
 		manual.start()
-	} else if(command === 'add focus'){
+	} else if(command === 'add-focus'){
 		add_focus()
 	} else if(command === 'flash'){
 		flash.start()
@@ -160,11 +160,45 @@ async function run_interactive(){
 	} else if(command === 'smart'){
 		smart.start()
 	} else if(command === 'dump'){
-		let dump = readline.question('which: ')
-		redis_handler.dump_queue(dump)
+		redis_handler.dump_queue(process.argv[3])
 	} else if(command === 'len'){
-		let len = readline.question('which: ')
-		redis_handler.print_queue_length(len)
+		redis_handler.print_queue_length(process.argv[3])
+		if(process.argv[3] === 'all') {
+			let total_bids = 0
+			let loops = 1
+			while(true){
+				await redis_handler.print_queue_length('high')
+				await redis_handler.print_queue_length('rare')
+				await redis_handler.print_queue_length('listed')
+				await redis_handler.print_queue_length('transfer')
+				await redis_handler.print_queue_length('staking')
+				await redis_handler.print_queue_length('collection')
+				await redis_handler.print_queue_length('flash')
+				await redis_handler.print_queue_length('manual')
+				let flash_length = await redis_handler.get_queue_length('flash')
+				if(flash_length > 10000){
+					redis_handler.dump_queue('flash')
+				}
+				console.log()
+				let orders = await opensea_handler.get_orders_window('0x18a73AaEe970AF9A797D944A7B982502E1e71556', 3000)
+				await utils.sleep(10000)
+				let orders2 = await opensea_handler.get_orders_window('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', 3000)
+				console.log((orders.length + orders2.length)*20 + ' bids per minute')
+				total_bids += (orders.length + orders2.length)*20
+				console.log('Average bpm: ' + (total_bids/loops).toFixed())
+				if((orders.length + orders2.length) < 1){
+					console.log('Queues are empty.')
+				}
+				if((orders.length + orders2.length)*20 < 1000 && (orders.length + orders2.length) < 0){
+					console.log('Bidding is currently slow.')
+				}
+				console.log('----------------------')
+				console.log()
+				await utils.sleep(10000)
+				loops += 1
+			}
+			process.exit(1)
+		}
 	} else if (command === 'focus') {
 		focus.start();
 	} else {

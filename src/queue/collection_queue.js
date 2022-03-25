@@ -4,7 +4,7 @@ const utils = require('../utility/utils.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
 const mongo = require('../AssetsMongoHandler.js')
 
-async function get_collection_bids(slug, exp){
+async function get_collection_bids(slug, exp, run_traits){
 	let blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556','0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
 	for(let w in blacklist_wallets){
 		blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
@@ -15,7 +15,19 @@ async function get_collection_bids(slug, exp){
   let bids_added = 0
 	let order_count = 0
 	let loop_counter = 0
-	var assets = await mongo.find({'slug':slug}, {})
+	let query = {'slug':slug}
+	if(run_traits === 'only'){
+		let traits = await mongo.read_traits(slug)
+		console.log(traits.traits)
+		let trait_dict = traits.traits
+		for(let trait in trait_dict){
+			console.log(trait)
+			console.log(Object.keys(trait_dict[trait])[0])
+		}
+		return
+		query = {slug:slug, traits: {'$elemMatch': { 'value': 'Circ-o-verse', 'trait_type': trait}}}
+	} 
+	var assets = await mongo.find(query, {})
 	// token_ids = assets.map(({ token_id }) => token_id);
 	let token_ids = []
 	let asset_contract_address = assets[0].token_address
@@ -58,6 +70,9 @@ async function get_collection_bids(slug, exp){
 	    	if(exp !== ''){
 	    		asset['expiration'] = exp/60
 	    	}
+				if(exp < 15){
+					asset['expiration'] = .25
+				}
 				order_count += 1
 				asset['bid_amount'] = o.basePrice/1000000000000000000	
 				if(!asset_map[asset['token_id']]){
@@ -81,6 +96,9 @@ async function get_collection_bids(slug, exp){
 					if(exp !== ''){
 						asset['expiration'] = exp/60
 					}
+					if(exp < 15){
+						asset['expiration'] = .25
+					}
 					asset_map[asset['token_id']] = asset
 				}
 			}
@@ -88,7 +106,7 @@ async function get_collection_bids(slug, exp){
 			for(let a in asset_map){
 				if(!blacklist_wallets.includes(asset_map[a]['owner_address'])){
 					bids_added += 1
-					await redis_handler.redis_push('collection', asset_map[a]); 
+					await redis_handler.redis_push('collection', asset_map[a], run_traits); 
 				} else{
 					top_bids += 1
 				}
@@ -113,6 +131,8 @@ async function get_collection_bids(slug, exp){
 	// 	// console.log('waiting: ' + wait_time/60000 + ' min')
 	// 	// await utils.sleep(wait_time)
 	// }
+	exp = (end_time - start_time)/60000
+	console.log(exp)
   get_collection_bids(slug, exp)
 }
 async function start(){
@@ -120,7 +140,7 @@ async function start(){
 	// let slug = readline.question('slug: ')
 	// let exp = readline.question('exp: ')
   // get_collection_bids(slug, exp)
-	get_collection_bids(process.argv[3], process.argv[4])
+	get_collection_bids(process.argv[3], process.argv[4], process.argv[5])
 }
 // start()
 module.exports = { start, get_collection_bids };

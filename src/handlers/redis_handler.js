@@ -88,6 +88,7 @@ async function redis_push(queue_name ,asset) {
 	}
 
 	if(asset['bid_amount']){
+		let min_range = asset['bid_range'][0]
 		let max_range = asset['bid_range'][1]
 		let collection_stats = await client.GET(`${asset['slug']}:stats`)
 		let data = JSON.parse(collection_stats)
@@ -96,6 +97,9 @@ async function redis_push(queue_name ,asset) {
 		if(asset['bid_amount'] > floor_price*(max_range-fee)){
 			console.log('TOO HIGH ' + asset.bid_amount.toFixed(2) + ' ' + asset.token_id + ' ' + asset.trait)
 			return
+		}
+		if(asset['bid_amount'] < floor_price*(min_range-fee)){
+			asset['bid_amount'] = floor_price*(min_range-fee)
 		}
 	}
 

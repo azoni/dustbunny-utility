@@ -1,6 +1,5 @@
 const opensea_handler = require('../handlers/opensea_handler.js')
 const redis_handler = require('../handlers/redis_handler.js')
-const data_node = require('../data_node.js')
 const utils = require('../utility/utils.js')
 const mongo = require('../AssetsMongoHandler.js')
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
@@ -8,13 +7,12 @@ let watchlistLoopStarted = false;
 
 // Grab assets from database to avoid api rate limits. 
 async function manual_queue_add(slug, event_type, exp, bid, run_traits){
-	let trait_bids = data_node.COLLECTION_TRAIT
-	let watch_list = watchlistupdater.getWatchList();
 	console.log('Getting assets for ' + slug + '...')
 	// var assets =  await opensea_handler.get_assets(slug)
 	let query = {'slug':slug}
 	if(run_traits === 'single'){
-		query = {slug:'boredapeyachtclub', traits: {'$elemMatch': { 'value': 'Trippy', 'trait_type': 'Fur'}}}			
+		console.log('finding single trait')
+		query = {slug:'metroverse-genesis', traits: {'$elemMatch': { 'value': 'Circ-o-verse', 'trait_type': 'Buildings: Commercial'}}}			
 	}
 	var assets = await mongo.find(query, {})
 	// let collection_traits = trait_bids[slug]
@@ -26,7 +24,7 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
 	} catch(e){
 		console.log('No traits found.')
 	}
-	
+	console.log('assets: ' + assets.length)
 	for(let asset of assets){
 		let trimmed_asset = {}
 		trimmed_asset['token_id'] = asset.token_id
@@ -37,12 +35,7 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
 		trimmed_asset['event_type'] = event_type
 		trimmed_asset['expiration'] = exp
 		trimmed_asset['bid_range'] = false
-		let watchListCollection = watch_list.find(({address}) => address === trimmed_asset['token_address']);
-		try{
-			trimmed_asset['tier'] = watchListCollection['tier'];
-		} catch(e){
-			console.log(trimmed_asset['slug'])
-		}
+
 		if(collection_traits !== false){
 			for(trait of asset.traits){
 				if(collection_traits !== undefined && collection_traits[trait.trait_type.toLowerCase()]){
