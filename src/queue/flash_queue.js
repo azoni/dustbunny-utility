@@ -73,12 +73,12 @@ async function get_competitor_bids(type, exp){
 	    		
 	    		if (data_node.PRIORITY_COMP_WALLET.includes(address)) {
 	    			asset['bid_amount'] = o.basePrice/1000000000000000000
-	    			redis_handler.push_asset_high_priority(asset);
+	    			redis_handler.redis_push('high', asset);
 	    		} else {
 	    			if(queue_length < 1000){
 	    				asset['bid_amount'] = o.basePrice/1000000000000000000
 	    			}
-	    			redis_handler.redis_push_asset_flash(asset);
+	    			redis_handler.redis_push('flash', asset);
 	    		}
 	    	}
 	    }
