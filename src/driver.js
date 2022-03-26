@@ -6,6 +6,8 @@ const flash = require('./queue/flash_queue.js')
 const transfer = require('./queue/transfer_queue.js')
 const smart = require('./queue/smart_queue.js')
 const focus = require('./queue/focus_queue.js');
+const bayc = require('./queue/bayc_queue.js');
+const trait = require('./queue/trait_queue.js');
 const collection = require('./queue/collection_queue.js');
 const http = require('http')
 const url = require('url');
@@ -153,6 +155,10 @@ async function run_interactive(){
 		listed.start()
 	} else if(command === 'rare'){
 		rare.start()
+	} else if(command === 'bayc'){
+		bayc.start()
+	} else if(command === 'trait'){
+		trait.start()
 	} else if(command === 'coll'){
 		collection.start()
 	} else if(command === 'transfer'){
