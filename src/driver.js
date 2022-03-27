@@ -11,6 +11,7 @@ const trait = require('./queue/trait_queue.js');
 const collection = require('./queue/collection_queue.js');
 const http = require('http')
 const url = require('url');
+const etherscan_handler = require('./handlers/etherscan_handler.js')
 const myIp  = require('./utility/what-is-my-ip.js');
 const redis_handler = require('./handlers/redis_handler.js')
 const mongo = require('./AssetsMongoHandler.js')
@@ -231,7 +232,32 @@ if (!myIp) {
 	throw new Error(`cant get ip: "${myIp}"`);
 }
 async function main(){
-	
+	let wallets = {
+		'wallet1': {
+			username: 'DustBunny_19',
+			address: '0x18a73AaEe970AF9A797D944A7B982502E1e71556'
+			},
+		// 'wallet2': {
+		// 	username: 'DustBunny_20',
+		// 	address: '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628'
+		// }, 
+		// 'wallet3': {
+		// 	username: 'DustBunny_21',
+		// 	address: '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A'
+		// }, 
+		'wallet4': {
+			username: 'DustBunny_22',
+			address: '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'
+		}, 
+	}
+	let total_weth = 0
+	for(let account in wallets){
+		let balance = await etherscan_handler.get_weth_balance(wallets[account]['address'])
+		wallets[account]['balance'] = balance
+		total_weth += balance
+	}
+	console.log(wallets)
+	console.log('total weth: ' + total_weth.toFixed(2))
 	console.log(myIp)
 	if(myIp === '10.0.0.59'){
 		connect()

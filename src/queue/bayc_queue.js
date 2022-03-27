@@ -14,7 +14,7 @@ async function get_collection_bids(slug, exp, run_traits){
 	for(let w in blacklist_wallets){
 		blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
 	}
- 	let start_time = Math.floor(+new Date())
+	let start_time = Math.floor(+new Date())
   console.log('Adding to queue...' + slug)
 	
   let bids_added = 0
@@ -58,13 +58,14 @@ async function get_collection_bids(slug, exp, run_traits){
 		}
 	}
 	let start = 0
-	let end = 10
+	let end = 3
 	let time = 0
 	var start_loop = Math.floor(+new Date())
 	while(true){
+		console.log(token_ids.slice(3, 6))
   		for(let token_array of token_ids.slice(start, end)){
   			console.log(loop_counter + '/' + assets.length + ' for ' + assets[0].slug)
-			loop_counter += 30
+			
 			let has_bids = {}
 			let top_bids = 0
 			let no_bids = 0
@@ -120,6 +121,7 @@ async function get_collection_bids(slug, exp, run_traits){
 				for(let a in asset_map){
 					if(!blacklist_wallets.includes(asset_map[a]['owner_address']) && !slugs_staking_wallets.includes(a['owner'])){
 						bids_added += 1
+						console.log('boredapeyachtclub ' + asset_map[a].token_id + ' ' + asset_map[a].bid_amount)
 						await redis_handler.redis_push('collection', asset_map[a], run_traits); 
 					} else{
 						top_bids += 1
@@ -132,12 +134,13 @@ async function get_collection_bids(slug, exp, run_traits){
 				console.log(ex.message)
 				console.log('error ')
 		    }
-  		
 		}
 		var end_loop = Math.floor(+new Date())
+		console.log('runtime: ' + ((end_loop - start_loop)/60000).toFixed(2))
 		if(end_loop - start_loop > 15*60000){
-			start += 10
-			end += 10
+			loop_counter += token_ids.slice(start, end).length*30
+			start += 3
+			end += 3
 			start_loop = Math.floor(+new Date())
 		}
 	}
