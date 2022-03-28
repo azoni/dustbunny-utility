@@ -98,6 +98,10 @@ async function redis_push(queue_name ,asset) {
 		let max_range = asset['bid_range'][1]
 		let collection_stats = await client.GET(`${asset['slug']}:stats`)
 		let data = JSON.parse(collection_stats)
+		if (!data) {
+			console.warn(`Collection stats for asset: ${asset['slug']} missing`);
+			return;
+		}
 		let floor_price = data.floor_price
 		let fee = data.dev_seller_fee_basis_points/10000
 		if(asset['bid_amount'] > floor_price*(max_range-fee)){
