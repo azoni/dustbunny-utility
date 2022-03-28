@@ -189,7 +189,7 @@ async function run_interactive(){
 				if((orders.length + orders2.length) < 1){
 					console.log('Queues are empty.')
 				}
-				if((orders.length + orders2.length)*20 < 1000 && (orders.length + orders2.length) < 0){
+				if((orders.length + orders2.length)*20 < 1000 && (orders.length + orders2.length) > 0){
 					console.log('Bidding is currently slow.')
 				}
 				console.log('----------------------')
@@ -206,7 +206,7 @@ async function run_interactive(){
 	}
 }
 function run_flag(){
-	console.log(process.argv)
+	// console.log(process.argv)
 	let queue = process.argv[2]
 	let exp = process.argv[3]
 
@@ -225,13 +225,12 @@ if (!myIp) {
 	throw new Error(`cant get ip: "${myIp}"`);
 }
 async function main(){
-	
 	console.log(myIp)
 	if(myIp === '10.0.0.59'){
 		connect()
 	}
 	await redis_handler.start_connection()
-	await mongo.connect()
+	await mongo.connect()	
 	run_interactive()
 	// if(!process.argv[2]){
 	// 	run_interactive()

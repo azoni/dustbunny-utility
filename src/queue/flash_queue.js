@@ -5,6 +5,7 @@ const opensea_handler = require('../handlers/opensea_handler.js')
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
 const mongo = require('../AssetsMongoHandler.js')
 
+
 let bids_added = 0
 let counter = 0
 let wallet_orders = data_node.COMP_WALLETS
@@ -48,7 +49,14 @@ async function get_competitor_bids(type, exp){
 	    		counter += 1
 	    		bids_added += 1
 	    		let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
-	    		try{
+	    		if(mongo_traits === null) {
+						const mongo_insert = require('../api_mongo_insert_to_db.js')
+						await mongo_insert.add_asset(asset.token_address, asset.token_id)
+						mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
+						console.log('Added to DB. --------------')
+						console.log(mongo_traits)
+					}
+					try{
 	    			asset['traits'] = mongo_traits.traits
 	    			for(trait of asset.traits){
 			    		let collection_traits = trait_bids[asset['slug']]

@@ -32,6 +32,7 @@ async function main() {
     console.log(process.argv)
     
     if (process.argv.length !== 3) {
+      return
       console.error('not enough args');
       throw new Error('not enough args');
     }
@@ -91,7 +92,24 @@ async function getAsset(slug, direction = 'desc') {
     await sleep(1000);
   } while (cursor);
 }
-
+async function add_asset(token_address, token_id){
+  await mongoose.connect('mongodb://10.0.0.80:27017/test');
+  const asset = await seaport.api.getAsset({
+    tokenAddress: token_address,
+    tokenId: token_id
+  })
+  const silence = new Kitten({
+    name: asset.name,
+    token_id: asset.token_id,
+    token_address: asset.asset_contract?.address,
+    image_url: asset.image_url,
+    slug: asset.slug,
+    traits: asset.traits || []
+  });
+  await silence.save();
+  console.log(silence.name);
+  await sleep(1000);
+}
 async function handleError(url, retry) {
   switch (retry) {
     case 3:
@@ -142,5 +160,8 @@ async function sleep(ms){
 	await new Promise(resolve => setTimeout(resolve, ms))
 }
 module.exports = {
-  getAsset
+  getAsset,
+  add_asset,
+  main,
+  Kitten
 }
