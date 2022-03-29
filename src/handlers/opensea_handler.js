@@ -31,7 +31,7 @@ async function get_assets_with_cursor(slug) {
 	const result = [];
   do {
     let resourceUrl = createGetAssetURL({ slug, limit, cursor });
-    console.log(resourceUrl);
+    //console.log(resourceUrl);
     let response =  await fetchAssetPage(resourceUrl);
     cursor = response.cursor
     const assets = response.body?.assets || [];
@@ -44,8 +44,11 @@ async function get_assets_with_cursor(slug) {
         slug: slug,
         dev_seller_fee_basis_points: parseInt(asset.collection?.dev_seller_fee_basis_points),
         traits: asset.traits || [],
-				owner_address: asset?.owner?.address || '',
+				owner_address: asset?.owner?.address || '',  
       };
+      if(asset.sell_orders !== null){
+        ass['listed_price'] = asset.sell_orders[0].current_price/1000000000000000000
+      }
 			result.push(ass);
     }
     await sleep(500);
@@ -66,19 +69,21 @@ async function handleError(url, retry) {
       return sleep(6000).then(_ => fetchAssetPage(url, retry - 1));
   }
 }
-
+let asset_cursor_count = 0
 async function fetchAssetPage(url, retry = 3) {
 	const options = {method: 'GET', headers: {Accept: 'application/json', 'X-API-KEY': values.API_KEY}};
   return fetch(url, options)
   .then(response => {
-    console.log(response.status);
+    //console.log(response.status);
     return response.json();
   })
   .then(response => {
     if (response.assets === undefined && retry > 0) {
       return handleError(url, retry);
     }
+    asset_cursor_count += response.assets?.length
     console.log(`cursor: ${response.next}\nlen: ${response.assets?.length}\n`);
+    console.log(asset_cursor_count)
     return { cursor: response.next, len: response.assets?.length, body: response };
   })
   .catch(err => {
@@ -97,7 +102,7 @@ function createGetAssetURL({ slug, limit = 50, cursor }) {
   (cursor ? `&cursor=${encodeURIComponent(cursor)}`: '' ) +
   //`&order_direction=${direction}` +
   `&limit=${limit}` +
-  `&include_orders=false`
+  `&include_orders=true`
   return resourceUrl
 }
 
@@ -142,7 +147,7 @@ async function get_listed_asset(slug){
 	let listed_assets = []
 	let assets = await get_assets_with_cursor(slug)
 	for(let asset of assets){
-		if(asset.sellOrders !== null){
+		if(asset.listed_price){
 			listed_assets.push(asset)
 		}
 	}
@@ -212,7 +217,7 @@ let blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73A
 for(let w in blacklist_wallets){
 	blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
 }
-async function get_orders_window(address, time_window, token_ids){
+async function get_orders_window(address, time_window, token_ids, side){
   let offset = 0
   let search_time = get_ISOString(time_window)
   let search_time2 = get_ISOString_now()
@@ -243,12 +248,14 @@ async function get_orders_window(address, time_window, token_ids){
   } else if(address !== 'all'){
   	order_api_data['maker'] = address
   }
-  
+  if(side){
+    order_api_data['side'] = 1
+  }
   do{
   	await sleep(250)
     try{
         order_api_data.offset = offset;
-    		order = await seaport.api.getOrders(order_api_data)	    
+    		order = await seaport.api.getOrders(order_api_data)	 
 	    try{
         username = order['orders'][0].makerAccount.user.username
       } catch(ex){
@@ -256,7 +263,7 @@ async function get_orders_window(address, time_window, token_ids){
       }
 	    order_length = order['orders'].length
 	    for(let o of order.orders){
-	    	if(o.paymentTokenContract.symbol === 'WETH'){
+	    	if(o.paymentTokenContract.symbol === 'WETH' || o.paymentTokenContract.symbol === 'ETH'){
 	    		orders_array.push(o)
 	    	}
 	    }
@@ -269,7 +276,10 @@ async function get_orders_window(address, time_window, token_ids){
     offset += 50
     // console.log(orders_array.length)
   } while(order_length === 50)
-  console.log(orders_array.length + ' bids made by ' + username)
+  if(!side){
+    console.log(orders_array.length + ' bids made by ' + username)
+  }
+  
   return orders_array
 }
 
@@ -310,5 +320,6 @@ module.exports = {
 	get_assets,
 	get_orders_window,
 	get_assets_with_cursor,
-	get_listed_lowered
+	get_listed_lowered,
+  get_listed_asset
 };

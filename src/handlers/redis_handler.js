@@ -41,6 +41,7 @@ async function redis_push(queue_name ,asset) {
 	} catch(e) {
 		console.log('No traits on asset.')
 	}
+	watch_list = watchlistupdater.getWatchList();
 	let watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
 	if(watchListCollection === undefined || watchListCollection['tier'] === 'skip' || (blacklist_wallets.includes(asset['owner_address']))){
 		console.log('already top bid')
@@ -104,7 +105,7 @@ async function redis_push(queue_name ,asset) {
 		}
 		let floor_price = data.floor_price
 		let fee = data.dev_seller_fee_basis_points/10000
-		if(asset['bid_amount'] > floor_price*(max_range-fee)){
+		if(asset['bid_amount'] > floor_price*(max_range-fee) && !asset['bypass_max']){
 			console.log('TOO HIGH ' + asset.bid_amount.toFixed(2) + ' ' + floor_price + ' ' + asset.slug + ' ' + asset.token_id + ' ' + asset.trait)
 			return
 		}

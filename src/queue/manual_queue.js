@@ -34,7 +34,7 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
 		trimmed_asset['fee'] = asset.dev_seller_fee_basis_points / 10000
 		trimmed_asset['event_type'] = event_type
 		trimmed_asset['expiration'] = exp
-		trimmed_asset['bid_range'] = false
+		
 
 		if(collection_traits !== false){
 			for(trait of asset.traits){
@@ -60,7 +60,9 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits){
 		if(!trimmed_asset['trait'] && run_traits === 'only'){
 			continue
 		}
-		trimmed_asset['bid_amount'] = false
+		// trimmed_asset['bidding_address'] = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
+		// trimmed_asset['bid_amount'] = 1
+		// trimmed_asset['bypass_max'] = true
 		await redis_handler.redis_push(event_type, trimmed_asset)
 	}
 	await redis_handler.print_queue_length(event_type)

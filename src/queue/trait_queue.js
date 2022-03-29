@@ -5,7 +5,7 @@ const mongo = require('../AssetsMongoHandler.js')
 
 // Grab assets from database to avoid api rate limits. 
 async function add_trait_queue(slug, exp){
-	console.log('Getting assets for ' + slug + '... assets:' + assets.length)
+	console.log('Getting assets for ' + slug + '...')
 	let counter = 0
 	let traits = await mongo.read_traits(slug)
 	let assets = []
@@ -25,13 +25,13 @@ async function add_trait_queue(slug, exp){
 		trimmed_asset['traits'] = asset.traits
 		trimmed_asset['token_address'] = asset.token_address
 		trimmed_asset['slug'] = asset.slug
-		trimmed_asset['event_type'] = 'scheduled'
+		trimmed_asset['event_type'] = 'trait'
 		trimmed_asset['expiration'] = exp
 
-		await redis_handler.redis_push(event_type, trimmed_asset)
+		await redis_handler.redis_push('collection', trimmed_asset)
 		counter += 1
 	}
-	await redis_handler.print_queue_length(event_type)
+	await redis_handler.print_queue_length('collection')
 	console.log(slug + ' added.')
 }
 
