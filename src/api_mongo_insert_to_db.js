@@ -25,6 +25,9 @@ const Kitten = mongoose.model('nftasset', Asset);
 main().catch(err => console.log(err));
 
 async function main() {
+  if(process.argv[3] !== add){
+    return
+  }
   try {
     await mongoose.connect('mongodb://10.0.0.80:27017/test');
     //const k =  await Kitten.findOne();
@@ -37,12 +40,12 @@ async function main() {
       throw new Error('not enough args');
     }
   
-    const kk = await Kitten.findOne({ slug: process.argv[2]})
+    const kk = await Kitten.findOne({ slug: process.argv[3]})
     if (kk) {
       console.log('already in the database');
       return;
     }
-    await getAsset(process.argv[2]);
+    await getAsset(process.argv[3]);
   } finally {
     mongoose.connection.close();
   }
@@ -92,7 +95,7 @@ async function getAsset(slug, direction = 'desc') {
     await sleep(1000);
   } while (cursor);
 }
-async function add_asset(token_address, token_id){
+async function add_asset(slug, token_address, token_id){
   await mongoose.connect('mongodb://10.0.0.80:27017/test');
   const asset = await seaport.api.getAsset({
     tokenAddress: token_address,
@@ -100,14 +103,14 @@ async function add_asset(token_address, token_id){
   })
   const silence = new Kitten({
     name: asset.name,
-    token_id: asset.token_id,
-    token_address: asset.asset_contract?.address,
+    token_id: token_id,
+    token_address: token_address,
     image_url: asset.image_url,
-    slug: asset.slug,
+    slug: slug,
     traits: asset.traits || []
   });
   await silence.save();
-  console.log(silence.name);
+  console.log(silence);
   await sleep(1000);
   mongoose.connection.close();
 }

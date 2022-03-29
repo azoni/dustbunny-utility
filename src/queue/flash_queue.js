@@ -51,7 +51,7 @@ async function get_competitor_bids(type, exp){
 	    		let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
 	    		if(mongo_traits === null) {
 						const mongo_insert = require('../api_mongo_insert_to_db.js')
-						await mongo_insert.add_asset(asset.token_address, asset.token_id)
+						await mongo_insert.add_asset(asset.slug, asset.token_address, asset.token_id)
 						mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
 						console.log('Added to DB. --------------')
 						console.log(mongo_traits)

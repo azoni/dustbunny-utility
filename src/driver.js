@@ -269,36 +269,35 @@ async function main(){
 	}
 	await redis_handler.start_connection()
 	await mongo.connect()	
-	query = {slug:'kaiju-kingz', traits: {'$elemMatch': { 'value': { "$regex" : 'genesis' , "$options" : "i"}, 'trait_type': { "$regex" : 'origin' , "$options" : "i"}}}}
-	var assets = await mongo.find(query, {})
-	console.log(assets.length)
-	let token_ids = []
-	let asset_contract_address = assets[0].token_address
-	let temp_30_array = []
-	let asset_count = 0
-	for(let asset of assets){
-		asset_count += 1
-		temp_30_array.push(asset.token_id)
-		if(temp_30_array.length === 30){
-			token_ids.push(temp_30_array)
-			temp_30_array = []
-		}
-		if(asset_count === assets.length){
-			token_ids.push(temp_30_array)
-		}
-	}
-	let listed_length = 0
-	for(let token_array of token_ids){
-		await utils.sleep(500)
-		var orders =  await opensea_handler.get_orders_window(asset_contract_address, false, token_array, 1)
-		console.log('order length: ' + orders.length)
-		for(let o of orders){
-			listed_length += 1
-			console.log(o.asset.tokenId + ' ' + o.currentPrice/1000000000000000000)
-		}
-	}
-	console.log(listed_length)
-	console.log('Trait floor: ' + 0)
+	// query = {slug:'kaiju-kingz', traits: {'$elemMatch': { 'value': { "$regex" : 'genesis' , "$options" : "i"}, 'trait_type': { "$regex" : 'origin' , "$options" : "i"}}}}
+	// var assets = await mongo.find(query, {})
+	// console.log(assets.length)
+	// let token_ids = []
+	// let asset_contract_address = assets[0].token_address
+	// let temp_30_array = []
+	// let asset_count = 0
+	// for(let asset of assets){
+	// 	asset_count += 1
+	// 	temp_30_array.push(asset.token_id)
+	// 	if(temp_30_array.length === 30){
+	// 		token_ids.push(temp_30_array)
+	// 		temp_30_array = []
+	// 	}
+	// 	if(asset_count === assets.length){
+	// 		token_ids.push(temp_30_array)
+	// 	}
+	// }
+	// let ordered_listings = []
+	// for(let token_array of token_ids){
+	// 	await utils.sleep(500)
+	// 	var orders =  await opensea_handler.get_orders_window(asset_contract_address, false, token_array, 1)
+	// 	console.log('order length: ' + orders.length)
+	// 	let listing_price = o.currentPrice/1000000000000000000
+	// 	console.log(o.asset.tokenId + ' ' + o.currentPrice/1000000000000000000)
+	// 	ordered_listings.push(listing_price)
+	// }
+	// console.log(listed_length)
+	// console.log('Trait floor: ' + ordered_listings[0])
 	run_interactive()
 	// if(!process.argv[2]){
 	// 	run_interactive()
