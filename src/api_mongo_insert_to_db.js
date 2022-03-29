@@ -109,6 +109,7 @@ async function add_asset(token_address, token_id){
   await silence.save();
   console.log(silence.name);
   await sleep(1000);
+  mongoose.connection.close();
 }
 async function handleError(url, retry) {
   switch (retry) {
@@ -162,6 +163,5 @@ async function sleep(ms){
 module.exports = {
   getAsset,
   add_asset,
-  main,
   Kitten
 }
