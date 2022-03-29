@@ -52,6 +52,8 @@ async function redis_push(queue_name ,asset) {
 	} catch(e){
 		console.log(asset['slug'])
 	}
+	let min_range = .61
+	let max_range = .81
 	if(asset['tier']){
 		if(asset['tier'] === 'medium'){
 			min_range = .66
