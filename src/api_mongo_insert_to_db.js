@@ -25,7 +25,7 @@ const Kitten = mongoose.model('nftasset', Asset);
 main().catch(err => console.log(err));
 
 async function main() {
-  if(process.argv[3] !== add){
+  if(process.argv[3] !== 'add'){
     return
   }
   try {
@@ -110,7 +110,7 @@ async function add_asset(slug, token_address, token_id){
     traits: asset.traits || []
   });
   await silence.save();
-  console.log(silence);
+  //console.log(silence.name);
   await sleep(1000);
   mongoose.connection.close();
 }

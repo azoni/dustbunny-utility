@@ -223,7 +223,7 @@ async function get_orders_window(address, time_window, token_ids, side){
   let search_time2 = get_ISOString_now()
   let orders_array = []
   let order = 0
-  let username = 'Null'
+  var username = 'Null'
   let order_length = 0
   var order_api_data = {
   	side: 0,
@@ -259,7 +259,7 @@ async function get_orders_window(address, time_window, token_ids, side){
 	    try{
         username = order['orders'][0].makerAccount.user.username
       } catch(ex){
-
+        username = 'Null'
       }
 	    order_length = order['orders'].length
 	    for(let o of order.orders){

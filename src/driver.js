@@ -15,6 +15,7 @@ const etherscan_handler = require('./handlers/etherscan_handler.js')
 const myIp  = require('./utility/what-is-my-ip.js');
 const redis_handler = require('./handlers/redis_handler.js')
 const mongo = require('./AssetsMongoHandler.js')
+const mongo_handler = require('./handlers/mongo_handler.js')
 const utils = require('./utility/utils.js')
 const opensea_handler = require('./handlers/opensea_handler.js')
 
@@ -166,6 +167,8 @@ async function run_interactive(){
 		transfer.start()
 	} else if(command === 'smart'){
 		smart.start()
+	} else if(command === 'trait-floor'){
+		trait_floor()
 	} else if(command === 'dump'){
 		redis_handler.dump_queue(process.argv[3])
 	} else if(command === 'len'){
@@ -212,8 +215,44 @@ async function run_interactive(){
 		console.log('Invalid command.')
 	}
 }
+async function trait_floor(){
+	console.log(process.argv)
+	query = {slug:process.argv[3], traits: {'$elemMatch': { 'value': { "$regex" : String(process.argv[5]) , "$options" : "i"}, 'trait_type': { "$regex" : String(process.argv[4]) , "$options" : "i"}}}}
+	var assets = await mongo.find(query, {})
+	console.log(assets.length)
+	let token_ids = []
+	let asset_contract_address = assets[0].token_address
+	let temp_30_array = []
+	let asset_count = 0
+	for(let asset of assets){
+		asset_count += 1
+		temp_30_array.push(asset.token_id)
+		if(temp_30_array.length === 30){
+			token_ids.push(temp_30_array)
+			temp_30_array = []
+		}
+		if(asset_count === assets.length){
+			token_ids.push(temp_30_array)
+		}
+	}
+	let ordered_listings = []
+	let asset_listings = {}
+	for(let token_array of token_ids){
+		await utils.sleep(500)
+		var orders =  await opensea_handler.get_orders_window(asset_contract_address, false, token_array, 1)
+		console.log('order length: ' + orders.length)
+		for(let o of orders){
+			let listing_price = o.currentPrice/1000000000000000000
+			console.log(o.asset.tokenId + ' ' + o.currentPrice/1000000000000000000)
+			asset_listings[o.asset.tokenId] = o.currentPrice/1000000000000000000
+			ordered_listings.push(asset_listings[o.asset.tokenId])
+		}
+		
+	}
+	console.log(ordered_listings.length)
+	console.log('Trait floor: ' + asset_listings)
+}
 function run_flag(){
-	// console.log(process.argv)
 	let queue = process.argv[2]
 	let exp = process.argv[3]
 
@@ -269,35 +308,15 @@ async function main(){
 	}
 	await redis_handler.start_connection()
 	await mongo.connect()	
-	// query = {slug:'kaiju-kingz', traits: {'$elemMatch': { 'value': { "$regex" : 'genesis' , "$options" : "i"}, 'trait_type': { "$regex" : 'origin' , "$options" : "i"}}}}
-	// var assets = await mongo.find(query, {})
-	// console.log(assets.length)
-	// let token_ids = []
-	// let asset_contract_address = assets[0].token_address
-	// let temp_30_array = []
-	// let asset_count = 0
-	// for(let asset of assets){
-	// 	asset_count += 1
-	// 	temp_30_array.push(asset.token_id)
-	// 	if(temp_30_array.length === 30){
-	// 		token_ids.push(temp_30_array)
-	// 		temp_30_array = []
-	// 	}
-	// 	if(asset_count === assets.length){
-	// 		token_ids.push(temp_30_array)
-	// 	}
-	// }
-	// let ordered_listings = []
-	// for(let token_array of token_ids){
-	// 	await utils.sleep(500)
-	// 	var orders =  await opensea_handler.get_orders_window(asset_contract_address, false, token_array, 1)
-	// 	console.log('order length: ' + orders.length)
-	// 	let listing_price = o.currentPrice/1000000000000000000
-	// 	console.log(o.asset.tokenId + ' ' + o.currentPrice/1000000000000000000)
-	// 	ordered_listings.push(listing_price)
-	// }
-	// console.log(listed_length)
-	// console.log('Trait floor: ' + ordered_listings[0])
+	await mongo_handler.connect()
+	// let comp_wallets = await mongo_handler.get_comp_wallets()
+	// let our_wallets = await mongo_handler.get_our_wallets()
+	// let comp_addresses = []
+	// let our_addresses = []
+	// comp_addresses = comp_wallets.map(({address}) => address.toLowerCase())
+	// our_addresses = our_wallets.map(({address}) => address.toLowerCase())
+	// let addresses = [...comp_addresses, ...our_addresses]
+	// console.log(addresses)
 	run_interactive()
 	// if(!process.argv[2]){
 	// 	run_interactive()

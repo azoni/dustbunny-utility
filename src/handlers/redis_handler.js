@@ -44,7 +44,7 @@ async function redis_push(queue_name ,asset) {
 	watch_list = watchlistupdater.getWatchList();
 	let watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
 	if(watchListCollection === undefined || watchListCollection['tier'] === 'skip' || (blacklist_wallets.includes(asset['owner_address']))){
-		console.log('already top bid')
+		//console.log('already top bid')
 		return
 	}
 	try{

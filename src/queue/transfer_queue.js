@@ -33,8 +33,6 @@ function cleanupWalletAddressMap() {
 	setTimeout(cleanupWalletAddressMap, 60_000);
 }
 
-
-
 async function getJSONFromFetch(f) {
   let r = await f;
   return r.json();
@@ -406,18 +404,11 @@ async function send_wallet_nfts_to_focus(interestAddress, collectionToFocusOn) {
 
 }
 
-
-
-async function push_asset_high_priority(asset) {
-	await client.rPush('queue:transfer', JSON.stringify(asset));
-}
 async function dump_queue(queue_name){
 	client.DEL('queue:' + queue_name)
 	console.log(await client.LLEN("queue:" + queue_name))
 }
-async function get_queue_length(queue_name){
-	console.log('Queue: ' + await client.LLEN("queue:" + queue_name))
-}
+
 async function transfer_queue_start() {
 	dump_queue('transfer')
 	watch_list = watchlistupdater.getWatchList();
