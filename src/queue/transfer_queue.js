@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 const mongo = require('../AssetsMongoHandler.js')
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
 const redis_handler = require('../handlers/redis_handler.js');
+const mongo_handler = require('../handlers/mongo_handler.js')
 
 const { client } = redis_handler;
 
@@ -91,47 +92,19 @@ async function getCollectionTransactions(collectionAddress, block, retry = 3) {
     throw new Error(error);
   }
 }
-const botAddresses = new Set([
-  '0xb00d318274625c112cf6f0498a6fa62929c3fcb0',
-  '0xb9285dc27576f1122b0d2612204fd02c006dc47c',
-  '0x9257a4bdc6e6de95e1c662bf66583735a779736f',
-  '0x17a27ae4e9b5975d670c18966561ab3cefb57d7c',
-  '0x7dda6e90f5ae012d8b611d71aef2912e48c6611b',
-  '0x5a6f8b066c48483aa0b641ff961468ba77cffcd5',
-  '0x621028759484648ca6fd0c24ddbfade21f231593',
-  '0x0fd6a6e97e5afaec8f42a46a918128358c0b76dc',
-  '0xc3e1bf433a3ec3d098631f87e49c1908afa9a3d3',
-  '0x4165b0092119a4a3869fb6a04c819a76e7a95386',
-  '0x208fd469595f97fe3d589bf9dcea7b96ef76a7cf',
-  '0x0b603f944d03e37424f8bb29d1f1c9d788f4771f',
-  '0xc8acf47df30286159220e8d58467a614dc07bc72',
-  '0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
-  '0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea',
-  '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4',
-  '0xfdb32c8ddda21172a031d928056e19725a0836c5',
-  '0xdc3b7ef263f1cdaa25ffa93c642639f5f4f2a669',
-  '0xadee30341a9e98ed145ccb02b00da15e74e305b5',
-  '0x483b71d5b5661c2340273dc1219c4f94dacf5cc8',
-  '0x15cba6d3b98d220bc1ecda89afdf07dd0bf06c5d',
-  '0xbb2cd2434ca0881bcdcce88f6e77c607fc71c128',
-  '0x07b52eac4361f6aa840237e20afe89fe5eb8d031',
-  '0x41f01d8f02c569be620e13c9b33ce803bed84e90',
-  '0x26054c824ff0a6225dfa24a1eebd6a18de6b5f7d',
-  '0x5bcfc791b9baa68e9aa50eb98e555304ad53d697',
-  '0x429cdc4baf9d216fbff22a8eeb56bc7a225329c0',
-  '0x277371339da18e8c5c4dc4c799fa556df62c6b71',
-  '0x16f98ff6bb49d329bc92ed5051c7e901c8ee976e',
-  '0xee87f1579c7743683ad41aa3ca2477f5f40a4b34',
-  '0x0e78c12ad4c2e31ff38c4c0ce2fea1e57b838d47',
-  '0x4af807f19aa181fa3eae8bc7481e571c039f2edc',
-  '0x91aedd38aba370dc9ebdeaa660d2920cb4920e98',
-  '0xdeef55689a46931754ff18d76ccda30459786bc0',
-  '0x1a5355f31ee2652f0040151856ff60ddd23d81cc',
-  '0x4d64bdb86c7b50d8b2935ab399511ba9433a3628',
-  '0x18a73aaee970af9a797d944a7b982502e1e71556',
-  '0x1aec9c6912d7da7a35803f362db5ad38207d4b4a',
-  '0x35c25ff925a61399a3b69e8c95c9487a1d82e7df',
-]);
+async function get_focus_addresses() {
+  await mongo_handler.connect()
+  const comp_wallets = await mongo_handler.get_comp_wallets()
+  const our_wallets = await mongo_handler.get_our_wallets()
+  let comp_addresses = []
+  let our_addresses = []
+  comp_addresses = comp_wallets.map(({ address }) => address.toLowerCase())
+  our_addresses = our_wallets.map(({ address }) => address.toLowerCase())
+  const addresses = [...comp_addresses, ...our_addresses]
+  console.log(addresses)
+  return addresses
+}
+const bot_address_list = get_focus_addresses()
 
 async function get_etherscan_transactions() {
   let ourlatest = await get_latest_block()
@@ -168,7 +141,7 @@ async function get_etherscan_transactions() {
     for (const tx of data.result) {
       let event_type = 'transfer'
       if (tx.blockNumber > ourlatest) { ourlatest = tx.blockNumber; }
-      if (botAddresses.has(tx.to?.toLowerCase()) && !staking_collections
+      if ((await bot_address_list).includes(tx.to?.toLowerCase()) && !staking_collections
         .includes(tx.from?.toLowerCase())) {
         potentialSellerSet.add(tx.from);
       }

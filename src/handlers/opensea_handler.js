@@ -2,14 +2,25 @@
 const opensea = require('opensea-js')
 
 const { Network } = opensea;
-// const RPCSubprovider = require('web3-provider-engine/subproviders/rpc');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const RPCSubprovider = require('web3-provider-engine/subproviders/rpc');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const Web3ProviderEngine = require('web3-provider-engine');
+const { MnemonicWalletSubprovider } = require('@0x/subproviders');
 const values = require('../values.js')
 
 const { OpenSeaPort } = opensea;
 
 const providerEngine = new Web3ProviderEngine();
+const MNEMONIC = 'inherit scrub other float window beef build flash monkey play add satisfy'
+const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
+  mnemonic: MNEMONIC,
+});
+const infuraRpcSubprovider = new RPCSubprovider({
+  rpcUrl: 'https://mainnet.infura.io/v3/deb8c4096c784171b97a21f7a5b7ba98',
+});
+providerEngine.addProvider(mnemonicWalletSubprovider);
+providerEngine.addProvider(infuraRpcSubprovider);
 const seaport = new OpenSeaPort(
   providerEngine,
   {
@@ -21,6 +32,52 @@ const seaport = new OpenSeaPort(
 
 function start() {
   providerEngine.start()
+}
+function create_seaport(key) {
+  providerEngine.stop();
+  const seaport_temp = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main,
+      apiKey: key,
+    },
+    (arg) => console.log(arg),
+  );
+  providerEngine.start()
+  return seaport_temp
+}
+async function test_bid(keys) {
+  let success = 0
+  let fail = 0
+  for (const key of keys) {
+    const seaport_temp = create_seaport(key)
+    const asset = {
+      tokenId: '8573',
+      tokenAddress: '0x24998f0a028d197413ef57c7810f7a5ef8b9fa55',
+    }
+    try {
+      await seaport_temp.createBuyOrder({
+        asset,
+        startAmount: 0.0001,
+        accountAddress: '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25',
+        expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * 0.25),
+      })
+      console.log(`Success' ${key}`)
+      success += 1
+    } catch (ex) {
+      if (ex.message.includes('API Error 403')) {
+        console.log(`Access was denied. ${key}`)
+      } else if (ex.message.includes('API Error 401')) {
+        console.log(`Expired API key. ${key}`)
+      } else {
+        console.log(ex.message)
+      }
+      fail += 1
+    }
+  }
+  console.log(`success ${success}`)
+  console.log(`fail ${fail}`)
+  return 'fail'
 }
 
 async function get_assets_with_cursor(slug) {
@@ -319,4 +376,5 @@ module.exports = {
   get_assets_with_cursor,
   get_listed_lowered,
   get_listed_asset,
+  test_bid,
 };

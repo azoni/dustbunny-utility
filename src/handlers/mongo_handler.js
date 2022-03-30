@@ -118,6 +118,10 @@ async function get_comp_wallets(query = {}) {
   checkAndThrowIfNotConnected();
   return _database.collection('comp_wallets').find(query).toArray();
 }
+async function get_opensea_keys(query = {}) {
+  checkAndThrowIfNotConnected();
+  return _database.collection('opensea_keys').find(query).toArray();
+}
 async function get_flash_wallets(query = {}) {
   checkAndThrowIfNotConnected();
   return _database.collection('flash_wallets').find(query).toArray();
@@ -165,4 +169,5 @@ module.exports = {
   get_comp_wallets,
   get_our_wallets,
   get_flash_wallets,
+  get_opensea_keys,
 }

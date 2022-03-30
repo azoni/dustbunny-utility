@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const url = require('url');
 const http = require('http')
 const manual = require('./queue/manual_queue.js')
@@ -19,6 +20,7 @@ const mongo_handler = require('./handlers/mongo_handler.js')
 const utils = require('./utility/utils.js')
 const opensea_handler = require('./handlers/opensea_handler.js')
 
+// eslint-disable-next-line func-names
 const requestListener = function (req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -302,9 +304,23 @@ async function main() {
   if (myIp === '10.0.0.59') {
     connect()
   }
+  function shuffleArray(array) {
+    // eslint-disable-next-line no-plusplus
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+  }
   await redis_handler.start_connection()
   await mongo.connect()
   await mongo_handler.connect()
+  // const opensea_keys = await mongo_handler.get_opensea_keys()
+  // const opensea__api_keys = opensea_keys.map(({ api_key }) => api_key)
+  // console.log('Starting bids...')
+  // shuffleArray(opensea__api_keys)
+  // await opensea_handler.test_bid(opensea__api_keys)
   // let comp_wallets = await mongo_handler.get_comp_wallets()
   // let our_wallets = await mongo_handler.get_our_wallets()
   // let comp_addresses = []
