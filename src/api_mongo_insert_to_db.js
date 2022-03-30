@@ -1,11 +1,15 @@
-const opensea = require("opensea-js")
-const values = require('./values.js')
-const Network = opensea.Network;
-const OpenSeaPort = opensea.OpenSeaPort;
-const Web3ProviderEngine = require("web3-provider-engine");
-const providerEngine = new Web3ProviderEngine();
+// eslint-disable-next-line import/no-extraneous-dependencies
+const Web3ProviderEngine = require('web3-provider-engine');
 const mongoose = require('mongoose');
-const API_KEY = values.API_KEY;
+const opensea = require('opensea-js')
+const values = require('./values.js')
+
+const { Network } = opensea;
+const { OpenSeaPort } = opensea;
+
+const providerEngine = new Web3ProviderEngine();
+
+const { API_KEY } = values;
 if (API_KEY === '') {
   throw new Error('You forgot to set the api key.')
 }
@@ -21,26 +25,23 @@ const Asset = new mongoose.Schema({
 
 const Kitten = mongoose.model('nftasset', Asset);
 
-
-main().catch(err => console.log(err));
+main().catch((err) => console.log(err));
 
 async function main() {
-  if(process.argv[3] !== 'add'){
+  if (process.argv[3] !== 'add') {
     return
   }
   try {
     await mongoose.connect('mongodb://10.0.0.80:27017/test');
-    //const k =  await Kitten.findOne();
-    //console.log(k.traits[0]);
+    // const k =  await Kitten.findOne();
+    // console.log(k.traits[0]);
     console.log(process.argv)
-    
+
     if (process.argv.length !== 3) {
       return
-      console.error('not enough args');
-      throw new Error('not enough args');
     }
-  
-    const kk = await Kitten.findOne({ slug: process.argv[3]})
+
+    const kk = await Kitten.findOne({ slug: process.argv[3] })
     if (kk) {
       console.log('already in the database');
       return;
@@ -59,12 +60,12 @@ const seaport = new OpenSeaPort(
     networkName: Network.Main,
     apiKey: API_KEY,
   },
-  (arg) => console.log(arg)
+  (arg) => console.log(arg),
 );
 
-const options = {method: 'GET', headers: {Accept: 'application/json', 'X-API-KEY': '578c069362bf4af7aa66b61e844867a9'}};
+const options = { method: 'GET', headers: { Accept: 'application/json', 'X-API-KEY': '578c069362bf4af7aa66b61e844867a9' } };
 
-//fetch('https://api.opensea.io/api/v1/assets?collection=cryptoadz-by-gremplin&order_by=pk&order_direction=desc&limit=50&cursor=LXBrPTQ3NzkwMzg0&include_orders=false', options)
+// fetch('https://api.opensea.io/api/v1/assets?collection=cryptoadz-by-gremplin&order_by=pk&order_direction=desc&limit=50&cursor=LXBrPTQ3NzkwMzg0&include_orders=false', options)
 //  .then(response => response.json())
 //  .then(response => console.log(response))
 //  .catch(err => console.error(err));
@@ -74,9 +75,11 @@ async function getAsset(slug, direction = 'desc') {
   let cursor = '';
 
   do {
-    let resourceUrl = createGetAssetURL({ slug, direction, limit, cursor });
+    const resourceUrl = createGetAssetURL({
+      slug, direction, limit, cursor,
+    });
     console.log(resourceUrl);
-    let response =  await fetchAssetPage(resourceUrl);
+    const response = await fetchAssetPage(resourceUrl);
     cursor = response.cursor
     const assets = response.body?.assets || [];
     for (const asset of assets) {
@@ -85,9 +88,10 @@ async function getAsset(slug, direction = 'desc') {
         token_id: asset.token_id,
         token_address: asset.asset_contract?.address,
         image_url: asset.image_url,
-        slug: slug,
+        slug,
+        // eslint-disable-next-line radix
         dev_seller_fee_basis_points: parseInt(asset.collection?.dev_seller_fee_basis_points),
-        traits: asset.traits || []
+        traits: asset.traits || [],
       });
       await silence.save();
       console.log(silence.name);
@@ -95,76 +99,79 @@ async function getAsset(slug, direction = 'desc') {
     await sleep(1000);
   } while (cursor);
 }
-async function add_asset(slug, token_address, token_id){
+async function add_asset(slug, token_address, token_id) {
   await mongoose.connect('mongodb://10.0.0.80:27017/test');
   const asset = await seaport.api.getAsset({
     tokenAddress: token_address,
-    tokenId: token_id
+    tokenId: token_id,
   })
   const silence = new Kitten({
     name: asset.name,
-    token_id: token_id,
-    token_address: token_address,
+    token_id,
+    token_address,
     image_url: asset.image_url,
-    slug: slug,
-    traits: asset.traits || []
+    slug,
+    traits: asset.traits || [],
   });
   await silence.save();
-  //console.log(silence.name);
+  // console.log(silence.name);
   await sleep(1000);
   mongoose.connection.close();
 }
 async function handleError(url, retry) {
   switch (retry) {
     case 3:
-      return sleep(2000).then(_ => fetchAssetPage(url, retry - 1));
+      return sleep(2000).then(() => fetchAssetPage(url, retry - 1));
     case 2:
-      return sleep(3000).then(_ => fetchAssetPage(url, retry - 1));
+      return sleep(3000).then(() => fetchAssetPage(url, retry - 1));
     case 1:
-      return sleep(4000).then(_ => fetchAssetPage(url, retry - 1));
+      return sleep(4000).then(() => fetchAssetPage(url, retry - 1));
     default:
-      return sleep(6000).then(_ => fetchAssetPage(url, retry - 1));
+      return sleep(6000).then(() => fetchAssetPage(url, retry - 1));
   }
 }
 
 async function fetchAssetPage(url, retry = 3) {
   return fetch(url, options)
-  .then(response => {
-    console.log(response.status);
-    return response.json();
-  })
-  .then(response => {
-    if (response.assets === undefined && retry > 0) {
-      return handleError(url, retry);
-    }
-    console.log(`cursor: ${response.next}\nlen: ${response.assets?.length}\n`);
-    return { cursor: response.next, len: response.assets?.length, body: response };
-  })
-  .catch(err => {
-    console.error(err);
-    if (retry > 0) {
-      return handleError(url, retry);
-    }
-    return { cursor: undefined, len: 0 }
-  });
+    .then((response) => {
+      console.log(response.status);
+      return response.json();
+    })
+    .then((response) => {
+      if (response.assets === undefined && retry > 0) {
+        return handleError(url, retry);
+      }
+      console.log(`cursor: ${response.next}\nlen: ${response.assets?.length}\n`);
+      return { cursor: response.next, len: response.assets?.length, body: response };
+    })
+    .catch((err) => {
+      console.error(err);
+      if (retry > 0) {
+        return handleError(url, retry);
+      }
+      return { cursor: undefined, len: 0 }
+    });
 }
 
-function createGetAssetURL({ slug, direction = 'desc', limit = 50, cursor }) {
-  let resourceUrl = 'https://api.opensea.io/api/v1/assets?' +
-  `collection=${slug}` +
-  `&order_by=pk` +
-  (cursor ? `&cursor=${encodeURIComponent(cursor)}`: '' ) +
-  //`&order_direction=${direction}` +
-  `&limit=${limit}` +
-  `&include_orders=false`
+function createGetAssetURL({
+  slug, limit = 50, cursor,
+}) {
+  const resourceUrl = `${'https://api.opensea.io/api/v1/assets?'
+  + `collection=${slug}`
+  + '&order_by=pk'}${
+    cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''
+  // `&order_direction=${direction}` +
+  }&limit=${limit}`
+  + '&include_orders=false'
   return resourceUrl
 }
 
-async function sleep(ms){
-	await new Promise(resolve => setTimeout(resolve, ms))
+async function sleep(ms) {
+  // eslint-disable-next-line no-promise-executor-return
+  await new Promise((resolve) => setTimeout(resolve, ms))
 }
 module.exports = {
   getAsset,
   add_asset,
-  Kitten
+  Kitten,
 }

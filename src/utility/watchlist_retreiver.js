@@ -1,13 +1,14 @@
 const mongoClient = require('../AssetsMongoHandler.js');
 
-let data_node = undefined;
+let data_node;
 const UPDATE_INTERVAL_MS = 60_000;
 let mongoConnected = false;
-let watchlist_timout = undefined;
+let watchlist_timout;
 let watchlist = [];
 let watchlist_slugs_only = [];
 
 try {
+  // eslint-disable-next-line global-require
   data_node = require('../data_node');
 } catch (error) {
   console.warn('data_node file not found for watchlist retreiver')
@@ -53,7 +54,6 @@ async function tryFetchningWatchListOrUseDefault() {
  */
 function stopLoop() {
   clearTimeout(watchlist_timout);
-
 }
 
 function getWatchList() {
