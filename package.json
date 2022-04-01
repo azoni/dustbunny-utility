@@ -5,9 +5,11 @@
   "dependencies": {
     "@0x/subproviders": "^6.6.0",
     "@alch/alchemy-web3": "^1.1.9",
+    "@flashbots/ethers-provider-bundle": "^0.4.3",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "ethers": "^5.6.1",
     "fs": "0.0.1-security",
     "mongoose": "^6.2.3",
     "opensea-js": "^2.0.1",
