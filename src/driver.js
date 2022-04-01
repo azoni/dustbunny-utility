@@ -19,6 +19,7 @@ const mongo = require('./AssetsMongoHandler.js')
 const mongo_handler = require('./handlers/mongo_handler.js')
 const utils = require('./utility/utils.js')
 const opensea_handler = require('./handlers/opensea_handler.js')
+const flashbot_listed = require('./queue/flashbot_list.js');
 
 // eslint-disable-next-line func-names
 const requestListener = function (req, res) {
@@ -208,6 +209,8 @@ async function run_interactive() {
     staking.start()
   } else if (command === 'listed') {
     listed.start()
+  } else if (command === 'greedy') {
+    flashbot_listed.start()
   } else if (command === 'rare') {
     rare.start()
   } else if (command === 'bayc') {
