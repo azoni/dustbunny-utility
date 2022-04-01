@@ -24,7 +24,8 @@ const GWEI = BigNumber.from(10).pow(9)
 const SLIP_ALLOWED = GWEI.mul(40);
 
 const blockToFee = {};
-
+let wallet;
+let flashbotsProvider;
 let currBlockNo = 0;
 const logger = new FileLogger('flashbotLogs.txt');
 
@@ -147,8 +148,7 @@ async function listed_queue_add(event_type, exp, bid) {
 
 let authSigner;
 // const path = `m/44'/60'/0'/0/${1}`;
-let wallet;
-let flashbotsProvider;
+
 async function start() {
   await watchlistupdater.startLoop();
   await setupWallets();
@@ -184,23 +184,31 @@ function startGetBlockLoop() {
   });
 }
 
-async function buyTheAsset(wallet, flashbotsProvider, abiEncoded, maxBaseFee, priorityFee, mynonce, BLOCKS_IN_THE_FUTURE) {
-  if (!wallet) { throw new Error('No wallet given to testing'); }
+async function buyTheAsset(
+  specifiedWallet,
+  flashbotsProvider,
+  abiEncoded,
+  maxBaseFee,
+  priorityFee,
+  mynonce,
+  BLOCKS_IN_THE_FUTURE,
+) {
+  if (!specifiedWallet) { throw new Error('No wallet given to testing'); }
   if (!abiEncoded) { throw new Error('No abi given to testing'); }
 
   const eip1559Transaction = {
     to: wyvernContractAddress,
     value: BigNumber.from(abiEncoded.txnData.value.toString()),
     type: 2,
-    maxFeePerGas: priorityFee.add(maxBaseFee), //PRIORITY_FEE.add(MAX_BASE_FEE)
-    maxPriorityFeePerGas: priorityFee, //PRIORITY_FEE
+    maxFeePerGas: priorityFee.add(maxBaseFee), // PRIORITY_FEE.add(MAX_BASE_FEE)
+    maxPriorityFeePerGas: priorityFee, // PRIORITY_FEE
     gasLimit: 500_000,
     data: abiEncoded.encoded,
     chainId: 1,
     nonce: mynonce,
   }
   const signedTransactions = await flashbotsProvider.signBundle([{
-    signer : wallet,
+    signer: specifiedWallet,
     transaction: eip1559Transaction,
   }]);
   console.log('signes transaction:')
@@ -230,7 +238,8 @@ async function buyTheAsset(wallet, flashbotsProvider, abiEncoded, maxBaseFee, pr
     logger.printLn(`Block ${targetBlock} Wait Response: ${FlashbotsBundleResolution[waitResponse]}`);
   }, 6_000);
   console.log(`Wait Response: ${FlashbotsBundleResolution[waitResponse]}`)
-  if (waitResponse === FlashbotsBundleResolution.BundleIncluded || waitResponse === FlashbotsBundleResolution.AccountNonceTooHigh) {
+  if (waitResponse === FlashbotsBundleResolution.BundleIncluded
+   || waitResponse === FlashbotsBundleResolution.AccountNonceTooHigh) {
     setTimeout(() => {
       logger.printLn('error flashbot resolution response');
     }, 6_000);
