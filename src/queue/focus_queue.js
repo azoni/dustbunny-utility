@@ -3,6 +3,7 @@ const watchlistupdater = require('../utility/watchlist_retreiver.js');
 
 const redis_handler = require('../handlers/redis_handler.js');
 const opensea_handler = require('../handlers/opensea_handler.js');
+const mongo_handler = require('../handlers/mongo_handler.js')
 
 const seaport = opensea_handler.seaport;
 
@@ -43,14 +44,50 @@ async function infiniteLoop(lastTimeStamp) {
   infinite_timeout = setTimeout(() => { infiniteLoop(t) }, 0);
 }
 
+function sliceIntoChunks(arr, chunkSize) {
+  const res = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+      const chunk = arr.slice(i, i + chunkSize);
+      res.push(chunk);
+  }
+  return res;
+}
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
 async function queryAllOrders(timestamp) {
   const t = timestamp || (Date.now() - (60_000 * 7));
   const currTime = Date.now();
   const m = listenSet
-    .map(x => 
-      openSeaThrottle(() => getOrdersForFocusGroup(x.slug ,x.collection_address, x.token_ids, timestamp))
-      .catch(e => console.warn(e))
-    )
+    .map(x => {
+      if (x.token_ids?.length > 30) {
+        const chunks = sliceIntoChunks(x.token_ids, 30);
+        // shuffle to make sure they each get a chance to GET all bids w/ no time window limit
+        shuffle(chunks);
+        let allQueriesForThisCollection = chunks.map((section) =>
+          openSeaThrottle(() => getOrdersForFocusGroup(x.slug ,x.collection_address, section, timestamp))
+        );
+        // nested promise.all to handle larger than 30 tokenids
+        return Promise.all(allQueriesForThisCollection);
+      }
+      return openSeaThrottle(() => getOrdersForFocusGroup(x.slug ,x.collection_address, x.token_ids, timestamp))
+        .catch(e => console.warn(e))
+    })
   return Promise.all(m).then(_ => currTime);
 }
 
@@ -120,19 +157,21 @@ function limitListenSet(toListenTo, slugMap) {
     arr.push({
       slug: slugMap[key] || '',
       collection_address: key,
-      token_ids: Array.from(toListenTo[key]).slice(0, 30)
+      token_ids: Array.from(toListenTo[key])
     })
   }
   arr.sort((a, b) => b.token_ids.length - a.token_ids.length);
   return arr.slice(0, 8);
 }
+let our_wallets;
+let our_addresses;
+async function setUpBlacklist() {
+  our_wallets = await mongo_handler.get_our_wallets()
+  our_addresses = our_wallets.map(({address}) => address.toLowerCase())
+  blacklist = new Set(our_addresses);
+}
 
-const blacklist = new Set([
-  '0x4d64bdb86c7b50d8b2935ab399511ba9433a3628',
-  '0x18a73aaee970af9a797d944a7b982502e1e71556',
-  '0x1aec9c6912d7da7a35803f362db5ad38207d4b4a',
-  '0x35c25ff925a61399a3b69e8c95c9487a1d82e7df',
-]);
+let blacklist;
 
 const slugFocusIteration = {}
 
@@ -173,6 +212,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
       console.log(`tokenId: ${o?.asset?.tokenId}, ${o.makerAccount?.address} bid: ${o.currentPrice/1e18}`);
       if (o?.asset?.tokenId === undefined) { continue; } // skip if theres no tokenId
       if (o?.asset?.tokenId in tokenIdToTopOrderDict) { continue; } // skip if we already found top bid
+      if (!(o.paymentTokenContract.symbol === 'WETH' || o.paymentTokenContract.symbol === 'ETH')) { continue; }
 
       tokenIdToTopOrderDict[o?.asset?.tokenId] = {
         address: o?.makerAccount?.address?.toLowerCase(),
@@ -218,6 +258,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
 }
 
 async function start() {
+  await setUpBlacklist();
   await watchlistupdater.startLoop();
   console.log('STARTING FOCUS QUEUE')
   infiniteLoop();
