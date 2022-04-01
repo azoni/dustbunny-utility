@@ -239,7 +239,7 @@ async function buyTheAsset(
   }, 6_000);
   console.log(`Wait Response: ${FlashbotsBundleResolution[waitResponse]}`)
   if (waitResponse === FlashbotsBundleResolution.BundleIncluded
-   || waitResponse === FlashbotsBundleResolution.AccountNonceTooHigh) {
+      || waitResponse === FlashbotsBundleResolution.AccountNonceTooHigh) {
     setTimeout(() => {
       logger.printLn('error flashbot resolution response');
     }, 6_000);
@@ -256,7 +256,17 @@ async function buyTheAsset(
   }
 }
 
-async function redis_attach_range(queue_name, asset, basePrice = (1e9 * 85), priorityFee = (1e9 * 3), gallonsGuess = 350_000, wall_address, writeToFile, account_balance) {
+async function redis_attach_range(
+  queue_name,
+  myAsset,
+  basePrice = (1e9 * 85),
+  priorityFee = (1e9 * 3),
+  gallonsGuess = 350_000,
+  wall_address,
+  writeToFile,
+  account_balance,
+) {
+  const asset = myAsset;
   try {
     if (!asset['traits']) {
       const mongo_traits = await mongo.findOne({ slug: asset['slug'], token_id: asset['token_id'] })
@@ -269,7 +279,7 @@ async function redis_attach_range(queue_name, asset, basePrice = (1e9 * 85), pri
   const watchListCollection = watch_list.find(({ address }) => address === asset['token_address']);
   if (watchListCollection === undefined || watchListCollection['tier'] === 'skip') {
     console.log('already top bid')
-    return;
+    return undefined;
   }
   try {
     asset['tier'] = watchListCollection['tier'];
@@ -326,15 +336,15 @@ async function redis_attach_range(queue_name, asset, basePrice = (1e9 * 85), pri
   console.log(`avg gas: ${avg_gas_fee}`);
   console.log();
   if (asset['listed_price'] > maxToBuy) {
-    return;
+    return undefined;
   }
   setTimeout(() => writeToFile(`\n${asset['slug']}:${asset['token_id']} maxbuy: ${maxToBuy} floor: ${floor_price}\n\n`), 5_000);
   const amount_needed_in_wallet = asset['listed_price'] + (basePrice.add(priorityFee).mul(500_000).toString() / 1e18);
   // const account_balance = await etherscan_handler.get_eth_balance(wall_address);
-  if (isNaN(account_balance) || amount_needed_in_wallet > account_balance) {
+  if (Number.isNaN(account_balance) || amount_needed_in_wallet > account_balance) {
     setTimeout(() => writeToFile(`\ncould have bought a ${asset['slug']}:${asset['token_id']} !!!!!!!\n`), 5_000);
     console.error(`could have bought a ${asset['slug']}:${asset['token_id']} : needed: ${amount_needed_in_wallet} had: ${account_balance}!!!!!!!`);
-    return;
+    return undefined;
   }
   asset['diff_in_eth'] = (floor_price * (my_max_range - fee)) - asset['listed_price'];
   return asset;
