@@ -54,7 +54,7 @@ async function listed_queue_add(event_type, exp, bid) {
     if (o.taker !== NULL_ADDRESS_STRING) {
       console.log('found a private sale');
       setTimeout(() => {
-        logger.printLn(`\n${ourWallets.has(o.taker) ? 'OUR PRIVATE SALE!' : 'private sale'} | ${o?.asset?.collection?.slug} | ${o?.asset?.tokenId} | ${o.basePrice/1e18} | ${o?.paymentTokenContract?.name} | ${o?.taker}`);
+        logger.printLn(`\n${ourWallets.has(o.taker) ? 'OUR PRIVATE SALE!' : 'private sale'} | ${o?.asset?.collection?.slug} | ${o?.asset?.tokenId} | ${o.basePrice / 1e18} | ${o?.paymentTokenContract?.name} | ${o?.taker}`);
       }, 900);
       continue;
     }
@@ -123,13 +123,13 @@ async function listed_queue_add(event_type, exp, bid) {
           });
           // eslint-disable-next-line max-len
           buyTheAsset(wallet, flashbotsProvider, abiEncoded, SLIP_ALLOWED.add(gasBaseFeeRightNow), GWEI.mul(6), nonce, 1)
-            .catch((e) => { setTimeout(() => { logger.printLn(`${e}`);}, 6_000)});
+            .catch((e) => { setTimeout(() => { logger.printLn(`${e}`); }, 6_000) });
           // eslint-disable-next-line max-len
           buyTheAsset(wallet, flashbotsProvider, abiEncoded, SLIP_ALLOWED.add(blockToFee[currBlockNo + 2]), GWEI.mul(6), nonce, 2)
-            .catch((e) => { setTimeout(() => { logger.printLn(`${e}`);}, 6_000)});
+            .catch((e) => { setTimeout(() => { logger.printLn(`${e}`); }, 6_000) });
           // eslint-disable-next-line max-len
           buyTheAsset(wallet, flashbotsProvider, abiEncoded, SLIP_ALLOWED.add(blockToFee[currBlockNo + 3]), GWEI.mul(6), nonce, 3)
-            .catch((e) => { setTimeout(() => { logger.printLn(`${e}`);}, 6_000)});
+            .catch((e) => { setTimeout(() => { logger.printLn(`${e}`); }, 6_000) });
         }
       }
     } catch (e) {
@@ -216,7 +216,7 @@ async function buyTheAsset(
   const targetBlock = currBlockNo + BLOCKS_IN_THE_FUTURE
   const simulation = await flashbotsProvider.simulate(signedTransactions, targetBlock);
   if ('error' in simulation) {
-    setTimeout(() => { logger.print(`Simulation Error: ${simulation.error.message}`);}, 6_000);
+    setTimeout(() => { logger.print(`Simulation Error: ${simulation.error.message}`); }, 6_000);
     console.warn(`Block: ${targetBlock}, Simulation Error: ${simulation.error.message}`)
     console.error('Error simulating the transaction');
   } else {
@@ -247,65 +247,65 @@ async function buyTheAsset(
   } else {
     const obj = {
       bundleStats: await flashbotsProvider.getBundleStats(simulation.bundleHash, targetBlock),
-      userStats: await flashbotsProvider.getUserStats()
+      userStats: await flashbotsProvider.getUserStats(),
     };
     console.log(obj);
     setTimeout(() => {
-      logger.printLn(`block: ${targetBlock},\n ${JSON.stringify(obj,null, 2)}\n`);
+      logger.printLn(`block: ${targetBlock},\n ${JSON.stringify(obj, null, 2)}\n`);
     }, 6_000);
   }
 }
 
-async function redis_attach_range(queue_name ,asset, basePrice = (1e9 * 85 ) , priorityFee = (1e9 * 3), gallonsGuess = 350_000, wall_address, writeToFile, account_balance) {
-  try{
-    if(!asset['traits']){
-      let mongo_traits = await mongo.findOne({'slug': asset['slug'], 'token_id': asset['token_id']})
+async function redis_attach_range(queue_name, asset, basePrice = (1e9 * 85), priorityFee = (1e9 * 3), gallonsGuess = 350_000, wall_address, writeToFile, account_balance) {
+  try {
+    if (!asset['traits']) {
+      const mongo_traits = await mongo.findOne({ slug: asset['slug'], token_id: asset['token_id'] })
       asset['traits'] = mongo_traits.traits
     }
-  } catch(e) {
+  } catch (e) {
     console.log('No traits on asset.')
   }
-  let watch_list = watchlistupdater.getWatchList();
-  let watchListCollection = watch_list.find(({address}) => address === asset['token_address']);
-  if(watchListCollection === undefined || watchListCollection['tier'] === 'skip') {
+  const watch_list = watchlistupdater.getWatchList();
+  const watchListCollection = watch_list.find(({ address }) => address === asset['token_address']);
+  if (watchListCollection === undefined || watchListCollection['tier'] === 'skip') {
     console.log('already top bid')
     return;
   }
   try {
     asset['tier'] = watchListCollection['tier'];
-  } catch(e){
+  } catch (e) {
     console.log(asset['slug'])
   }
-  let min_range = .61
-  let max_range = .81
-  if(asset['tier']){
-    if(asset['tier'] === 'medium'){
-      min_range = .66
-      max_range = .86
-    } else if(asset['tier'] === 'high'){
-      min_range = .71
-      max_range = .91
-    } else if(asset['tier'] === 'low'){
-      min_range = .61
-      max_range = .81
-    } else if(asset['tier'] === 'medium-low'){
-      min_range = .685
-      max_range = .835
+  let min_range = 0.61
+  let max_range = 0.81
+  if (asset['tier']) {
+    if (asset['tier'] === 'medium') {
+      min_range = 0.66
+      max_range = 0.86
+    } else if (asset['tier'] === 'high') {
+      min_range = 0.71
+      max_range = 0.91
+    } else if (asset['tier'] === 'low') {
+      min_range = 0.61
+      max_range = 0.81
+    } else if (asset['tier'] === 'medium-low') {
+      min_range = 0.685
+      max_range = 0.835
     }
   }
   asset['bid_range'] = [min_range, max_range]
-  let traits = await mongo.read_traits(asset['slug'])
+  const traits = await mongo.read_traits(asset['slug'])
   if (traits) {
-    let collection_traits = traits.traits
-    for (let trait of (asset.traits || [])){
-      if (collection_traits[trait.trait_type.toLowerCase()]){
-        if (collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]){
-          let range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
-          if (!asset['bid_range']){
+    const collection_traits = traits.traits
+    for (const trait of (asset.traits || [])) {
+      if (collection_traits[trait.trait_type.toLowerCase()]) {
+        if (collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]) {
+          const range = collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]
+          if (!asset['bid_range']) {
             asset['bid_range'] = range
             asset['trait'] = trait.value
           }
-          if (range[1] > asset['bid_range'][1]){
+          if (range[1] > asset['bid_range'][1]) {
             asset['trait'] = trait.value
             asset['bid_range'] = range
           }
@@ -313,17 +313,15 @@ async function redis_attach_range(queue_name ,asset, basePrice = (1e9 * 85 ) , p
       }
     }
   }
-  //console.log(`base: ${basePrice.toString()}, pri: ${priorityFee.toString()}, gal: ${gallonsGuess}`)
-  const avg_gas_fee = basePrice.add(priorityFee).mul(gallonsGuess).toString()/1e18;
+  const avg_gas_fee = basePrice.add(priorityFee).mul(gallonsGuess).toString() / 1e18;
 
-	
-  let my_max_range = asset['bid_range'][1]
-  let client = redis_handler.client;
-  let collection_stats = await client.GET(`${asset['slug']}:stats`)
-  let data = JSON.parse(collection_stats)
-  let floor_price = data.floor_price
-  let fee = data.dev_seller_fee_basis_points/10_000
-  let maxToBuy = floor_price * (my_max_range - fee) - avg_gas_fee;
+  const my_max_range = asset['bid_range'][1]
+  const { client } = redis_handler;
+  const collection_stats = await client.GET(`${asset['slug']}:stats`)
+  const data = JSON.parse(collection_stats)
+  const { floor_price } = data
+  const fee = data.dev_seller_fee_basis_points / 10_000
+  const maxToBuy = floor_price * (my_max_range - fee) - avg_gas_fee;
   console.log(`maxbuy: ${maxToBuy} floor: ${floor_price}`);
   console.log(`avg gas: ${avg_gas_fee}`);
   console.log();
@@ -332,7 +330,7 @@ async function redis_attach_range(queue_name ,asset, basePrice = (1e9 * 85 ) , p
   }
   setTimeout(() => writeToFile(`\n${asset['slug']}:${asset['token_id']} maxbuy: ${maxToBuy} floor: ${floor_price}\n\n`), 5_000);
   const amount_needed_in_wallet = asset['listed_price'] + (basePrice.add(priorityFee).mul(500_000).toString() / 1e18);
-  //const account_balance = await etherscan_handler.get_eth_balance(wall_address);
+  // const account_balance = await etherscan_handler.get_eth_balance(wall_address);
   if (isNaN(account_balance) || amount_needed_in_wallet > account_balance) {
     setTimeout(() => writeToFile(`\ncould have bought a ${asset['slug']}:${asset['token_id']} !!!!!!!\n`), 5_000);
     console.error(`could have bought a ${asset['slug']}:${asset['token_id']} : needed: ${amount_needed_in_wallet} had: ${account_balance}!!!!!!!`);
