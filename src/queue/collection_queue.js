@@ -9,7 +9,6 @@ async function get_collection_bids(slug, exp, run_traits) {
   const blacklist_wallets = ['0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
   const staking_wallets = await mongo.readStakingWallets()
   const slugs_staking_wallets = staking_wallets
-    .filter((el) => el.slug === slug)
     .map(({ address }) => address.toLowerCase());
   for (const w in blacklist_wallets) {
     blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
@@ -123,7 +122,7 @@ async function get_collection_bids(slug, exp, run_traits) {
         if (!blacklist_wallets.includes(asset_map[a].owner_address)
         && !slugs_staking_wallets.includes(a.owner)) {
           bids_added += 1
-          // trimmed_asset.bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
+          // asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
           await redis_handler.redis_push('collection', asset_map[a], run_traits);
         } else {
           top_bids += 1
