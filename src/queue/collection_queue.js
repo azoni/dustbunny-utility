@@ -6,7 +6,7 @@ const mongo_handler = require('../handlers/mongo_handler.js')
 
 async function get_collection_bids(slug, exp, run_traits) {
   await mongo_handler.connect()
-  const blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
+  const blacklist_wallets = ['0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
   const staking_wallets = await mongo.readStakingWallets()
   const slugs_staking_wallets = staking_wallets
     .filter((el) => el.slug === slug)
@@ -46,8 +46,12 @@ async function get_collection_bids(slug, exp, run_traits) {
   let asset_count = 0
   const trait_dict = {}
   for (const asset of assets) {
-    trait_dict[asset.token_id] = asset.traits
     asset_count += 1
+    if (slugs_staking_wallets.includes(asset.owner)) {
+      // eslint-disable-next-line no-continue
+      continue
+    }
+    trait_dict[asset.token_id] = asset.traits
     temp_30_array.push(asset.token_id)
     if (temp_30_array.length === 30) {
       token_ids.push(temp_30_array)
@@ -59,7 +63,7 @@ async function get_collection_bids(slug, exp, run_traits) {
   }
   for (const token_array of token_ids) {
     console.log(`${loop_counter}/${assets.length} for ${assets[0].slug}`)
-    loop_counter += 30
+    loop_counter += token_array.length
     const has_bids = {}
     let top_bids = 0
     let no_bids = 0
@@ -119,6 +123,7 @@ async function get_collection_bids(slug, exp, run_traits) {
         if (!blacklist_wallets.includes(asset_map[a].owner_address)
         && !slugs_staking_wallets.includes(a.owner)) {
           bids_added += 1
+          // trimmed_asset.bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
           await redis_handler.redis_push('collection', asset_map[a], run_traits);
         } else {
           top_bids += 1

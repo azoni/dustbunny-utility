@@ -40,7 +40,7 @@ try {
     throw new Error('Missing INFURA_PROJECT_ID auth key');
   }
 } catch (e) {
-  console.log(e)
+  console.log()
 }
 const provider = new providers.InfuraProvider(1, INFURA_PROJECT_ID);
 

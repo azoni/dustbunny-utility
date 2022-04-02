@@ -53,7 +53,7 @@ async function get_competitor_bids(type, exp) {
           if (queue_length < 1000) {
             asset.bid_amount = o.basePrice / 1000000000000000000
           }
-          const allowed_slugs = ['doodles-officla', 'cool-cats-nft', 'cyberkongz', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'clonex', 'world-of-women-nft']
+          const allowed_slugs = ['doodles-official', 'cool-cats-nft', 'cyberkongz', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'clonex', 'world-of-women-nft']
           if (allowed_slugs.includes(asset.slug)) {
             bids_added += 1
             redis_handler.redis_push('flash', asset);

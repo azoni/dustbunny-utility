@@ -4,6 +4,7 @@ const mongo = require('../AssetsMongoHandler.js')
 const utils = require('../utility/utils.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
 
+// eslint-disable-next-line no-unused-vars
 async function trait_floor(assets) {
   const token_ids = []
   const asset_contract_address = assets[0].token_address
@@ -74,7 +75,7 @@ async function add_trait_queue(slug, exp) {
       const min = floor_price * (bid_range[0] - fee)
       const max = floor_price * (bid_range[1] - fee)
       try {
-        let trait_floor_price = await trait_floor(temp_assets)
+        let trait_floor_price = [] // await trait_floor(temp_assets)
         if (trait_floor_price.length === 0) {
           trait_floor_price = ['None']
         }

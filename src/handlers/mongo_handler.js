@@ -69,7 +69,7 @@ async function findAndDeleteManyAssets(query = {}) {
 
 async function update_owner_asset(slug, token_id, value) {
   console.log(`${slug} ${token_id} ${value}`)
-  _nftassets.updateOne(
+  return _nftassets.updateOne(
     { slug, token_id },
     {
       $set:
