@@ -6,7 +6,7 @@ const mongo = require('../AssetsMongoHandler.js')
 const { STAKING_WALLETS } = require('../data_node.js')
 
 async function get_collection_bids(slug, exp, run_traits){
-	let blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556','0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
+	let blacklist_wallets = ['0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556','0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
 	let staking_wallets = await mongo.readStakingWallets()
 	const slugs_staking_wallets = staking_wallets
 		.filter(el => el.slug === slug)
@@ -58,14 +58,16 @@ async function get_collection_bids(slug, exp, run_traits){
 		}
 	}
 	let start = 0
-	let end = 3
+	let end = 84
 	let time = 0
 	var start_loop = Math.floor(+new Date())
 	while(true){
-		console.log(token_ids.slice(3, 6))
-  		for(let token_array of token_ids.slice(start, end)){
+		let total_bids_added = 0
+  		for(let token_array of token_ids){ //.slice(start, end)){
+  			await utils.sleep(12000)
+  			loop_counter += 30
   			console.log(loop_counter + '/' + assets.length + ' for ' + assets[0].slug)
-			
+			//taker 0x0000000000000000000000000000000000000000
 			let has_bids = {}
 			let top_bids = 0
 			let no_bids = 0
@@ -119,9 +121,20 @@ async function get_collection_bids(slug, exp, run_traits){
 				}
 				console.log('assets with no bids: ' + no_bids)
 				for(let a in asset_map){
-					if(!blacklist_wallets.includes(asset_map[a]['owner_address']) && !slugs_staking_wallets.includes(a['owner'])){
+					if(!blacklist_wallets.includes(asset_map[a]['owner_address']) && !slugs_staking_wallets.includes(a['owner']) && asset_map[a].bid_amount < 90){
 						bids_added += 1
+						total_bids_added += 1
+
 						console.log('boredapeyachtclub ' + asset_map[a].token_id + ' ' + asset_map[a].bid_amount)
+						
+						if(total_bids_added === 1000){
+							var end_loop = Math.floor(+new Date())
+							console.log('runtime: ' + ((end_loop - start_loop)/60000).toFixed(2) + '------------------------------')
+							console.log('waiting: ' + (((30*60000) - (end_loop - start_loop))/60000).toFixed(2))
+							await utils.sleep((30*60000) - (end_loop - start_loop))
+							start_loop = Math.floor(+new Date())
+							total_bids_added = 0
+						}
 						await redis_handler.redis_push('collection', asset_map[a], run_traits); 
 					} else{
 						top_bids += 1
@@ -135,14 +148,28 @@ async function get_collection_bids(slug, exp, run_traits){
 				console.log('error ')
 		    }
 		}
-		var end_loop = Math.floor(+new Date())
-		console.log('runtime: ' + ((end_loop - start_loop)/60000).toFixed(2))
-		if(end_loop - start_loop > 15*60000){
-			loop_counter += token_ids.slice(start, end).length*30
-			start += 3
-			end += 3
-			start_loop = Math.floor(+new Date())
-		}
+		
+		// var end_loop = Math.floor(+new Date())
+		// console.log('------------------------------------')
+		// console.log('runtime: ' + ((end_loop - start_loop)/60000).toFixed(2))
+		
+		// console.log('------------------------------------')
+		// // if(end_loop - start_loop > 15*60000){
+		// 	loop_counter += token_ids.slice(start, end).length*30
+
+		// 	start += 84
+		// 	end += 84
+		// 	if(loop_counter > assets.length){
+		// 		start  = 0
+		// 		end = 84
+		// 	}
+			
+		// // }	
+		// console.log('Bids made: ' + total_bids_added)
+		
+		// console.log('waiting: ' + (((30*60000) - (end_loop - start_loop))/60000).toFixed(2))
+		// await utils.sleep((30*60000) - (end_loop - start_loop))
+		// start_loop = Math.floor(+new Date())
 	}
 	let queue_length = await redis_handler.get_queue_length('collection')
 	console.log('orders found: ' + order_count)
@@ -163,7 +190,7 @@ async function start(){
 	// let slug = readline.question('slug: ')
 	// let exp = readline.question('exp: ')
   // get_collection_bids(slug, exp)
-	get_collection_bids('boredapeyachtclub', 15)
+	get_collection_bids('boredapeyachtclub', 30)
 }
 // start()
 module.exports = { start, get_collection_bids };

@@ -256,6 +256,9 @@ async function get_orders_window(address, time_window, token_ids){
       }
 	    order_length = order['orders'].length
 	    for(let o of order.orders){
+        if(o.waitingForBestCounterOrder || o.cancelledOrFinalized || o.markedInvalid){
+          console.log(o.asset.tokenId + ' counter ' +  o.waitingForBestCounterOrder + ' cancelled ' +  o.cancelledOrFinalized + ' invalid ' +  o.markedInvalid)
+        }
 	    	if(o.paymentTokenContract.symbol === 'WETH'){
 	    		orders_array.push(o)
 	    	}
