@@ -12,6 +12,7 @@ const focus = require('./queue/focus_queue.js');
 const bayc = require('./queue/bayc_queue.js');
 const trait = require('./queue/trait_queue.js');
 const collection = require('./queue/collection_queue.js');
+// eslint-disable-next-line no-unused-vars
 const etherscan_handler = require('./handlers/etherscan_handler.js')
 const myIp = require('./utility/what-is-my-ip.js');
 const redis_handler = require('./handlers/redis_handler.js')
@@ -140,7 +141,6 @@ async function add_focus() {
 }
 
 async function trait_floor() {
-  console.log(process.argv)
   const query = { slug: process.argv[3], traits: { $elemMatch: { value: { $regex: String(process.argv[5]), $options: 'i' }, trait_type: { $regex: String(process.argv[4]), $options: 'i' } } } }
   const assets = await mongo.find(query, {})
   console.log(assets.length)
@@ -165,10 +165,10 @@ async function trait_floor() {
     await utils.sleep(500)
     const orders = await opensea_handler
       .get_orders_window(asset_contract_address, false, token_array, 1)
-    console.log(`order length: ${orders.length}`)
+    // console.log(`order length: ${orders.length}`)
     for (const o of orders) {
       const listing_price = o.currentPrice / 1000000000000000000
-      console.log(`${o.asset.tokenId} ${listing_price}`)
+      // console.log(`${o.asset.tokenId} ${listing_price}`)
       if (!asset_listings[o.asset.tokenId]) {
         ordered_listings.push(listing_price)
         asset_listings[o.asset.tokenId] = [listing_price]
@@ -178,10 +178,11 @@ async function trait_floor() {
     }
   }
   console.log(ordered_listings.length)
-  console.log(`Trait floor: ${ordered_listings.sort()}`)
-  for (const l in asset_listings) {
-    console.log(`${l} ${asset_listings[l]}`)
-  }
+  const trait_floor_prices = ordered_listings.sort((a, b) => a - b).slice(0, 4)
+  console.log(`Trait floor: ${trait_floor_prices}`)
+  // for (const l in asset_listings) {
+  //   console.log(`${l} ${asset_listings[l]}`)
+  // }
 }
 
 if (!myIp) {
@@ -269,32 +270,32 @@ async function run_interactive() {
   }
 }
 async function main() {
-  const wallets = {
-    wallet1: {
-      username: 'DustBunny_19',
-      address: '0x18a73AaEe970AF9A797D944A7B982502E1e71556',
-    },
-    // 'wallet2': {
-    // username: 'DustBunny_20',
-    // address: '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628'
-    // },
-    // 'wallet3': {
-    // username: 'DustBunny_21',
-    // address: '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A'
-    // },
-    wallet4: {
-      username: 'DustBunny_22',
-      address: '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF',
-    },
-  }
-  let total_weth = 0
-  for (const account in wallets) {
-    const balance = await etherscan_handler.get_weth_balance(wallets[account].address)
-    wallets[account].balance = balance
-    total_weth += balance
-  }
-  console.log(wallets)
-  console.log(`total weth: ${total_weth.toFixed(2)}`)
+  // const wallets = {
+  //   wallet1: {
+  //     username: 'DustBunny_19',
+  //     address: '0x18a73AaEe970AF9A797D944A7B982502E1e71556',
+  //   },
+  //   // 'wallet2': {
+  //   // username: 'DustBunny_20',
+  //   // address: '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628'
+  //   // },
+  //   // 'wallet3': {
+  //   // username: 'DustBunny_21',
+  //   // address: '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A'
+  //   // },
+  //   wallet4: {
+  //     username: 'DustBunny_22',
+  //     address: '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF',
+  //   },
+  // }
+  // let total_weth = 0
+  // for (const account in wallets) {
+  //   const balance = await etherscan_handler.get_weth_balance(wallets[account].address)
+  //   wallets[account].balance = balance
+  //   total_weth += balance
+  // }
+  // console.log(wallets)
+  // console.log(`total weth: ${total_weth.toFixed(2)}`)
   // let listed_assets = await opensea_handler.get_listed_asset('kaiju-kingz')
   // for(let listed of listed_assets){
   // console.log(listed)
@@ -304,6 +305,7 @@ async function main() {
   if (myIp === '10.0.0.59') {
     connect()
   }
+  // eslint-disable-next-line no-unused-vars
   function shuffleArray(array) {
     // eslint-disable-next-line no-plusplus
     for (let i = array.length - 1; i > 0; i--) {
@@ -319,8 +321,46 @@ async function main() {
   // const opensea_keys = await mongo_handler.get_opensea_keys()
   // const opensea__api_keys = opensea_keys.map(({ api_key }) => api_key)
   // console.log('Starting bids...')
-  // shuffleArray(opensea__api_keys)
+  // const chris_keys = [
+  //   '0865f887ab0e407bacc4f50a5ccfbe43',
+  //   '86360c61515a4100a52b884db4297a0a',
+  //   '53670eb145e744c38e33aa67d6a9c5f2',
+  //   'a75e5184a4d644a6bbaf1d533586b5a2',
+  //   '59c4998451ed4203b728542b320820aa',
+  //   '3a756e159f6543a29bac0b5dfe05cdc5',
+  //   '54fbaf6e1510440e8c912a78b407aabc',
+  //   '07bcfe2a61e2405ca720cbed9dff4a6a',
+  //   '70cc4d5441364f6e94178ed2fde2f63e',
+  //   '08a43e33a64f4be0bf60991b2fd734f6',
+  //   'eb15dde4d79c487bb6d90a955f586ac6',
+  //   '628192c274bf46ffa497f724126b2d95',
+  //   '6447cc33bb364ee69dd822948711b9eb',
+  //   '0dfad8a7f7254f74a86eb2c7270568f1',
+  //   '70eb0d72e9a8421d8969c1bc9e865469',
+  // ]
+  // const usable_keys = [
+  //   '04903a94a949443f96061e0046b034c7',
+  //   '3e994eb084474893abe7842014dbd66c',
+  //   '183e20b9d8f24da3a3bfdc9bcc384ec3',
+  //   '4b7d65a561134155970501edaa04b5d2',
+  //   'ade086f2f73f4bb7aa63abd1ab0afcb1',
+  //   'bfb44f9711eb4c49bb05e6f8d56d0ea5',
+  //   '5c93bcf2e40643438ee849894831bb0e',
+  //   'a1a9c9b3d63a4855bfdfd38634d42b13',
+  //   '8c2f58482e71447ab9f2fdfc26ed36d4',
+  //   '69f7f946a4b24c1386de2a4f0cf0f870',
+  //   'fd933408b9604c2f89af28c1a2022210',
+  //   '6061f7f616fe498c9708d102d0b9c407',
+  //   '9f341b7c6420433c8f6c5973ddc50aad',
+  //   '96d8c5bc3d38408e9e05f261aee738b2',
+  //   'becbd5981e0c482083b3bac4267ad651',
+  // ]
   // await opensea_handler.test_bid(opensea__api_keys)
+  // for (const api_key of opensea__api_keys) {
+  //   console.log(api_key)
+  //   await mongo_handler.update_opensea_key(api_key)
+  // }
+
   // let comp_wallets = await mongo_handler.get_comp_wallets()
   // let our_wallets = await mongo_handler.get_our_wallets()
   // let comp_addresses = []

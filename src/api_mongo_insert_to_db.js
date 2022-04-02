@@ -28,7 +28,7 @@ const Kitten = mongoose.model('nftasset', Asset);
 main().catch((err) => console.log(err));
 
 async function main() {
-  if (process.argv[3] !== 'add') {
+  if (process.argv[2] !== 'add') {
     return
   }
   try {
@@ -37,7 +37,7 @@ async function main() {
     // console.log(k.traits[0]);
     console.log(process.argv)
 
-    if (process.argv.length !== 3) {
+    if (process.argv.length !== 4) {
       return
     }
 
@@ -63,7 +63,7 @@ const seaport = new OpenSeaPort(
   (arg) => console.log(arg),
 );
 
-const options = { method: 'GET', headers: { Accept: 'application/json', 'X-API-KEY': '578c069362bf4af7aa66b61e844867a9' } };
+const options = { method: 'GET', headers: { Accept: 'application/json', 'X-API-KEY': 'fd933408b9604c2f89af28c1a2022210' } };
 
 // fetch('https://api.opensea.io/api/v1/assets?collection=cryptoadz-by-gremplin&order_by=pk&order_direction=desc&limit=50&cursor=LXBrPTQ3NzkwMzg0&include_orders=false', options)
 //  .then(response => response.json())

@@ -101,7 +101,6 @@ async function get_focus_addresses() {
   comp_addresses = comp_wallets.map(({ address }) => address.toLowerCase())
   our_addresses = our_wallets.map(({ address }) => address.toLowerCase())
   const addresses = [...comp_addresses, ...our_addresses]
-  console.log(addresses)
   return addresses
 }
 const bot_address_list = get_focus_addresses()
@@ -153,7 +152,7 @@ async function get_etherscan_transactions() {
       if (tx.from === '0x0000000000000000000000000000000000000000') {
         event_type = 'mint'
       }
-
+      mongo_handler.update_owner_asset(collection.slug, tx.tokenID, tx.to)
       if (!tx.to || !tx.from) {
         console.log('error')
         console.log(collection);
@@ -276,7 +275,7 @@ async function get_nfts_from_wallet(interestAddress, event_type) {
           asset.slug = watchListCollection.slug;
           asset.event_type = event_type
           asset.tier = watchListCollection.tier;
-          redis_handler.redis_push('transfer', asset);
+          //redis_handler.redis_push('transfer', asset);
         }
       }
     }

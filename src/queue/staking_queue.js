@@ -1,4 +1,4 @@
-const opensea_handler = require('../handlers/opensea_handler.js')
+// const opensea_handler = require('../handlers/opensea_handler.js')
 const redis_handler = require('../handlers/redis_handler.js')
 const data_node = require('../data_node.js')
 const utils = require('../utility/utils.js')
@@ -8,10 +8,9 @@ async function staking_queue_add(slug, exp) {
   const trait_bids = data_node.COLLECTION_TRAIT
   console.log(`Getting unstaked assets for ${slug}...`)
   // var assets =  await opensea_handler.get_assets(slug)
-  const assets = await opensea_handler.get_assets_with_cursor(slug)
   const collection_traits = trait_bids[slug]
   const staking_wallets = await mongo.readStakingWallets()
-
+  const assets = await mongo.find({ slug }, {})
   const slugs_staking_wallets = staking_wallets
     .filter((el) => el.slug === slug)
     .map(({ address }) => address.toLowerCase());
@@ -22,7 +21,7 @@ async function staking_queue_add(slug, exp) {
     asset.fee = asset.dev_seller_fee_basis_points / 10000
     asset.event_type = 'staking'
     asset.expiration = exp
-    if (slugs_staking_wallets.includes(asset.owner_address.toLowerCase())) {
+    if (slugs_staking_wallets.includes(asset.owner.toLowerCase()) || !asset.owner) {
       // eslint-disable-next-line no-continue
       continue
     }

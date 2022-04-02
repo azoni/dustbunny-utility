@@ -2,8 +2,10 @@
 const redis_handler = require('../handlers/redis_handler.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
 const mongo = require('../AssetsMongoHandler.js')
+const mongo_handler = require('../handlers/mongo_handler.js')
 
 async function get_collection_bids(slug, exp, run_traits) {
+  await mongo_handler.connect()
   const blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
   const staking_wallets = await mongo.readStakingWallets()
   const slugs_staking_wallets = staking_wallets
@@ -78,6 +80,7 @@ async function get_collection_bids(slug, exp, run_traits) {
         asset.expiration = 0.25
         asset.owner_address = o.makerAccount.address.toLowerCase()
         asset.owner = o.asset.owner.address.toLowerCase()
+        mongo_handler.update_owner_asset(asset.slug, asset.token_id, asset.owner)
         if (exp !== '') {
           asset.expiration = exp / 60
         }

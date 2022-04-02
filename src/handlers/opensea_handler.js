@@ -6,6 +6,8 @@ const { Network } = opensea;
 const RPCSubprovider = require('web3-provider-engine/subproviders/rpc');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const Web3ProviderEngine = require('web3-provider-engine');
+// eslint-disable-next-line no-unused-vars
+const { WyvernSchemaName } = require('opensea-js/lib/types')
 const { MnemonicWalletSubprovider } = require('@0x/subproviders');
 const values = require('../values.js')
 
@@ -33,6 +35,7 @@ const seaport = new OpenSeaPort(
 function start() {
   providerEngine.start()
 }
+// eslint-disable-next-line no-unused-vars
 function create_seaport(key) {
   providerEngine.stop();
   const seaport_temp = new OpenSeaPort(
@@ -46,35 +49,37 @@ function create_seaport(key) {
   providerEngine.start()
   return seaport_temp
 }
-async function test_bid(keys) {
+async function test_bid() {
   let success = 0
   let fail = 0
-  for (const key of keys) {
-    const seaport_temp = create_seaport(key)
-    const asset = {
-      tokenId: '8573',
-      tokenAddress: '0x24998f0a028d197413ef57c7810f7a5ef8b9fa55',
-    }
-    try {
-      await seaport_temp.createBuyOrder({
-        asset,
-        startAmount: 0.0001,
-        accountAddress: '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25',
-        expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * 0.25),
-      })
-      console.log(`Success' ${key}`)
-      success += 1
-    } catch (ex) {
-      if (ex.message.includes('API Error 403')) {
-        console.log(`Access was denied. ${key}`)
-      } else if (ex.message.includes('API Error 401')) {
-        console.log(`Expired API key. ${key}`)
-      } else {
-        console.log(ex.message)
-      }
-      fail += 1
-    }
+  // for (const key of keys) {
+  // const seaport_temp = create_seaport(key)
+  const asset = {
+    tokenId: '8573', // '1',
+    tokenAddress: '0x24998f0a028d197413ef57c7810f7a5ef8b9fa55', // '0x2079812353e2c9409a788fbf5f383fa62ad85be8',
+    // schemaName: WyvernSchemaName.ERC1155,
   }
+  try {
+    await seaport.createBuyOrder({
+      asset,
+      startAmount: 0.0001,
+      accountAddress: '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25',
+      expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * 0.25),
+    })
+    // console.log(`Success' ${key}`)
+    success += 1
+  } catch (ex) {
+    console.log(ex.message)
+    if (ex.message.includes('API Error 403')) {
+      // console.log(`Access was denied. ${key}`)
+    } else if (ex.message.includes('API Error 401')) {
+      // console.log(`Expired API key. ${key}`)
+    } else {
+      console.log(ex.message)
+    }
+    fail += 1
+  }
+  // }
   console.log(`success ${success}`)
   console.log(`fail ${fail}`)
   return 'fail'
