@@ -80,7 +80,7 @@ async function get_collection_bids(slug, exp, run_traits) {
         asset.expiration = 0.25
         asset.owner_address = o.makerAccount.address.toLowerCase()
         asset.owner = o.asset.owner.address.toLowerCase()
-        mongo_handler.update_owner_asset(asset.slug, asset.token_id, asset.owner)
+        // mongo_handler.update_owner_asset(asset.slug, asset.token_id, asset.owner)
         if (exp !== '') {
           asset.expiration = exp / 60
         }

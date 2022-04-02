@@ -275,7 +275,7 @@ async function get_nfts_from_wallet(interestAddress, event_type) {
           asset.slug = watchListCollection.slug;
           asset.event_type = event_type
           asset.tier = watchListCollection.tier;
-          //redis_handler.redis_push('transfer', asset);
+          redis_handler.redis_push('transfer', asset);
         }
       }
     }
