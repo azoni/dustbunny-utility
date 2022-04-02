@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { get_collection } = require('./handlers/opensea_handler');
+const { get_collection } = require('./handlers/opensea_handler.js');
 const data = require('./data.json');
 
 const WatchListSetItem = new mongoose.Schema({
@@ -10,8 +10,7 @@ const WatchListSetItem = new mongoose.Schema({
 
 const WatchListSet = mongoose.model('watch_list', WatchListSetItem);
 
-
-main().catch(err => console.log(err));
+main().catch((err) => console.log(err));
 
 async function main() {
   try {
@@ -21,9 +20,9 @@ async function main() {
     mySet = Array.from(mySet);
     for (const el of mySet) {
       const col = await get_collection(el)
-      .catch(_=> sleep(1_300).then(_ => get_collection(el)))
-      .catch(_=> sleep(2_000).then(_ => get_collection(el)))
-      .catch(_=> sleep(6_000).then(_ => get_collection(el)))
+        .catch(() => sleep(1_300).then(() => get_collection(el)))
+        .catch(() => sleep(2_000).then(() => get_collection(el)))
+        .catch(() => sleep(6_000).then(() => get_collection(el)))
       console.log(col?.collection?.primary_asset_contracts?.[0]?.address);
       let w;
       try {
@@ -43,6 +42,6 @@ async function main() {
   }
 }
 
-async function sleep(ms){
-	await new Promise(resolve => setTimeout(resolve, ms))
+async function sleep(ms) {
+  await new Promise((resolve) => { setTimeout(resolve, ms); })
 }
