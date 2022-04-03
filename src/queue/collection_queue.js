@@ -4,7 +4,7 @@ const opensea_handler = require('../handlers/opensea_handler.js')
 const mongo = require('../AssetsMongoHandler.js')
 const mongo_handler = require('../handlers/mongo_handler.js')
 
-async function get_collection_bids(slug, exp, run_traits) {
+async function get_collection_bids(slug, exp, run_traits, timestamp) {
   await mongo_handler.connect()
   const blacklist_wallets = ['0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
   const staking_wallets = await mongo.readStakingWallets()
@@ -69,7 +69,7 @@ async function get_collection_bids(slug, exp, run_traits) {
     // await utils.sleep(250)
     const asset_map = {}
     const orders = await opensea_handler
-      .get_orders_window(asset_contract_address, false, token_array)
+      .get_orders_window(asset_contract_address, timestamp, token_array)
     try {
       for (const o of orders) {
         has_bids[o.asset.tokenId] = true
@@ -122,7 +122,7 @@ async function get_collection_bids(slug, exp, run_traits) {
         if (!blacklist_wallets.includes(asset_map[a].owner_address)
         && !slugs_staking_wallets.includes(a.owner)) {
           bids_added += 1
-          // asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
+          asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
           await redis_handler.redis_push('collection', asset_map[a], run_traits);
         } else {
           top_bids += 1
@@ -144,14 +144,14 @@ async function get_collection_bids(slug, exp, run_traits) {
 
   // eslint-disable-next-line no-param-reassign
   exp = (end_time - start_time) / 60000
-  get_collection_bids(slug, exp, run_traits)
+  get_collection_bids(slug, exp, run_traits, Date.now() - (end_time - start_time))
 }
 async function start() {
   // const readline = require('readline-sync')
   // let slug = readline.question('slug: ')
   // let exp = readline.question('exp: ')
   // get_collection_bids(slug, exp)
-  get_collection_bids(process.argv[3], process.argv[4], process.argv[5])
+  get_collection_bids(process.argv[3], process.argv[4], process.argv[5], false)
 }
 // start()
 module.exports = { start, get_collection_bids };
