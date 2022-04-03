@@ -151,7 +151,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
   // eslint-disable-next-line no-param-reassign
   exp = (end_time - start_time) / 60000
   timestamp = end_time - start_time
-  console.log((runtime/60000)).toFixed(2)
+  console.log((runtime/60000).toFixed(2))
   if(runtime > 15*60000){
     runtime = 0
     timestamp = false
