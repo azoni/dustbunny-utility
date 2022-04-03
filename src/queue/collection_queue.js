@@ -3,6 +3,7 @@ const redis_handler = require('../handlers/redis_handler.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
 const mongo = require('../AssetsMongoHandler.js')
 const mongo_handler = require('../handlers/mongo_handler.js')
+const utils = require('../utility/utils.js')
 
 async function get_collection_bids(slug, exp, run_traits) {
   await mongo_handler.connect()
@@ -61,6 +62,7 @@ async function get_collection_bids(slug, exp, run_traits) {
     }
   }
   for (const token_array of token_ids) {
+    await utils.sleep(500)
     console.log(`${loop_counter}/${assets.length} for ${assets[0].slug}`)
     loop_counter += token_array.length
     const has_bids = {}
