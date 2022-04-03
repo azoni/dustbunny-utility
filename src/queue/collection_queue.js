@@ -15,7 +15,6 @@ async function get_collection_bids(slug, exp, run_traits, timestamp) {
   for (const w in blacklist_wallets) {
     blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
   }
-  
   console.log(`Adding to queue...${slug}`)
 
   let bids_added = 0
@@ -63,7 +62,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp) {
     }
   }
   for (const token_array of token_ids) {
-    await utils.sleep(2000)
+    await utils.sleep(500)
     console.log(`${loop_counter}/${assets.length} for ${assets[0].slug}`)
     loop_counter += token_array.length
     const has_bids = {}
@@ -144,10 +143,10 @@ async function get_collection_bids(slug, exp, run_traits, timestamp) {
   console.log(`Queue collection: ${queue_length}`)
   const end_time = Math.floor(+new Date())
   console.log(`run time: ${((end_time - start_time) / 60000).toFixed(2)} minutes`)
-
+  console.log(`timestamp ${((token_ids.length * 2000) / 60000).toFixed(2)}`)
   // eslint-disable-next-line no-param-reassign
   exp = (end_time - start_time) / 60000
-  get_collection_bids(slug, exp, run_traits, (end_time - start_time))
+  get_collection_bids(slug, exp, run_traits, (token_ids.length * 2000))
 }
 async function start() {
   // const readline = require('readline-sync')
