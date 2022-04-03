@@ -62,7 +62,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
     }
   }
   for (const token_array of token_ids) {
-    // await utils.sleep(250)
+    await utils.sleep(500)
     console.log(`${loop_counter}/${assets.length} for ${assets[0].slug}`)
     loop_counter += token_array.length
     const has_bids = {}
