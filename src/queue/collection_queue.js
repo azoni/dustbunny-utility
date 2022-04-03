@@ -124,7 +124,7 @@ async function get_collection_bids(slug, exp, run_traits) {
         if (!blacklist_wallets.includes(asset_map[a].owner_address)
         && !slugs_staking_wallets.includes(a.owner)) {
           bids_added += 1
-          // asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
+          asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
           await redis_handler.redis_push('collection', asset_map[a], run_traits);
         } else {
           top_bids += 1
