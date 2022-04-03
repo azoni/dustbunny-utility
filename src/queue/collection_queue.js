@@ -66,7 +66,6 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
     console.log(`${loop_counter}/${assets.length} for ${assets[0].slug}`)
     loop_counter += token_array.length
     const has_bids = {}
-    let top_bids = 0
     let no_bids = 0
     // await utils.sleep(250)
     const asset_map = {}
@@ -74,6 +73,11 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
       .get_orders_window(asset_contract_address, timestamp, token_array)
     try {
       for (const o of orders) {
+        const expire = o.expirationTime - (Math.floor(+new Date()) / 1000)
+        if ((blacklist_wallets.includes(o.makerAccount.address.toLowerCase()) && expire > 180)
+        || slugs_staking_wallets.includes(o.asset.owner.address.toLowerCase())) {
+          continue
+        }
         has_bids[o.asset.tokenId] = true
         const asset = {}
         asset.token_id = o.asset.tokenId
@@ -100,7 +104,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
           asset_map[asset.token_id] = asset
         }
       }
-      if(timestamp === false) {
+      if (timestamp === false) {
         for (const id of token_array) {
           if (!has_bids[id]) {
             no_bids += 1
@@ -121,17 +125,11 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
           }
         }
       }
-      
       console.log(`assets with no bids: ${no_bids}`)
       for (const a in asset_map) {
-        if (!blacklist_wallets.includes(asset_map[a].owner_address)
-        && !slugs_staking_wallets.includes(a.owner)) {
-          bids_added += 1
-          asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
-          await redis_handler.redis_push('collection', asset_map[a], run_traits);
-        } else {
-          top_bids += 1
-        }
+        bids_added += 1
+        asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
+        await redis_handler.redis_push('collection', asset_map[a], run_traits);
       }
       console.log(`added to queue: ${bids_added}`)
     } catch (ex) {
@@ -151,8 +149,8 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
   // eslint-disable-next-line no-param-reassign
   exp = (end_time - start_time) / 60000
   timestamp = end_time - start_time
-  console.log((runtime/60000).toFixed(2))
-  if(runtime > 15*60000){
+  console.log((runtime / 60000).toFixed(2))
+  if (runtime > 15 * 60000) {
     runtime = 0
     timestamp = false
   }
