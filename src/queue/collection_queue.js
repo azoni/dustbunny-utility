@@ -6,6 +6,7 @@ const mongo_handler = require('../handlers/mongo_handler.js')
 const utils = require('../utility/utils.js')
 
 async function get_collection_bids(slug, exp, run_traits, timestamp) {
+  const start_time = Math.floor(+new Date())
   await mongo_handler.connect()
   const blacklist_wallets = ['0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
   const staking_wallets = await mongo.readStakingWallets()
@@ -14,7 +15,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp) {
   for (const w in blacklist_wallets) {
     blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
   }
-  const start_time = Math.floor(+new Date())
+  
   console.log(`Adding to queue...${slug}`)
 
   let bids_added = 0
@@ -130,7 +131,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp) {
           top_bids += 1
         }
       }
-      console.log(`added to queue: ${30 - top_bids}`)
+      console.log(`added to queue: ${bids_added}`)
     } catch (ex) {
       console.log(ex)
       console.log(ex.message)
@@ -146,7 +147,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp) {
 
   // eslint-disable-next-line no-param-reassign
   exp = (end_time - start_time) / 60000
-  get_collection_bids(slug, exp, run_traits, Date.now() - (end_time - start_time))
+  get_collection_bids(slug, exp, run_traits, (end_time - start_time))
 }
 async function start() {
   // const readline = require('readline-sync')
