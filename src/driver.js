@@ -248,21 +248,19 @@ async function run_interactive() {
           redis_handler.dump_queue('flash')
         }
         console.log()
-        // const orders = await opensea_handler.get_orders_window('0x18a73AaEe970AF9A797D944A7B982502E1e71556', 3000)
-        // await utils.sleep(10000)
-        // const orders2 = await opensea_handler.get_orders_window('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', 3000)
-        // console.log(`${(orders.length + orders2.length) * 20} bids per minute`)
-        // total_bids += (orders.length + orders2.length) * 20
-        // console.log(`Average bpm: ${(total_bids / loops).toFixed()}`)
-        // if ((orders.length + orders2.length) < 1) {
-        //   console.log('Queues are empty.')
-        // }
-        // if ((orders.length + orders2.length) * 20 < 1000 && (orders.length + orders2.length) > 0) {
-        //   console.log('Bidding is currently slow.')
-        // }
+        const orders = await opensea_handler.get_orders_window('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', 5000)
+        console.log(`${(orders.length) * 12} bids per minute`)
+        total_bids += (orders.length) * 12
+        console.log(`Average bpm: ${(total_bids / loops).toFixed()}`)
+        if ((orders.length) < 1) {
+          console.log('Queues are empty.')
+        }
+        if ((orders.length) * 12 < 500 && (orders.length) > 0) {
+          console.log('Bidding is currently slow.')
+        }
         console.log('----------------------')
         console.log()
-        await utils.sleep(3000)
+        await utils.sleep(5000)
         loops += 1
       }
     }
