@@ -54,15 +54,29 @@ async function add_trait_queue(slug, exp) {
   let counter = 0
   const traits = await mongo.read_traits(slug)
   const assets = []
-  console.log(traits.traits)
+
   // eslint-disable-next-line prefer-const
   let traits_dict = traits.traits
+  if (process.argv[5]) {
+    const property = process.argv[5]
+    const single_property = {}
+    if (process.argv[6]) {
+      const value = process.argv[6]
+      const single_trait = {}
+      single_trait[value] = traits_dict[property][value]
+      single_property[property] = single_trait
+    } else {
+      single_property[property] = traits_dict[property]
+    }
+    traits_dict = single_property
+  }
   // const single_property = {}
   // const single_trait = {}
   // single_trait.trippy = traits_dict.fur.trippy
   // single_property.fur = single_trait
   // console.log(single_property)
   // traits_dict = single_property
+  console.log(traits_dict)
   for (const trait in traits_dict) {
     for (const t in traits_dict[trait]) {
       const query = { slug, traits: { $elemMatch: { value: { $regex: t, $options: 'i' }, trait_type: { $regex: trait, $options: 'i' } } } }
@@ -79,7 +93,7 @@ async function add_trait_queue(slug, exp) {
         if (trait_floor_price.length === 0) {
           trait_floor_price = ['None']
         }
-        console.log(`${trait} ${t} num: ${temp_assets.length} min: ${min.toFixed(2)} max: ${max.toFixed(2)} floor: ${trait_floor_price.join(', ')}`)
+        console.log(`${trait} ${t} num: ${temp_assets.length} min: ${min.toFixed(2)} max: ${max.toFixed(2)}`) // floor: ${trait_floor_price.join(', ')}`)
       } catch (e) {
         console.log(temp_assets)
       }
@@ -88,10 +102,11 @@ async function add_trait_queue(slug, exp) {
       }
     }
   }
+  console.log(`Assets: ${assets.length}`)
   const readline = require('readline-sync')
   const confirm = readline.question('confirm: ')
   if (confirm !== 'confirm') {
-    return
+    process.exit(1)
   }
   console.log('adding to queue...')
   for (const asset of assets) {

@@ -142,7 +142,8 @@ async function add_focus() {
 }
 
 async function trait_floor() {
-  const query = { slug: process.argv[3], traits: { $elemMatch: { value: { $regex: String(process.argv[5]), $options: 'i' }, trait_type: { $regex: String(process.argv[4]), $options: 'i' } } } }
+  let query = { slug: process.argv[3], traits: { $elemMatch: { value: { $regex: String(process.argv[5]), $options: 'i' }, trait_type: { $regex: String(process.argv[4]), $options: 'i' } } } }
+  query = { slug: process.argv[3] }
   const assets = await mongo.find(query, {})
   console.log(assets.length)
   const token_ids = []
@@ -162,6 +163,7 @@ async function trait_floor() {
   }
   const ordered_listings = []
   const asset_listings = {}
+  let listing_count = 0
   for (const token_array of token_ids) {
     await utils.sleep(500)
     const orders = await opensea_handler
@@ -171,16 +173,18 @@ async function trait_floor() {
       const listing_price = o.currentPrice / 1000000000000000000
       // console.log(`${o.asset.tokenId} ${listing_price}`)
       if (!asset_listings[o.asset.tokenId]) {
-        ordered_listings.push(listing_price)
-        asset_listings[o.asset.tokenId] = [listing_price]
-      } else {
-        asset_listings[o.asset.tokenId].push(listing_price)
+        listing_count += 1
+        console.log(`${o.asset.tokenId} ${listing_count}`)
+        asset_listings[o.asset.tokenId] = listing_price
+      } else if (listing_price < asset_listings[o.asset.tokenId]) {
+        asset_listings[o.asset.tokenId] = listing_price
       }
+      ordered_listings.push(listing_price)
     }
   }
-  console.log(ordered_listings.length)
-  const trait_floor_prices = ordered_listings.sort((a, b) => a - b).slice(0, 4)
-  console.log(`Trait floor: ${trait_floor_prices}`)
+  console.log(asset_listings)
+  // const trait_floor_prices = ordered_listings.sort((a, b) => a - b).slice(0, 30)
+  // console.log(`floor: ${trait_floor_prices}`)
   // for (const l in asset_listings) {
   //   console.log(`${l} ${asset_listings[l]}`)
   // }
@@ -294,7 +298,6 @@ async function run_interactive() {
         console.log(`DustBunny_18: ${account2.toFixed(2)}`)
         console.log(`Total weth: ${(account1 + account2).toFixed(2)}`)
         console.log('----------------------')
-        console.log()
         await utils.sleep(5000)
         loops += 1
       }

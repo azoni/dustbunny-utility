@@ -15,6 +15,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
   for (const w in blacklist_wallets) {
     blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
   }
+  // console.log(slugs_staking_wallets)
   console.log(`Adding to queue...${slug}`)
 
   let bids_added = 0
@@ -44,11 +45,13 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
   const asset_contract_address = assets[0].token_address
   let temp_30_array = []
   let asset_count = 0
+  let staked_count = 0
   const trait_dict = {}
   for (const asset of assets) {
     asset_count += 1
     if (slugs_staking_wallets.includes(asset.owner)) {
       // eslint-disable-next-line no-continue
+      staked_count += 1
       continue
     }
     trait_dict[asset.token_id] = asset.traits
@@ -63,7 +66,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
   }
   for (const token_array of token_ids) {
     await utils.sleep(500)
-    console.log(`${loop_counter}/${assets.length} for ${assets[0].slug}`)
+    console.log(`${loop_counter}/${assets.length - staked_count} for ${assets[0].slug}`)
     loop_counter += token_array.length
     const has_bids = {}
     let no_bids = 0
@@ -128,7 +131,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
       console.log(`assets with no bids: ${no_bids}`)
       for (const a in asset_map) {
         bids_added += 1
-        // asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
+        asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
         await redis_handler.redis_push('collection', asset_map[a], run_traits);
       }
       console.log(`added to queue: ${bids_added}`)

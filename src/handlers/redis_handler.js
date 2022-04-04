@@ -120,7 +120,7 @@ async function redis_push(queue_name, asset) {
     }
     const { floor_price } = data
     const fee = data.dev_seller_fee_basis_points / 10000
-    if (floor_price < 0.5) {
+    if (floor_price < 0.3) {
       return
     }
     if (asset.bid_amount > floor_price * (max_range - fee) && !asset.bypass_max) {
