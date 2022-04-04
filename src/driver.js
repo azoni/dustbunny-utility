@@ -227,45 +227,79 @@ async function run_interactive() {
   } else if (command === 'trait-floor') {
     trait_floor()
   } else if (command === 'dump') {
-    redis_handler.dump_queue(process.argv[3])
+    if (process.argv[3] === 'all') {
+      redis_handler.dump_queue('high')
+      redis_handler.dump_queue('listed')
+      redis_handler.dump_queue('transfer')
+      redis_handler.dump_queue('collection')
+      redis_handler.dump_queue('flash')
+      redis_handler.dump_queue('manual')
+    } else {
+      redis_handler.dump_queue(process.argv[3])
+    }
   } else if (command === 'len') {
-    redis_handler.print_queue_length(process.argv[3])
     if (process.argv[3] === 'all') {
       let total_bids = 0
       let loops = 1
       // eslint-disable-next-line no-constant-condition
+      const queue_names = ['high', 'listed', 'transfer', 'collection', 'flash', 'manual']
+      let account1
+      let account2
+      let temp_account1
+      let temp_account2
+      account1 = await etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')
+      account2 = await etherscan_handler.get_weth_balance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb')
+      temp_account1 = account1
+      temp_account2 = account2
       while (true) {
-        await redis_handler.print_queue_length('high')
-        await redis_handler.print_queue_length('rare')
-        await redis_handler.print_queue_length('listed')
-        await redis_handler.print_queue_length('transfer')
-        await redis_handler.print_queue_length('staking')
-        await redis_handler.print_queue_length('collection')
-        await redis_handler.print_queue_length('flash')
-        await redis_handler.print_queue_length('manual')
-        const flash_length = await redis_handler.get_queue_length('flash')
-        if (flash_length > 10000) {
-          redis_handler.dump_queue('flash')
+        for (const name of queue_names) {
+          await redis_handler.print_queue_length(name)
+          const length = await redis_handler.get_queue_length(name)
+          if (length > 500) {
+            redis_handler.dump_queue(name)
+          }
         }
+
         console.log()
-        const orders = await opensea_handler.get_orders_window('0x18a73AaEe970AF9A797D944A7B982502E1e71556', 3000)
-        await utils.sleep(10000)
-        const orders2 = await opensea_handler.get_orders_window('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', 3000)
-        console.log(`${(orders.length + orders2.length) * 20} bids per minute`)
-        total_bids += (orders.length + orders2.length) * 20
+        const orders = await opensea_handler.get_orders_window('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', 5000)
+        const orders2 = await opensea_handler.get_orders_window('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb', 5000)
+        console.log(`${(orders.length + orders2.length) * 12} bids per minute`)
+        total_bids += (orders.length + orders2.length) * 12
         console.log(`Average bpm: ${(total_bids / loops).toFixed()}`)
         if ((orders.length + orders2.length) < 1) {
+          console.log()
           console.log('Queues are empty.')
         }
-        if ((orders.length + orders2.length) * 20 < 1000 && (orders.length + orders2.length) > 0) {
+        if ((orders.length + orders2.length) * 12 < 400 && (orders.length + orders2.length) > 0) {
           console.log('Bidding is currently slow.')
+        } else if ((orders.length + orders2.length) === 0) {
+          console.log()
+          console.log('**NO BIDS BEING MADE**')
+          console.log()
         }
+
+        account1 = await etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')
+        account2 = await etherscan_handler.get_weth_balance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb')
+        if (temp_account1 !== account1) {
+          console.log('================Dustbunny buy================')
+        } else {
+          temp_account1 = account1
+        }
+        if (temp_account2 !== account2) {
+          console.log('================Dustbunny_18 buy================')
+        } else {
+          temp_account2 = account2
+        }
+        console.log(`DustBunny: ${account1.toFixed(2)}`)
+        console.log(`DustBunny_18: ${account2.toFixed(2)}`)
+        console.log(`Total weth: ${(account1 + account2).toFixed(2)}`)
         console.log('----------------------')
         console.log()
-        await utils.sleep(10000)
+        await utils.sleep(5000)
         loops += 1
       }
     }
+    redis_handler.print_queue_length(process.argv[3])
   } else if (command === 'focus') {
     focus.start();
   } else {

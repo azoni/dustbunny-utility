@@ -128,7 +128,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
       console.log(`assets with no bids: ${no_bids}`)
       for (const a in asset_map) {
         bids_added += 1
-        asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
+        // asset_map[a].bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
         await redis_handler.redis_push('collection', asset_map[a], run_traits);
       }
       console.log(`added to queue: ${bids_added}`)

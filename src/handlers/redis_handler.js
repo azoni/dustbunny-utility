@@ -79,11 +79,15 @@ async function redis_push(queue_name, asset) {
   try {
     if (traits) {
       const collection_traits = traits.traits
+      let reduce = false
       for (const trait of asset.traits) {
         if (collection_traits[trait.trait_type.toLowerCase()]) {
           if (collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]) {
             const range = collection_traits[trait.trait_type
               .toLowerCase()][trait.value.toLowerCase()]
+            if (range === 'reduce') {
+              reduce = true
+            }
             if (!asset.bid_range) {
               asset.bid_range = range
               asset.trait = trait.value
@@ -94,6 +98,10 @@ async function redis_push(queue_name, asset) {
             }
           }
         }
+      }
+      if (reduce) {
+        asset.bid_range[0] -= 0.1
+        asset.bid_range[1] -= 0.1
       }
     }
   } catch (e) {
@@ -112,6 +120,9 @@ async function redis_push(queue_name, asset) {
     }
     const { floor_price } = data
     const fee = data.dev_seller_fee_basis_points / 10000
+    if (floor_price < 0.5) {
+      return
+    }
     if (asset.bid_amount > floor_price * (max_range - fee) && !asset.bypass_max) {
       console.log(`TOO HIGH ${asset.bid_amount.toFixed(2)} ${floor_price} ${asset.slug} ${asset.token_id} ${asset.trait}`)
       return
