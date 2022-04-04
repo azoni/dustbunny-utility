@@ -249,13 +249,15 @@ async function run_interactive() {
         }
         console.log()
         const orders = await opensea_handler.get_orders_window('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', 5000)
-        console.log(`${(orders.length) * 12} bids per minute`)
-        total_bids += (orders.length) * 12
+        await utils.sleep(250)
+        const orders2 = await opensea_handler.get_orders_window('0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6', 5000)
+        console.log(`${(orders.length + orders2.length) * 12} bids per minute`)
+        total_bids += (orders.length + orders2.length) * 12
         console.log(`Average bpm: ${(total_bids / loops).toFixed()}`)
-        if ((orders.length) < 1) {
+        if ((orders.length + orders2.length) < 1) {
           console.log('Queues are empty.')
         }
-        if ((orders.length) * 12 < 500 && (orders.length) > 0) {
+        if ((orders.length + orders2.length) * 12 < 1000 && (orders.length + orders2.length) > 0) {
           console.log('Bidding is currently slow.')
         }
         console.log('----------------------')
