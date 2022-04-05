@@ -113,12 +113,12 @@ function connect() {
     console.log('Server is running')
   })
 }
-async function add_focus() {
+async function add_focus(slug, token_ids) {
   // basePrice/1000000000000000000
   // let assets = await opensea_handler.get_assets_with_cursor('boredapeyachtclub')
-  const token_array = ['3132']// , '2874', '3485', '4865', '4019', '7165', '5536', '7184']
-  for (const token of token_array) {
-    const asset = await mongo.readAssetBySlug('azuki', token)
+  // const token_array = ['3132']// , '2874', '3485', '4865', '4019', '7165', '5536', '7184']
+  for (const token of token_ids) {
+    const asset = await mongo.readAssetBySlug(slug, token)
     const trimmed_asset = {}
     trimmed_asset.token_id = asset.token_id
     trimmed_asset.traits = asset.traits
@@ -161,7 +161,6 @@ async function trait_floor() {
       token_ids.push(temp_30_array)
     }
   }
-  const ordered_listings = []
   const asset_listings = {}
   let listing_count = 0
   for (const token_array of token_ids) {
@@ -172,6 +171,10 @@ async function trait_floor() {
     for (const o of orders) {
       const listing_price = o.currentPrice / 1000000000000000000
       // console.log(`${o.asset.tokenId} ${listing_price}`)
+      if (o.paymentTokenContract.symbol !== 'ETH') {
+        // eslint-disable-next-line no-continue
+        continue
+      }
       if (!asset_listings[o.asset.tokenId]) {
         listing_count += 1
         console.log(`${o.asset.tokenId} ${listing_count}`)
@@ -179,11 +182,24 @@ async function trait_floor() {
       } else if (listing_price < asset_listings[o.asset.tokenId]) {
         asset_listings[o.asset.tokenId] = listing_price
       }
-      ordered_listings.push(listing_price)
+      // ordered_listings.push(listing_price)
     }
   }
-  console.log(asset_listings)
-  // const trait_floor_prices = ordered_listings.sort((a, b) => a - b).slice(0, 30)
+
+  const items = Object.keys(asset_listings).map(
+    (key) => [key, asset_listings[key]],
+  );
+  items.sort(
+    (first, second) => first[1] - second[1],
+  );
+  const sliced_items = items.slice(0, 30)
+  const keys = sliced_items.map(
+    (e) => e[0],
+  );
+
+  console.log(keys);
+  add_focus(process.argv[3], keys)
+  // console.log(ordered_listings.length)
   // console.log(`floor: ${trait_floor_prices}`)
   // for (const l in asset_listings) {
   //   console.log(`${l} ${asset_listings[l]}`)
