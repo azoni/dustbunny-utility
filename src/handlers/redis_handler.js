@@ -108,7 +108,9 @@ async function redis_push(queue_name, asset) {
     console.log(e.message)
     console.log('Asset doesnt exist')
   }
-
+  if (watchListCollection.db_range && !asset.trait) {
+    console.log('Bid range from DB')
+  }
   if (asset.bid_amount) {
     min_range = asset.bid_range[0]
     max_range = asset.bid_range[1]
