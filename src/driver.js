@@ -136,7 +136,13 @@ async function add_focus(slug, token_ids) {
       token_ids: [trimmed_asset.token_id],
       time_suggestion: 600 * 60_000,
     }
-    await redis_handler.redis_push_command(command1)
+    let which = ''
+    if (process.argv[4]) {
+      // eslint-disable-next-line prefer-destructuring
+      which = process.argv[4]
+      console.log(which)
+    }
+    await redis_handler.redis_push_command(command1, which)
     console.log(`${token} added.`)
   }
 }
@@ -192,7 +198,7 @@ async function trait_floor() {
   items.sort(
     (first, second) => first[1] - second[1],
   );
-  const sliced_items = items.slice(0, 30)
+  const sliced_items = items// .slice(0, 30)
   const keys = sliced_items.map(
     (e) => e[0],
   );

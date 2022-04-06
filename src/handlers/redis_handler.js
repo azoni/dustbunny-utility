@@ -130,8 +130,9 @@ async function redis_push(queue_name, asset) {
       console.log(`TOO HIGH ${asset.bid_amount.toFixed(2)} ${floor_price} ${asset.slug} ${asset.token_id} ${asset.trait}`)
       return
     }
-    if (asset.bid_amount > etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')) {
-      console.log(`TOO POOR ${asset.bid_amount} ${etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')}`)
+    const our_balance = await etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')
+    if (asset.bid_amount > our_balance) {
+      console.log(`TOO POOR ${asset.slug} ${asset.token_id} ${asset.bid_amount} ${our_balance.toFixed(2)}`)
       return
     }
     if (asset.bid_amount < floor_price * (min_range - fee)) {
