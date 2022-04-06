@@ -264,7 +264,7 @@ async function start() {
 }
 
 async function getRedisCommandList() {
-  const data = await redis_handler.redis_command_pop('second');
+  const data = await redis_handler.redis_command_pop();
   console.log(typeof data)
   console.log(data);
   if (Array.isArray(data)) {
