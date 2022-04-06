@@ -149,13 +149,13 @@ async function push_asset_high_priority(asset) {
   await client.rPush('queue:high', JSON.stringify(asset));
 }
 
-async function redis_command_pop() {
-  const data = await client.lPopCount('focus:commands', 30);
+async function redis_command_pop(which='') {
+  const data = await client.lPopCount(`focus:commands${which}`, 30);
   return data;
 }
 
-async function redis_push_command(command) {
-  return client.rPush('focus:commands', JSON.stringify(command));
+async function redis_push_command(command, which = '') {
+  return client.rPush(`focus:commands${which}`, JSON.stringify(command));
 }
 
 // http method - client pull
