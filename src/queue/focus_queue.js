@@ -174,7 +174,6 @@ async function setUpBlacklist() {
 let blacklist;
 
 const slugFocusIteration = {}
-
 async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTimeStamp, retry = 3) {
   //console.log(`lastTimeStamp: ${fromTimeStamp}`);
   //console.log(`contract: ${constract_address}`);
@@ -184,7 +183,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
   const w = watchlistupdater.getWatchList();
   let collectionDbData = w.find(({slug}) => slug === mySlug);
   slugFocusIteration[mySlug] = slugFocusIteration[mySlug] || 0;
-  slugFocusIteration[mySlug] = (slugFocusIteration[mySlug] + 1) % 60;
+  slugFocusIteration[mySlug] = (slugFocusIteration[mySlug] + 1) % 40;
 
   try {
     const query = {
@@ -219,7 +218,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
         topBid: o.currentPrice / 1e18,
       }
     }
-    if (slugFocusIteration === 0) {
+    if (slugFocusIteration[mySlug] === 0) {
       for (const id of token_ids) {
         if (tokenIdToTopOrderDict[id] === undefined) {
           console.log(`found no bids so sending => token_id:${id}, contract: ${contract_address}, slugs: ${slug}`);
