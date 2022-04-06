@@ -7,12 +7,13 @@ const etherscan_handler = require('./etherscan_handler.js')
 
 let balanceTimeout;
 let our_balance;
+let pushTriggered = false;
 async function etherscanBalanceLoop() {
 	our_balance = await etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25');
 	clearTimeout(balanceTimeout);
 	balanceTimeout = setTimeout(etherscanBalanceLoop, 60_000);
 }
-etherscanBalanceLoop();
+
 let watch_list;
 const blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
 for (const w in blacklist_wallets) {
@@ -138,6 +139,12 @@ async function redis_push(queue_name, asset) {
       console.log(`TOO HIGH ${asset.bid_amount.toFixed(2)} ${floor_price} ${asset.slug} ${asset.token_id} ${asset.trait}`)
       return
     }
+
+	if (pushTriggered === false) {
+		etherscanBalanceLoop();
+		pushTriggered = true;
+	}
+
     if (our_balance !== undefined && asset.bid_amount > our_balance) {
       console.log(`TOO POOR ${asset.slug} ${asset.token_id} ${asset.bid_amount} ${our_balance.toFixed(2)}`)
       return
