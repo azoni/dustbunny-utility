@@ -3,6 +3,7 @@
 const node_redis = require('redis')
 const mongo = require('../AssetsMongoHandler.js')
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
+const etherscan_handler = require('./etherscan_handler.js')
 
 let watch_list;
 const blacklist_wallets = ['0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
@@ -129,6 +130,10 @@ async function redis_push(queue_name, asset) {
       console.log(`TOO HIGH ${asset.bid_amount.toFixed(2)} ${floor_price} ${asset.slug} ${asset.token_id} ${asset.trait}`)
       return
     }
+    if (asset.bid_amount > etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')) {
+      console.log(`TOO POOR ${asset.bid_amount} ${etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')}`)
+      return
+    }
     if (asset.bid_amount < floor_price * (min_range - fee)) {
       asset.bid_amount = floor_price * (min_range - fee)
     }
@@ -149,7 +154,7 @@ async function push_asset_high_priority(asset) {
   await client.rPush('queue:high', JSON.stringify(asset));
 }
 
-async function redis_command_pop(which='') {
+async function redis_command_pop(which = '') {
   const data = await client.lPopCount(`focus:commands${which}`, 30);
   return data;
 }
