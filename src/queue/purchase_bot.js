@@ -1,8 +1,7 @@
-console.log('here1')
 // eslint-disable-next-line import/no-extraneous-dependencies
 const redis_handler = require('../handlers/redis_handler.js');
 const opensea_handler = require('../handlers/opensea_handler.js');
-console.log('here2')
+
 const { seaport } = opensea_handler;
 
 let try_to_buy_timeout;
