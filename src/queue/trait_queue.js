@@ -79,8 +79,10 @@ async function add_trait_queue(slug, exp) {
   console.log(traits_dict)
   for (const trait in traits_dict) {
     for (const t in traits_dict[trait]) {
+      console.log(`${trait} ${t}`)
       const query = { slug, traits: { $elemMatch: { value: { $regex: t, $options: 'i' }, trait_type: { $regex: trait, $options: 'i' } } } }
       const temp_assets = await mongo.find(query, { $caseSensitive: false })
+      console.log(temp_assets)
       const collection_stats = await redis_handler.client.GET(`${slug}:stats`)
       const data = JSON.parse(collection_stats)
       const { floor_price } = data
