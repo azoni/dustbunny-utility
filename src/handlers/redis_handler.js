@@ -9,9 +9,9 @@ let balanceTimeout;
 let our_balance;
 let pushTriggered = false;
 async function etherscanBalanceLoop() {
-	our_balance = await etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25');
-	clearTimeout(balanceTimeout);
-	balanceTimeout = setTimeout(etherscanBalanceLoop, 60_000);
+  our_balance = await etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25');
+  clearTimeout(balanceTimeout);
+  balanceTimeout = setTimeout(etherscanBalanceLoop, 60_000);
 }
 
 let watch_list;
@@ -140,10 +140,10 @@ async function redis_push(queue_name, asset) {
       return
     }
 
-	if (pushTriggered === false) {
-		etherscanBalanceLoop();
-		pushTriggered = true;
-	}
+    if (pushTriggered === false) {
+      etherscanBalanceLoop();
+      pushTriggered = true;
+    }
 
     if (our_balance !== undefined && asset.bid_amount > our_balance) {
       console.log(`TOO POOR ${asset.slug} ${asset.token_id} ${asset.bid_amount} ${our_balance.toFixed(2)}`)
@@ -155,6 +155,10 @@ async function redis_push(queue_name, asset) {
   }
 
   await client.rPush(`queue:${queue_name}`, JSON.stringify(asset));
+}
+
+async function redis_pop_listing_to_purchase() {
+  return client.lPop('queue:listing.to.buy');
 }
 
 async function redis_push_asset(asset) {
@@ -240,4 +244,5 @@ module.exports = {
   redis_queue_pop,
   get_queue_length,
   redis_push_asset_flash,
+  redis_pop_listing_to_purchase,
 };
