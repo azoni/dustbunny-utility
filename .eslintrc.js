@@ -21,5 +21,6 @@ module.exports = {
     'linebreak-style': 'off',
     'no-underscore-dangle': 'off',
     'no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
+    'no-plusplus': 'off',
   },
 };
