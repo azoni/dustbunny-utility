@@ -201,7 +201,7 @@ async function trait_floor() {
   items.sort(
     (first, second) => first[1] - second[1],
   );
-  const sliced_items = items// .slice(0, 30)
+  const sliced_items = items.slice(0, 30)
   const keys = sliced_items.map(
     (e) => e[0],
   );
@@ -274,12 +274,20 @@ async function run_interactive() {
       const queue_names = ['high', 'listed', 'transfer', 'collection', 'flash', 'manual']
       let account1
       let account2
+      let account1_eth
+      let account2_eth
       let temp_account1
       let temp_account2
+      let temp_account1_eth
+      let temp_account2_eth
       account1 = await etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')
       account2 = await etherscan_handler.get_weth_balance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb')
+      account1_eth = await etherscan_handler.get_eth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')
+      account2_eth = await etherscan_handler.get_eth_balance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb')
       temp_account1 = account1
       temp_account2 = account2
+      temp_account1_eth = account1_eth
+      temp_account2_eth = account2_eth
       while (true) {
         for (const name of queue_names) {
           await redis_handler.print_queue_length(name)
@@ -309,20 +317,28 @@ async function run_interactive() {
 
         account1 = await etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')
         account2 = await etherscan_handler.get_weth_balance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb')
-        if (temp_account1 !== account1) {
+        account1_eth = await etherscan_handler.get_eth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')
+        account2_eth = await etherscan_handler.get_eth_balance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb')
+        if (temp_account1 !== account1 || temp_account1_eth !== account1_eth) {
+          console.log('================Dustbunny buy================')
+          console.log('================Dustbunny buy================')
           console.log('================Dustbunny buy================')
         } else {
           temp_account1 = account1
+          temp_account1_eth = account1_eth
         }
-        if (temp_account2 !== account2) {
+        if (temp_account2 !== account2 || temp_account2_eth !== account2_eth) {
+          console.log('================Dustbunny_18 buy================')
+          console.log('================Dustbunny_18 buy================')
           console.log('================Dustbunny_18 buy================')
         } else {
           temp_account2 = account2
+          temp_account2_eth = account2_eth
         }
-        console.log(`DustBunny: ${account1.toFixed(2)}`)
-        console.log(`DustBunny_18: ${account2.toFixed(2)}`)
-        console.log(`Total weth: ${(account1 + account2).toFixed(2)}`)
-        console.log('----------------------')
+        console.log(`DustBunny    - Eth: ${account1_eth.toFixed(2)} Weth: ${account1.toFixed(2)}`)
+        console.log(`DustBunny_18 - Eth: ${account2_eth.toFixed(2)} Weth: ${account2.toFixed(2)}`)
+        console.log(`Total        - Eth: ${(account1_eth + account2_eth).toFixed(2)} Weth: ${(account1 + account2).toFixed(2)}`)
+        console.log('------------------------------------------------')
         await utils.sleep(5000)
         loops += 1
       }
