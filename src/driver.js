@@ -12,6 +12,7 @@ const focus = require('./queue/focus_queue.js');
 const bayc = require('./queue/bayc_queue.js');
 const trait = require('./queue/trait_queue.js');
 const collection = require('./queue/collection_queue.js');
+const purchase_bot = require('./queue/purchase_bot');
 // eslint-disable-next-line no-unused-vars
 const etherscan_handler = require('./handlers/etherscan_handler.js')
 const myIp = require('./utility/what-is-my-ip.js');
@@ -329,6 +330,8 @@ async function run_interactive() {
     redis_handler.print_queue_length(process.argv[3])
   } else if (command === 'focus') {
     focus.start();
+  } else if (command === 'purchase') {
+    purchase_bot.start();
   } else {
     console.log('Invalid command.')
   }
