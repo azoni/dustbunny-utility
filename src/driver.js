@@ -114,36 +114,38 @@ function connect() {
   })
 }
 async function add_focus(slug, token_ids) {
-  // basePrice/1000000000000000000
-  // let assets = await opensea_handler.get_assets_with_cursor('boredapeyachtclub')
-  // const token_array = ['3132']// , '2874', '3485', '4865', '4019', '7165', '5536', '7184']
-  for (const token of token_ids) {
-    const asset = await mongo.readAssetBySlug(slug, token)
-    const trimmed_asset = {}
-    trimmed_asset.token_id = asset.token_id
-    trimmed_asset.traits = asset.traits
-    trimmed_asset.token_address = asset.token_address
-    trimmed_asset.slug = asset.slug
-    trimmed_asset.fee = asset.dev_seller_fee_basis_points / 10000
-    trimmed_asset.event_type = 'hyper'
-    trimmed_asset.expiration = 0.25
-    trimmed_asset.bid_range = false
-    trimmed_asset.tier = 'high';
-    const command1 = {
-      hash: `${trimmed_asset.slug}:${trimmed_asset.token_id}`,
-      slug: trimmed_asset.slug,
-      collection_address: trimmed_asset.token_address,
-      token_ids: [trimmed_asset.token_id],
-      time_suggestion: 600 * 60_000,
+  let which = ''
+  if (process.argv[4]) {
+    // eslint-disable-next-line prefer-destructuring
+    which = process.argv[4]
+  }
+  if (!token_ids) {
+    console.log(`Adding ${slug}....`)
+    const assets = await mongo.readAssetsBySlug(slug)
+    for (const asset of assets) {
+      const command1 = {
+        hash: `${asset.slug}:${asset.token_id}`,
+        slug: asset.slug,
+        collection_address: asset.token_address,
+        token_ids: [asset.token_id],
+        time_suggestion: 60 * 60_000,
+      }
+      await redis_handler.redis_push_command(command1, which)
+      console.log(`${asset.token_id} added.`)
     }
-    let which = ''
-    if (process.argv[4]) {
-      // eslint-disable-next-line prefer-destructuring
-      which = process.argv[4]
-      console.log(which)
+  } else {
+    for (const token of token_ids) {
+      const asset = await mongo.readAssetBySlug(slug, token)
+      const command1 = {
+        hash: `${asset.slug}:${asset.token_id}`,
+        slug: asset.slug,
+        collection_address: asset.token_address,
+        token_ids: [asset.token_id],
+        time_suggestion: 600 * 60_000,
+      }
+      await redis_handler.redis_push_command(command1, which)
+      console.log(`${token} added.`)
     }
-    await redis_handler.redis_push_command(command1, which)
-    console.log(`${token} added.`)
   }
 }
 
@@ -229,7 +231,7 @@ async function run_interactive() {
   } else if (command === 'man') {
     manual.start()
   } else if (command === 'add-focus') {
-    add_focus()
+    add_focus(process.argv[3])
   } else if (command === 'flash') {
     flash.start()
   } else if (command === 'staking') {

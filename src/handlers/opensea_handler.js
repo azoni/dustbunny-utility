@@ -10,11 +10,12 @@ const Web3ProviderEngine = require('web3-provider-engine');
 const { WyvernSchemaName } = require('opensea-js/lib/types')
 const { MnemonicWalletSubprovider } = require('@0x/subproviders');
 const values = require('../values.js')
+const secret = require('../secret.js')
 
 const { OpenSeaPort } = opensea;
 
 const providerEngine = new Web3ProviderEngine();
-const MNEMONIC = 'inherit scrub other float window beef build flash monkey play add satisfy'
+const { MNEMONIC } = secret
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
 });
