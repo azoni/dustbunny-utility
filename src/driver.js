@@ -10,6 +10,7 @@ const transfer = require('./queue/transfer_queue.js')
 const smart = require('./queue/smart_queue.js')
 const focus = require('./queue/focus_queue.js');
 const bayc = require('./queue/bayc_queue.js');
+const get_orders = require('./queue/get_orders_queue.js');
 const trait = require('./queue/trait_queue.js');
 const collection = require('./queue/collection_queue.js');
 const purchase_bot = require('./queue/purchase_bot');
@@ -201,7 +202,7 @@ async function trait_floor() {
   items.sort(
     (first, second) => first[1] - second[1],
   );
-  const sliced_items = items.slice(0, 60)
+  const sliced_items = items.slice(0, 90)
   const keys = sliced_items.map(
     (e) => e[0],
   );
@@ -346,6 +347,8 @@ async function run_interactive() {
     redis_handler.print_queue_length(process.argv[3])
   } else if (command === 'focus') {
     focus.start();
+  } else if (command === 'orders') {
+    get_orders.start();
   } else if (command === 'purchase') {
     purchase_bot.start();
   } else {
