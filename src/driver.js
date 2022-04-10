@@ -201,7 +201,7 @@ async function trait_floor() {
   items.sort(
     (first, second) => first[1] - second[1],
   );
-  const sliced_items = items.slice(0, 30)
+  const sliced_items = items.slice(0, 60)
   const keys = sliced_items.map(
     (e) => e[0],
   );
@@ -297,23 +297,23 @@ async function run_interactive() {
           }
         }
 
-        console.log()
-        const orders = await opensea_handler.get_orders_window('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', 5000)
-        const orders2 = await opensea_handler.get_orders_window('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb', 5000)
-        console.log(`${(orders.length + orders2.length) * 12} bids per minute`)
-        total_bids += (orders.length + orders2.length) * 12
-        console.log(`Average bpm: ${(total_bids / loops).toFixed()}`)
-        if ((orders.length + orders2.length) < 1) {
-          console.log()
-          console.log('Queues are empty.')
-        }
-        if ((orders.length + orders2.length) * 12 < 400 && (orders.length + orders2.length) > 0) {
-          console.log('Bidding is currently slow.')
-        } else if ((orders.length + orders2.length) === 0) {
-          console.log()
-          console.log('**NO BIDS BEING MADE**')
-          console.log()
-        }
+        // console.log()
+        // const orders = await opensea_handler.get_orders_window('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', 5000)
+        // const orders2 = await opensea_handler.get_orders_window('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb', 5000)
+        // console.log(`${(orders.length + orders2.length) * 12} bids per minute`)
+        // total_bids += (orders.length + orders2.length) * 12
+        // console.log(`Average bpm: ${(total_bids / loops).toFixed()}`)
+        // if ((orders.length + orders2.length) < 1) {
+        //   console.log()
+        //   console.log('Queues are empty.')
+        // }
+        // if ((orders.length + orders2.length) * 12 < 400 && (orders.length + orders2.length) > 0) {
+        //   console.log('Bidding is currently slow.')
+        // } else if ((orders.length + orders2.length) === 0) {
+        //   console.log()
+        //   console.log('**NO BIDS BEING MADE**')
+        //   console.log()
+        // }
 
         account1 = await etherscan_handler.get_weth_balance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25')
         account2 = await etherscan_handler.get_weth_balance('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb')

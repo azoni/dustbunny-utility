@@ -359,6 +359,33 @@ async function fulfil_order() {
     console.log(ex)
   }
 }
+async function get_assets_from_wallet(address) {
+  try{
+    const url = `https://api.opensea.io/api/v1/assets?owner=${address}&limit=200`
+    const options = { method: 'GET', headers: { Accept: 'application/json', 'X-API-KEY': values.API_KEY } };
+    const wallet = await fetch(url, options)
+    const data = await wallet.json()
+    const assets = {}
+
+    for (const asset of data.assets) {
+      const slug = asset.collection.slug
+      let trim = {}
+      trim.token_id = asset.token_id
+      trim.slug = asset.collection.slug
+      trim.purchased = asset.last_sale.total_price / 1000000000000000000
+      if (!assets[slug]) {
+        assets[slug] = [trim]
+      } else {
+        assets[slug].push(trim)
+      }
+    }
+    return assets
+
+  } catch(e) {
+    console.log(e)
+  }
+  return
+}
 
 async function sleep(ms) {
   // eslint-disable-next-line no-promise-executor-return
@@ -375,6 +402,7 @@ function get_ISOString_now() {
 
 module.exports = {
   start,
+  get_assets_from_wallet,
   seaport,
   get_collection,
   get_assets,
