@@ -345,7 +345,12 @@ async function start() {
 }
 
 async function getRedisCommandList() {
-  const data = await redis_handler.redis_command_pop();
+  let which = ''
+  if(process.argv[3]) {
+    which = process.argv[3]
+  }
+  console.log(which)
+  const data = await redis_handler.redis_command_pop(which);
   if (data) {
     console.log(data);
   }
