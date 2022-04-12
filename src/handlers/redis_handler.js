@@ -182,6 +182,10 @@ async function redis_push_command(command, which = '') {
   return client.rPush(`focus:commands${which}`, JSON.stringify(command));
 }
 
+async function redis_push_listing_to_buy(payload) {
+  await client.rPush('queue:listing.to.buy', JSON.stringify(payload));
+}
+
 // http method - client pull
 async function redis_queue_pop() {
   const pop_count = 2
@@ -245,4 +249,5 @@ module.exports = {
   get_queue_length,
   redis_push_asset_flash,
   redis_pop_listing_to_purchase,
+  redis_push_listing_to_buy,
 };
