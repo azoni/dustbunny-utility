@@ -17,6 +17,14 @@ const redis_self_throttle = throttledQueue(2, 1_000);
 let expirable_commands = [];
 let listenSet = [];
 let blacklist;
+let which_queue = 'high'
+if (process.argv[3]) {
+  // eslint-disable-next-line prefer-destructuring
+  which_queue = 'collection'
+  console.log('Using lower priroity queue')
+} else {
+  console.log(`Using ${which_queue} queue`)
+}
 
 let infinite_timeout;
 let toggle = false;
@@ -36,7 +44,7 @@ async function infiniteLoop(lastTimeStamp) {
       slugToContractDict[slug] = tier;
     }
     for (const token_id of token_ids) {
-      redis_handler.redis_push('high', {
+      redis_handler.redis_push(which_queue, {
         token_id,
         token_address: collection_address,
         slug,
@@ -89,7 +97,7 @@ async function bid_on_expired_items(expiredBidsDictionary) {
     const { tokenIds, collection_address, tier } = expiredBidsDictionary[slug];
     for (const tokenId of tokenIds) {
       console.log(`sending expired: ${slug}:${tokenId}`);
-      redis_handler.redis_push('high', {
+      redis_handler.redis_push(which_queue, {
         token_id: tokenId,
         token_address: collection_address,
         slug,
@@ -315,7 +323,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
         console.log(`We are top bid ${slug} : id: ${key}, ${tokenIdToTopOrderDict[key].topBid}`);
       } else {
         console.log(`sending => top: ${tokenIdToTopOrderDict[key].topBid}, token_id:${key}, slugs: ${slug}`);
-        redis_handler.redis_push('high', {
+        redis_handler.redis_push(which_queue, {
           token_id: key,
           token_address: contract_address,
           slug,

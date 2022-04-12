@@ -221,7 +221,7 @@ async function trait_floor() {
   items.sort(
     (first, second) => first[1] - second[1],
   );
-  const sliced_items = items // .slice(0, 60)
+  const sliced_items = items.slice(0, 60)
   const keys = sliced_items.map(
     (e) => e[0],
   );
