@@ -29,20 +29,27 @@ let flashbotsProvider;
 let currBlockNo = 0;
 const logger = new FileLogger('flashbotLogs.txt');
 
-try {
-  if (!FLASHBOTS_AUTH_KEY) {
-    throw new Error('Missing FLASHBOTS auth key');
+let provider;
+
+function check_credentials_exist() {
+  try {
+    if (!FLASHBOTS_AUTH_KEY) {
+      throw new Error('Missing FLASHBOTS auth key');
+    }
+    if (!WALLET_MNEUMONIC) {
+      throw new Error('Missing WALL_MNEMONIC auth key');
+    }
+    if (!INFURA_PROJECT_ID) {
+      throw new Error('Missing INFURA_PROJECT_ID auth key');
+    }
+  } catch (e) {
+    console.log()
   }
-  if (!WALLET_MNEUMONIC) {
-    throw new Error('Missing WALL_MNEMONIC auth key');
-  }
-  if (!INFURA_PROJECT_ID) {
-    throw new Error('Missing INFURA_PROJECT_ID auth key');
-  }
-} catch (e) {
-  console.log()
 }
-const provider = new providers.InfuraProvider(1, INFURA_PROJECT_ID);
+
+function setup_provider() {
+  provider = new providers.InfuraProvider(1, INFURA_PROJECT_ID);
+}
 
 const ourWallets = new Set(['0x18a73aaee970af9a797d944a7b982502e1e71556', '0x35c25ff925a61399a3b69e8c95c9487a1d82e7df']);
 
@@ -154,6 +161,8 @@ let authSigner;
 
 async function start() {
   await watchlistupdater.startLoop();
+  check_credentials_exist();
+  setup_provider();
   await setupWallets();
   setupFileLogger();
   startGetBlockLoop();
