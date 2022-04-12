@@ -59,6 +59,7 @@ async function display_dashboard() {
     await utils.sleep(250)
     const orders2 = await opensea_handler.get_orders_window('0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb', 5000)
     total_bids += (orders.length + orders2.length) * 12
+    console.log()
     console.log(`${(orders.length + orders2.length) * 12} bids per minute - Average bpm: ${(total_bids / loops).toFixed()}`)
     if ((orders.length + orders2.length) < 1) {
       console.log('Queues are empty.')
