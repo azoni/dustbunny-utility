@@ -64,7 +64,7 @@ async function infiniteLoop(lastTimeStamp) {
     const s = Date.now();
     await queryAllOrders(lastTimeStamp);
     const e = Date.now();
-    // console.log(`time: ${e - s}ms`)
+    console.log(`********************* time: ${e - s}ms **************************`)
   }
   clearTimeout(infinite_timeout);
   infinite_timeout = setTimeout(() => { infiniteLoop(t) }, 0);
@@ -280,7 +280,16 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
       limit: 50,
       offset: 0,
     };
-    query.listed_after = (Date.now() - 30_000);
+    const currTime = Date.now();
+
+    if (fromTimeStamp === undefined) {
+      query.listed_after = (currTime - 30_000);
+    } else {
+      const lastDurationTime = currTime - fromTimeStamp;
+      const bufferTime = 1_000;
+      query.listed_after = (currTime - lastDurationTime - bufferTime);
+    }
+    console.log(`listed_after: ${query.listed_after}`);
     const orders = await seaport.api.getOrders(query);
     const tokenIdToTopOrderDict = {};
 
