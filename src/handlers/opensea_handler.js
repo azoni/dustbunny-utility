@@ -360,31 +360,52 @@ async function fulfil_order() {
   }
 }
 async function get_assets_from_wallet(address) {
-  try{
-    const url = `https://api.opensea.io/api/v1/assets?owner=${address}&limit=200`
+  try {
+    const url = `https://api.opensea.io/api/v1/assets?owner=${address}&limit=200&include_orders=true`
     const options = { method: 'GET', headers: { Accept: 'application/json', 'X-API-KEY': values.API_KEY } };
     const wallet = await fetch(url, options)
     const data = await wallet.json()
     const assets = {}
 
     for (const asset of data.assets) {
-      const slug = asset.collection.slug
-      let trim = {}
-      trim.token_id = asset.token_id
-      trim.slug = asset.collection.slug
-      trim.purchased = asset.last_sale.total_price / 1000000000000000000
-      if (!assets[slug]) {
-        assets[slug] = [trim]
-      } else {
-        assets[slug].push(trim)
+      try {
+        const { slug } = asset.collection
+        const trim = {}
+        if (asset.sell_orders) {
+          trim.listed_price = asset.sell_orders[0].base_price / 1000000000000000000
+        } else {
+          trim.listed_price = false
+        }
+        trim.token_id = asset.token_id
+        trim.slug = asset.collection.slug
+        trim.purchased = asset.last_sale.total_price / 1000000000000000000
+        if (!assets[slug]) {
+          assets[slug] = [trim]
+        } else {
+          assets[slug].push(trim)
+        }
+      } catch (e) {
+        // console.log(asset)
       }
     }
     return assets
-
-  } catch(e) {
+  } catch (e) {
     console.log(e)
   }
-  return
+  return 0
+}
+async function get_asset_count_from_wallet(address) {
+  try {
+    const url = `https://api.opensea.io/api/v1/assets?owner=${address}&limit=200&include_orders=true`
+    const options = { method: 'GET', headers: { Accept: 'application/json', 'X-API-KEY': values.API_KEY } };
+    const wallet = await fetch(url, options)
+    const data = await wallet.json()
+
+    return data.assets.length
+  } catch (e) {
+    console.log(e)
+  }
+  return 0
 }
 
 async function sleep(ms) {
@@ -403,6 +424,7 @@ function get_ISOString_now() {
 module.exports = {
   start,
   get_assets_from_wallet,
+  get_asset_count_from_wallet,
   seaport,
   get_collection,
   get_assets,

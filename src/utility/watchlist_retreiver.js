@@ -1,7 +1,7 @@
 const mongoClient = require('../AssetsMongoHandler.js');
 
 let data_node;
-const UPDATE_INTERVAL_MS = 60_000;
+const UPDATE_INTERVAL_MS = 15_000;
 let mongoConnected = false;
 let watchlist_timout;
 let watchlist = [];

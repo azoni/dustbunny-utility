@@ -37,38 +37,23 @@ async function staking_queue_add(slug, exp) {
     // await redis_handler.redis_push('staking', asset)
   }
   console.log(`counter: ${counter}`)
-  await redis_handler.print_queue_length('staking')
+  // await redis_handler.print_queue_length('staking')
   console.log(`${slug} added.`)
 }
 
 async function start() {
   const exp = 15
-  while (true) {
-    const start_time = Math.floor(+new Date())
-    await staking_queue_add('raidparty', exp / 60)
-    await staking_queue_add('raidpartyfighters', exp / 60)
-    // await staking_queue_add('critterznft', exp / 60)
-    // await utils.sleep(150000)
-    // // await staking_queue_add('sappy-seals', exp / 60)
-    // await staking_queue_add('anonymice', exp / 60)
-    // await utils.sleep(150000)
-    // await staking_queue_add('genesis-creepz', exp / 60)
-    // await utils.sleep(150000)
-    // await staking_queue_add('metahero-generative', exp / 60)
-    // await utils.sleep(150000)
-    // await staking_queue_add('metroverse-genesis', exp / 60)
-    // await utils.sleep(150000)
-    // await staking_queue_add('metroverse-blackout', exp / 60)
-    // await staking_queue_add('ether-orcs', exp / 60)
-    // await staking_queue_add('nft-worlds', exp / 60)
-    // await utils.sleep(exp*60000)
-    const end_time = Math.floor(+new Date())
-    if (end_time - start_time < exp * 60000) {
-      const wait_time = exp * 60000 - (end_time - start_time)
-      console.log(`waiting: ${wait_time}ms`)
-      await utils.sleep(wait_time)
-    }
-  }
+  await staking_queue_add('raidparty', exp / 60)
+  await staking_queue_add('raidpartyfighters', exp / 60)
+  await staking_queue_add('critterznft', exp / 60)
+  await staking_queue_add('sappy-seals', exp / 60)
+  await staking_queue_add('anonymice', exp / 60)
+  await staking_queue_add('genesis-creepz', exp / 60)
+  await staking_queue_add('metahero-generative', exp / 60)
+  await staking_queue_add('metroverse-genesis', exp / 60)
+  await staking_queue_add('metroverse-blackout', exp / 60)
+  await staking_queue_add('ether-orcs', exp / 60)
+  await staking_queue_add('nft-worlds', exp / 60)
 }
 
 module.exports = { start, staking_queue_add };

@@ -10,6 +10,7 @@ const transfer = require('./queue/transfer_queue.js')
 const smart = require('./queue/smart_queue.js')
 const focus = require('./queue/focus_queue.js');
 const bayc = require('./queue/bayc_queue.js');
+const get_orders = require('./queue/get_orders_queue.js');
 const trait = require('./queue/trait_queue.js');
 const collection = require('./queue/collection_queue.js');
 const purchase_bot = require('./queue/purchase_bot');
@@ -123,17 +124,36 @@ async function add_focus(slug, token_ids) {
   if (!token_ids) {
     console.log(`Adding ${slug}....`)
     const assets = await mongo.readAssetsBySlug(slug)
+    const token_ids_array = []
+    const asset_contract_address = assets[0].token_address
+    let temp_30_array = []
+    let asset_count = 0
+    let counter = 0
+    let hash_counter = 0
     for (const asset of assets) {
-      const command1 = {
-        hash: `${asset.slug}:${asset.token_id}`,
-        slug: asset.slug,
-        collection_address: asset.token_address,
-        token_ids: [asset.token_id],
-        time_suggestion: 60 * 60_000,
+      asset_count += 1
+      temp_30_array.push(asset.token_id)
+      if (temp_30_array.length === 30) {
+        token_ids_array.push(temp_30_array)
+        temp_30_array = []
       }
-      await redis_handler.redis_push_command(command1, which)
-      console.log(`${asset.token_id} added.`)
+      if (asset_count === assets.length) {
+        token_ids_array.push(temp_30_array)
+      }
     }
+    for (const token_array of token_ids_array) {
+      const command1 = {
+        hash: `${slug}:${hash_counter}`,
+        slug,
+        collection_address: asset_contract_address,
+        token_ids: token_array,
+        time_suggestion: 600 * 60_000,
+      }
+      hash_counter += 1
+      counter += token_array.length
+      await redis_handler.redis_push_command(command1, which)
+    }
+    console.log(`${counter} assets added.`)
   } else {
     for (const token of token_ids) {
       const asset = await mongo.readAssetBySlug(slug, token)
@@ -201,7 +221,7 @@ async function trait_floor() {
   items.sort(
     (first, second) => first[1] - second[1],
   );
-  const sliced_items = items.slice(0, 60)
+  const sliced_items = items // .slice(0, 60)
   const keys = sliced_items.map(
     (e) => e[0],
   );
@@ -268,7 +288,7 @@ async function run_interactive() {
     }
   } else if (command === 'len') {
     if (process.argv[3] === 'all') {
-      let total_bids = 0
+      const total_bids = 0
       let loops = 1
       // eslint-disable-next-line no-constant-condition
       const queue_names = ['high', 'listed', 'transfer', 'collection', 'flash', 'manual']
@@ -346,6 +366,8 @@ async function run_interactive() {
     redis_handler.print_queue_length(process.argv[3])
   } else if (command === 'focus') {
     focus.start();
+  } else if (command === 'orders') {
+    get_orders.start();
   } else if (command === 'purchase') {
     purchase_bot.start();
   } else {
@@ -399,6 +421,7 @@ async function main() {
     }
   }
   await redis_handler.start_connection()
+  // await redis_handler.client.DEL(`focus:commands`)
   await mongo.connect()
   await mongo_handler.connect()
   // const opensea_keys = await mongo_handler.get_opensea_keys()
