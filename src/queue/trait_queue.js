@@ -57,6 +57,7 @@ async function add_trait_queue(slug, exp) {
 
   // eslint-disable-next-line prefer-const
   let traits_dict = traits.traits
+  console.log(traits_dict)
   if (process.argv[5]) {
     const property = process.argv[5]
     const single_property = {}
@@ -76,13 +77,10 @@ async function add_trait_queue(slug, exp) {
   // single_property.fur = single_trait
   // console.log(single_property)
   // traits_dict = single_property
-  console.log(traits_dict)
   for (const trait in traits_dict) {
     for (const t in traits_dict[trait]) {
-      console.log(`${trait} ${t}`)
       const query = { slug, traits: { $elemMatch: { value: { $regex: t, $options: 'i' }, trait_type: { $regex: trait, $options: 'i' } } } }
       const temp_assets = await mongo.find(query, { $caseSensitive: false })
-      console.log(temp_assets)
       const collection_stats = await redis_handler.client.GET(`${slug}:stats`)
       const data = JSON.parse(collection_stats)
       const { floor_price } = data
@@ -119,7 +117,6 @@ async function add_trait_queue(slug, exp) {
     trimmed_asset.slug = asset.slug
     trimmed_asset.event_type = 'trait'
     trimmed_asset.expiration = exp
-    // trimmed_asset.bidding_adress = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
 
     await redis_handler.redis_push('collection', trimmed_asset)
     counter += 1
