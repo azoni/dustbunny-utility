@@ -35,7 +35,11 @@ async function dump_queue(queue_name) {
   client.DEL(`queue:${queue_name}`)
   console.log(`${queue_name} queue dumped`)
 }
-
+async function dump_by_name(queue_name) {
+  console.log(await client.LLEN(`${queue_name}`))
+  client.DEL(`${queue_name}`)
+  console.log(`${queue_name} dumped`)
+}
 async function print_queue_length(queue_name) {
   console.log(`Queue ${queue_name}: ${await client.LLEN(`queue:${queue_name}`)}`)
 }
@@ -58,7 +62,7 @@ async function redis_push(queue_name, asset) {
   const watchListCollection = watch_list.find(({ address }) => address === asset.token_address);
   if (watchListCollection === undefined || watchListCollection.tier === 'skip' || (blacklist_wallets.includes(asset.owner_address))) {
     // console.log('already top bid')
-    return
+    return false
   }
   try {
     // eslint-disable-next-line no-param-reassign
@@ -128,16 +132,17 @@ async function redis_push(queue_name, asset) {
     const data = JSON.parse(collection_stats)
     if (!data) {
       console.warn(`Collection stats for asset: ${asset.slug} missing`);
-      return;
+      return false
     }
     const { floor_price } = data
     const fee = data.dev_seller_fee_basis_points / 10000
     if (floor_price < 0.3) {
-      return
+      return false
     }
-    if (asset.bid_amount > floor_price * (max_range - fee) && !asset.bypass_max) {
-      console.log(`TOO HIGH ${asset.bid_amount.toFixed(2)} ${floor_price} ${asset.slug} ${asset.token_id} ${asset.trait}`)
-      return
+    const our_max_bid = floor_price * (max_range - fee)
+    if (asset.bid_amount > our_max_bid && !asset.bypass_max) {
+      console.log(`TOO HIGH ${asset.bid_amount.toFixed(2)} max: ${our_max_bid} floor: ${floor_price} ${asset.slug} ${asset.token_id} trait: ${asset.trait}`)
+      return false
     }
 
     if (pushTriggered === false) {
@@ -147,18 +152,15 @@ async function redis_push(queue_name, asset) {
 
     if (our_balance !== undefined && asset.bid_amount > our_balance) {
       console.log(`TOO POOR ${asset.slug} ${asset.token_id} ${asset.bid_amount} ${our_balance.toFixed(2)}`)
-      return
+      return false
     }
     if (asset.bid_amount < floor_price * (min_range - fee)) {
       asset.bid_amount = floor_price * (min_range - fee)
     }
   }
-
-  await client.rPush(`queue:${queue_name}`, JSON.stringify(asset));
-}
-
-async function redis_pop_listing_to_purchase() {
-  return client.lPop('queue:listing.to.buy');
+  console.log(asset)
+  // await client.rPush(`queue:${queue_name}`, JSON.stringify(asset));
+  return true
 }
 
 async function redis_push_asset(asset) {
@@ -180,10 +182,6 @@ async function redis_command_pop(which = '') {
 
 async function redis_push_command(command, which = '') {
   return client.rPush(`focus:commands${which}`, JSON.stringify(command));
-}
-
-async function redis_push_listing_to_buy(payload) {
-  await client.rPush('queue:listing.to.buy', JSON.stringify(payload));
 }
 
 // http method - client pull
@@ -248,6 +246,5 @@ module.exports = {
   redis_queue_pop,
   get_queue_length,
   redis_push_asset_flash,
-  redis_pop_listing_to_purchase,
-  redis_push_listing_to_buy,
+  dump_by_name,
 };

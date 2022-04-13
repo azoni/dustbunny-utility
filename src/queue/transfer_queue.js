@@ -153,17 +153,17 @@ async function get_etherscan_transactions() {
         event_type = 'mint'
       }
 
-	  const mainSet = new Set(['boredapeyahtclub', 'mutant-ape-yacht-club']);
-	  if (mainSet.has(collection.slug)) {
-		const command = {
-			hash: `${collection.slug}:${collection.tokenID}:stolen`,
-			slug: collection.slug,
-			collection_address: collection.address,
-			token_ids: [tx.tokenID],
-			time_suggestion: 30 * 60 * 1_000,
-		  };
-		await redis_handler.redis_push_command(command)
-	  }
+      const mainSet = new Set(['boredapeyahtclub', 'mutant-ape-yacht-club']);
+      if (mainSet.has(collection.slug)) {
+        const command = {
+          hash: `${collection.slug}:${collection.tokenID}:stolen`,
+          slug: collection.slug,
+          collection_address: collection.address,
+          token_ids: [tx.tokenID],
+          time_suggestion: 30 * 60 * 1_000,
+        };
+        await redis_handler.redis_push_command(command)
+      }
 
       mongo_handler.update_owner_asset(collection.slug, tx.tokenID, tx.to)
       if (!tx.to || !tx.from) {

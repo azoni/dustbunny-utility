@@ -5,6 +5,8 @@ const opensea_handler = require('./handlers/opensea_handler.js')
 const etherscan_handler = require('./handlers/etherscan_handler.js')
 const utils = require('./utility/utils.js')
 
+let blacklist
+
 async function get_watch_list() {
   const watch_list = await mongo_handler.readWatchList()
   let counter = 0
@@ -26,12 +28,21 @@ async function get_watch_list() {
 async function main() {
   await mongo_handler.connect()
   await redis_handler.client.connect()
+  await setUpBlacklist()
   if (process.argv[2] === 'watch') {
     await get_watch_list()
   } else if (process.argv[2] === 'wallet') {
     await display_wallet()
   } else if (process.argv[2] === 'dash') {
     await display_dashboard()
+  } else if (process.argv[2] === 'stake') {
+    add_staking()
+  } else if (process.argv[2] === 'update-owners') {
+    update_db_owners()
+  } else if (process.argv[2] === 'add-int-trait') {
+    add_int_traits_to_db()
+  } else if (process.argv[2] === 'dump-name') {
+    dump_by_name()
   }
 }
 
@@ -51,7 +62,7 @@ async function display_dashboard() {
     for (const name of queue_names) {
       await redis_handler.print_queue_length(name)
       const length = await redis_handler.get_queue_length(name)
-      if (length > 500) {
+      if (length > 1000) {
         redis_handler.dump_queue(name)
       }
     }
@@ -104,6 +115,72 @@ async function display_dashboard() {
     await utils.sleep(4500)
     loops += 1
   }
+}
+async function setUpBlacklist() {
+  const our_wallets = await mongo_handler.get_our_wallets()
+  const our_addresses = our_wallets.map(({ address }) => address.toLowerCase())
+  blacklist = new Set(our_addresses);
+}
+async function add_listed() {
+
+}
+async function update_db_owners() {
+
+}
+async function dump_by_name() {
+  await redis_handler.dump_by_name(process.argv[3])
+}
+async function add_staking() {
+  const slug = process.argv[3]
+  let which = ''
+  if (process.argv[4]) {
+    // eslint-disable-next-line prefer-destructuring
+    which = process.argv[4]
+  }
+  const blacklist_wallets = blacklist
+  const staking_wallets = await mongo_handler.readStakingWallets()
+  const slugs_staking_wallets = staking_wallets
+    .map(({ address }) => address.toLowerCase());
+  for (const w in blacklist_wallets) {
+    blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
+  }
+  console.log(`Adding to queue...${slug}`)
+  const assets = await mongo_handler.find({ slug }, {})
+  const token_ids = []
+  const asset_contract_address = assets[0].token_address
+  let temp_30_array = []
+  let asset_count = 0
+  let counter = 0
+  let hash_counter = 0
+  const trait_dict = {}
+  for (const asset of assets) {
+    asset_count += 1
+    if (!slugs_staking_wallets.includes(asset.owner)) {
+      // eslint-disable-next-line no-continue
+      trait_dict[asset.token_id] = asset.traits
+      temp_30_array.push(asset.token_id)
+      if (temp_30_array.length === 30) {
+        token_ids.push(temp_30_array)
+        temp_30_array = []
+      }
+      if (asset_count === assets.length) {
+        token_ids.push(temp_30_array)
+      }
+    }
+  }
+  for (const token_array of token_ids) {
+    const command1 = {
+      hash: `${slug}:${hash_counter}`,
+      slug,
+      collection_address: asset_contract_address,
+      token_ids: token_array,
+      time_suggestion: 600 * 60_000,
+    }
+    hash_counter += 1
+    counter += token_array.length
+    await redis_handler.redis_push_command(command1, which)
+  }
+  console.log(`${counter} assets added.`)
 }
 
 async function display_wallet() {
@@ -192,5 +269,8 @@ async function get_wallet_value(address) {
   return_data.listed_profit = listed_total_profit
   return return_data
 }
-
+async function add_int_traits_to_db() {
+  const ranges = ['0-999', '1200-1299', '1300-1399', '1400-1500']
+  await mongo_handler.update_all_int_asset_traits(process.argv[3], process.argv[4], ranges)
+}
 main()
