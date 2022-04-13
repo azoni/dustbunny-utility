@@ -12,13 +12,24 @@ async function get_watch_list() {
   let counter = 0
   const skip_list = ['skip']
   for (const collection of watch_list) {
-    const collection_stats = await redis_handler.client.GET(`${collection.slug}:stats`)
-    const data = JSON.parse(collection_stats)
-    const { floor_price } = data
-    // const { fee } = data
-    if (!skip_list.includes(collection.tier) && floor_price > 0.5) {
-      counter += 1
-      console.log(collection.slug)
+    try {
+      if (!skip_list.includes(collection.tier)) {
+        const collection_stats = await redis_handler.client.GET(`${collection.slug}:stats`)
+        const data = JSON.parse(collection_stats)
+        const { floor_price } = data
+        const { dev_seller_fee_basis_points } = data
+        // const { fee } = data
+        counter += 1
+        if (collection.db_range) {
+          const max_range = collection.db_range[1]
+          const max_bid = floor_price * (max_range - dev_seller_fee_basis_points / 10000)
+          console.log(`${collection.slug} max bid: ${max_bid.toFixed(5)} range: ${collection.db_range}`)
+        } else {
+          // console.log(`${collection.slug}`)
+        }
+      }
+    } catch (e) {
+      console.log(collection)
     }
   }
   console.log(`Count: ${counter}`)

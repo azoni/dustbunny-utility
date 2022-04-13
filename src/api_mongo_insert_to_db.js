@@ -87,7 +87,7 @@ async function getAsset(slug, direction = 'desc') {
       const silence = new Kitten({
         name: asset.name,
         token_id: asset.token_id,
-        owner: asset.owner_address,
+        owner: asset?.owner?.address || '',
         token_address: asset.asset_contract?.address,
         image_url: asset.image_url,
         slug,
