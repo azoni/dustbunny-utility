@@ -332,22 +332,9 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
           slug,
           event_type: 'focus',
           bid_amount: tokenIdToTopOrderDict[key].topBid,
-          tier: collectionDbData?.tier || '',
+          tier: collectionDbData.tier || '',
         });
         registerBidAttempted(slug, key);
-      }
-    }
-    for (const token_id of token_ids) {
-      const no_top_bid_found = !(token_id in tokenIdToTopOrderDict)
-      if (no_top_bid_found) { // bid lowest amount
-        redis_handler.redis_push(which_queue, {
-          token_id,
-          token_address: contract_address,
-          slug,
-          event_type: 'focus',
-          bid_amount: 0.01,
-          tier: collectionDbData?.tier || '',
-        });
       }
     }
   } catch (error) {
