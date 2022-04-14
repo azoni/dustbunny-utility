@@ -12,8 +12,6 @@ const TIME_LIMIT = 3_000; // ms
 const ONE_MINUTE = 60_000;
 const FOURTEEN_MINUTES = 14 * 60_000;
 const CALLS_PER_TIME_LIMIT = 2;
-const FIND_ALL_ORDERS = -97;
-
 const openSeaThrottle = throttledQueue(CALLS_PER_TIME_LIMIT, TIME_LIMIT);
 const redis_self_throttle = throttledQueue(2, 1_000);
 let expirable_commands = [];
@@ -69,7 +67,7 @@ async function infiniteLoop(lastTimeStamp) {
     const s = Date.now();
     await queryAllOrders();
     const e = Date.now();
-    console.log(`time: ${e - s}ms`)
+    // console.log(`time: ${e - s}ms`)
   } else {
     const s = Date.now();
     await queryAllOrders(lastTimeStamp);
@@ -95,17 +93,20 @@ async function expiration_check_loop() {
 }
 
 async function bid_on_expired_items(expiredBidsDictionary) {
-  const allBidsByCollection = [];
   for (const slug in expiredBidsDictionary) {
     const { tokenIds, collection_address, tier } = expiredBidsDictionary[slug];
-    const unique_token_ids = Array.from(new Set(tokenIds || []));
-    const chunks_of_token_ids = sliceIntoChunks(unique_token_ids, 30);
-    const allQueriesForThisCollection = chunks_of_token_ids
-      // eslint-disable-next-line max-len
-      .map((some_token_ids) => openSeaThrottle(() => getOrdersForFocusGroup(slug, collection_address, some_token_ids, FIND_ALL_ORDERS)));
-    allBidsByCollection.push(Promise.all(allQueriesForThisCollection))
+    for (const tokenId of tokenIds) {
+      console.log(`sending expired: ${slug}:${tokenId}`);
+      redis_handler.redis_push(which_queue, {
+        token_id: tokenId,
+        token_address: collection_address,
+        slug,
+        event_type: 'focus',
+        tier: tier || '',
+      });
+      registerBidAttempted(slug, tokenId);
+    }
   }
-  return Promise.all(allBidsByCollection);
 }
 function cleanup_stale_token_ids(token_id_dict, valid_token_ids) {
   const my_valid_token_ids = new Set(valid_token_ids || []);
@@ -291,8 +292,6 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
 
     if (fromTimeStamp === undefined) {
       query.listed_after = (currTime - 30_000);
-    } else if (fromTimeStamp === FIND_ALL_ORDERS) {
-      // do not add listed_after
     } else {
       const lastDurationTime = currTime - fromTimeStamp;
       const bufferTime = 1_000;
