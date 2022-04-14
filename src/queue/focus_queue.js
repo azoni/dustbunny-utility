@@ -348,7 +348,6 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
           bid_amount: 0.01,
           tier: collectionDbData?.tier || '',
         });
-        registerBidAttempted(slug, token_id);
       }
     }
   } catch (error) {
