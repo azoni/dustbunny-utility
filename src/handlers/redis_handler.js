@@ -90,7 +90,6 @@ async function redis_push(queue_name, asset) {
   // eslint-disable-next-line no-param-reassign
   asset.bid_range = [min_range, max_range]
   const traits = await mongo.read_traits(asset.slug)
-  let reduce = false
   try {
     if (traits) {
       const collection_traits = traits.traits
@@ -99,9 +98,7 @@ async function redis_push(queue_name, asset) {
           if (collection_traits[trait.trait_type.toLowerCase()][trait.value.toLowerCase()]) {
             const range = collection_traits[trait.trait_type
               .toLowerCase()][trait.value.toLowerCase()]
-            if (range === 'reduce') {
-              reduce = true
-            }
+
             if (!asset.bid_range) {
               asset.bid_range = range
               asset.trait = trait.value
@@ -154,10 +151,7 @@ async function redis_push(queue_name, asset) {
       asset.bid_amount = floor_price * (min_range - fee)
     }
   }
-  if (reduce) {
-    asset.bid_range[0] -= 0.025
-    asset.bid_range[1] -= 0.025
-  }
+
   await client.rPush(`queue:${queue_name}`, JSON.stringify(asset));
   return true
 }

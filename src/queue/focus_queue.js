@@ -10,7 +10,7 @@ const { seaport } = opensea_handler;
 
 const TIME_LIMIT = 3_000; // ms
 const ONE_MINUTE = 60_000;
-const FIFTEEN_MINUTES = 15 * 60_000;
+const FOURTEEN_MINUTES = 14 * 60_000;
 const CALLS_PER_TIME_LIMIT = 2;
 const openSeaThrottle = throttledQueue(CALLS_PER_TIME_LIMIT, TIME_LIMIT);
 const redis_self_throttle = throttledQueue(2, 1_000);
@@ -128,7 +128,7 @@ function aggregateAllExpiredBids() {
       const { tier = '' } = w.find(({ slug: someSlug }) => someSlug === slug) || {};
       for (const tokenId in bid_placed_db[slug]) {
         const timestamp = bid_placed_db[slug][tokenId];
-        if (Number.isNaN(timestamp) || (now - timestamp) > FIFTEEN_MINUTES) {
+        if (Number.isNaN(timestamp) || (now - timestamp) > FOURTEEN_MINUTES) {
           upsertSlug(expired_bids, slug, collection_address, tier);
           console.log(`EXPIRED ITEM FOUND: ${slug}:${tokenId}`)
           expired_bids[slug].tokenIds.push(tokenId);
@@ -316,10 +316,12 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
       tokenIdToTopOrderDict[o?.asset?.tokenId] = {
         address: o?.makerAccount?.address?.toLowerCase(),
         topBid: o.currentPrice / 1e18,
+        expirationTime: o.expirationTime,
       }
     }
     for (const key in tokenIdToTopOrderDict) {
-      if (blacklist.has(tokenIdToTopOrderDict[key].address)) {
+      if (blacklist.has(tokenIdToTopOrderDict[key].address)
+      && tokenIdToTopOrderDict[key].expirationTime - Math.floor(+new Date()) / 1000 > 180) {
         console.log(`We are top bid ${slug} : id: ${key}, ${tokenIdToTopOrderDict[key].topBid}`);
       } else {
         console.log(`sending => top: ${tokenIdToTopOrderDict[key].topBid}, token_id:${key}, slugs: ${slug}`);

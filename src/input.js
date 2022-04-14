@@ -46,14 +46,18 @@ async function main() {
     await display_wallet()
   } else if (process.argv[2] === 'dash') {
     await display_dashboard()
-  } else if (process.argv[2] === 'stake') {
-    add_staking()
+  } else if (process.argv[2] === 'focus') {
+    add_focus()
   } else if (process.argv[2] === 'update-owners') {
     update_db_owners()
   } else if (process.argv[2] === 'add-int-trait') {
     add_int_traits_to_db()
   } else if (process.argv[2] === 'dump-name') {
     dump_by_name()
+  } else if (process.argv[2] === 'length') {
+    await redis_handler.print_queue_length(process.argv[3])
+  } else {
+    console.log('Invalid command.')
   }
 }
 
@@ -141,7 +145,7 @@ async function update_db_owners() {
 async function dump_by_name() {
   await redis_handler.dump_by_name(process.argv[3])
 }
-async function add_staking() {
+async function add_focus() {
   const slug = process.argv[3]
   let which = ''
   if (process.argv[4]) {
@@ -165,6 +169,7 @@ async function add_staking() {
   let hash_counter = 0
   const trait_dict = {}
   for (const asset of assets) {
+    console.log(asset.name)
     asset_count += 1
     if (!slugs_staking_wallets.includes(asset.owner)) {
       // eslint-disable-next-line no-continue
@@ -281,7 +286,7 @@ async function get_wallet_value(address) {
   return return_data
 }
 async function add_int_traits_to_db() {
-  const ranges = ['0-999', '1200-1299', '1300-1399', '1400-1500']
+  const ranges = ['0-999', '1200-1299', '1300-1349', '1350-1380', '1381-1400']
   await mongo_handler.update_all_int_asset_traits(process.argv[3], process.argv[4], ranges)
 }
 main()
