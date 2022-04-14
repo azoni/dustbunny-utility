@@ -30,23 +30,12 @@ if (process.argv[4]) {
 
 let infinite_timeout;
 let toggle = false;
-
-function upsert_slug_set(slug, db) {
-  if (slug in db) { return; }
-  // eslint-disable-next-line no-param-reassign
-  db[slug] = new Set();
-}
-
 async function infiniteLoop(lastTimeStamp) {
   toggle = !toggle;
   const more = toggle ? await redis_self_throttle(getRedisCommandList) : [];
   const hashlist = more.map(({ hash }) => hash);
   const slugToContractDict = {};
-  const slug_to_token_ids_dict = {};
-  const slug_to_collection_address_dict = {}
-  // Aggregate command assets for initial bidding
   for (const { slug, token_ids, collection_address = '' } of more) {
-    slug_to_collection_address_dict[slug] = collection_address;
     let tier = '';
     if (slug in slugToContractDict) {
       tier = slugToContractDict[slug];
@@ -56,25 +45,17 @@ async function infiniteLoop(lastTimeStamp) {
       tier = coll?.tier || '';
       slugToContractDict[slug] = tier;
     }
-    if (token_ids?.length) {
-      upsert_slug_set(slug, slug_to_token_ids_dict);
-    }
     for (const token_id of token_ids) {
-      slug_to_token_ids_dict[slug].add(token_id);
+      redis_handler.redis_push(which_queue, {
+        token_id,
+        token_address: collection_address,
+        slug,
+        event_type: 'focus',
+        tier: tier || '',
+      });
+      registerBidAttempted(slug, token_id)
     }
   }
-  // Initial Bid on everthing
-  for (const slug in slug_to_token_ids_dict) {
-    const tokenIds = slug_to_token_ids_dict[slug]; // this is a set
-    const collection_address = slug_to_collection_address_dict[slug];
-
-    const unique_token_ids = Array.from(tokenIds || []);
-    const chunks_of_token_ids = sliceIntoChunks(unique_token_ids, 30);
-    chunks_of_token_ids
-      // eslint-disable-next-line max-len
-      .map((some_token_ids) => openSeaThrottle(() => getOrdersForFocusGroup(slug, collection_address, some_token_ids, FIND_ALL_ORDERS)));
-  }
-
   const changesMade = removeCollisionsAndExpirations(hashlist);
   const more_expirable_commands = more
     .map((c) => expirable_command_factory(c));
@@ -310,17 +291,14 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
 
     if (fromTimeStamp === undefined) {
       query.listed_after = (currTime - 30_000);
-      console.log('listed_after default: 30 seconds');
     } else if (fromTimeStamp === FIND_ALL_ORDERS) {
       // do not add listed_after
-      console.log('listed_after: checking all bids ever');
     } else {
       const lastDurationTime = currTime - fromTimeStamp;
       const bufferTime = 1_000;
       query.listed_after = (currTime - lastDurationTime - bufferTime);
-      console.log(`listed_after interval: ${Math.trunc((lastDurationTime + bufferTime) / 1_000)} seconds`);
     }
-
+    console.log(`listed_after: ${query.listed_after}`);
     const orders = await seaport.api.getOrders(query);
     const tokenIdToTopOrderDict = {};
 
