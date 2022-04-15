@@ -44,6 +44,8 @@ async function main() {
     }
   } else if (process.argv[2] === 'length') {
     await redis_handler.print_queue_length(process.argv[3])
+  } else if (process.argv[2] === 'find-flash') {
+    find_flash()
   } else {
     console.log('Invalid command.')
   }
@@ -237,6 +239,16 @@ async function create_token_ids_30(assets) {
     }
   }
   return token_ids
+}
+async function find_flash() {
+  const flash_wallets = await mongo_handler.get_flash_wallets()
+
+  for (const wallet of flash_wallets) {
+    const balance = await etherscan_handler.get_weth_balance(wallet.address)
+    if (balance > 2.5) {
+      console.log(`${wallet.username} ${balance.toFixed(2)}`)
+    }
+  }
 }
 async function push_command(slug, asset_contract_address, token_ids, duration, which = '') {
   let hash_counter = 0

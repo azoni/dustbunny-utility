@@ -5,6 +5,7 @@ const utils = require('../utility/utils.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
 const mongo = require('../AssetsMongoHandler.js')
 const mongo_handler = require('../handlers/mongo_handler.js')
+const etherscan_handler = require('../handlers/etherscan_handler.js')
 
 let bids_added = 0
 
@@ -12,16 +13,22 @@ async function get_competitor_bids(type, exp) {
   // const flash_wallets = await mongo_handler.get_flash_wallets()
   // flash ten, 11, 12, 13
   const flash_wallets = await mongo_handler.get_flash_wallets()
-  const wallet_orders = flash_wallets.map(({ address }) => address.toLowerCase())
+  const flash_active_wallets = []
+  for (const wallet of flash_wallets) {
+    const balance = await etherscan_handler.get_weth_balance(wallet.address)
+    if (balance > 2.5) {
+      flash_active_wallets.push(wallet)
+    }
+  }
   // const wallet_orders = ['0x41f01d8F02c569be620E13c9b33CE803BeD84e90', '0x26054c824ff0a6225dFA24a1EebD6A18dE6b5f7d', '0xDE7E81F4587456C49f4ceAb92FbD48c96e60C6d2', '0x045e1c6b9a5c486e9Ee36ed510A0ff2577A24a1d', '0xEf66b4871069ed10D64220F9D77443bBBA264BB3'] // flash_wallets.map(({ address }) => address.toLowerCase())
-  const time_window = wallet_orders.length * 2000
+  const time_window = flash_active_wallets.length * 2000
   const start_time = Math.floor(+new Date())
   console.log(`${'Adding to queue... event window: '}${time_window}`)
 
   const queue_length = await redis_handler.get_queue_length(type)
 
   bids_added = 0
-  for (const wallet of flash_wallets) {
+  for (const wallet of flash_active_wallets) {
     await utils.sleep(500)
     console.log(wallet.username)
     const orders = await opensea_handler.get_orders_window(wallet.address, time_window)

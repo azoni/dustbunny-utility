@@ -87,8 +87,6 @@ async function redis_push(queue_name, asset) {
       max_range = 0.835
     }
   }
-  // eslint-disable-next-line no-param-reassign
-  asset.bid_range = [min_range, max_range]
   const traits = await mongo.read_traits(asset.slug)
   try {
     if (traits) {
@@ -115,8 +113,11 @@ async function redis_push(queue_name, asset) {
     console.log(e.message)
     console.log('Asset doesnt exist')
   }
+  console.log(asset.trait)
   if (watchListCollection.db_range && !asset.trait) {
     asset.bid_range = watchListCollection.db_range
+  } else if (!asset.trait) {
+    asset.bid_range = [min_range, max_range]
   }
   if (asset.bid_amount) {
     min_range = asset.bid_range[0]
@@ -151,7 +152,6 @@ async function redis_push(queue_name, asset) {
       asset.bid_amount = floor_price * (min_range - fee)
     }
   }
-
   await client.rPush(`queue:${queue_name}`, JSON.stringify(asset));
   return true
 }
