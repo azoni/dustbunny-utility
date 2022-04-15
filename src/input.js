@@ -46,6 +46,8 @@ async function main() {
     await redis_handler.print_queue_length(process.argv[3])
   } else if (process.argv[2] === 'find-flash') {
     find_flash()
+  } else if (process.argv[2] === 'get-length') {
+    display_length()
   } else {
     console.log('Invalid command.')
   }
@@ -77,7 +79,20 @@ async function get_watch_list() {
   }
   console.log(`Count: ${counter}`)
 }
-
+async function display_length() {
+  const queue_names = ['high', 'listed', 'transfer', 'collection', 'flash', 'manual']
+  while (true) {
+    for (const name of queue_names) {
+      await redis_handler.print_queue_length(name)
+      const length = await redis_handler.get_queue_length(name)
+      if (length > 1000) {
+        redis_handler.dump_queue(name)
+      }
+    }
+    console.log('----------------------')
+    await utils.sleep(3000)
+  }
+}
 async function display_dashboard() {
   let total_bids = 0
   let loops = 1

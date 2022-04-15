@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { MongoClient } = require('mongodb');
-const values = require('../values');
 // Connection URI
 const uri = 'mongodb://10.0.0.80:27017/';
 // Create a new MongoClient
@@ -79,6 +78,9 @@ async function update_owner_asset(slug, token_id, value) {
     },
   )
 }
+async function update_asset_traits() {
+  return 0
+}
 async function update_all_int_asset_traits(slug, trait_type, ranges) {
   console.log('Starting... ')
   const assets = await readAssetsBySlug(slug)
@@ -89,6 +91,52 @@ async function update_all_int_asset_traits(slug, trait_type, ranges) {
 // trait_type, damage
 // ranges, ['1200-1299','1300-1399', '1400-1500']
 async function update_int_asset_trait(slug, token_id, trait_type, ranges) {
+  const asset = await readAssetBySlug(slug, token_id)
+  let value
+  let value_range
+  console.log(`${slug} ${token_id}`)
+  for (const trait of asset.traits) {
+    if (trait.trait_type.toLowerCase() === trait_type.toLowerCase()) {
+      value = trait.value // 1046
+    }
+  }
+  let match
+  for (const range of ranges) {
+    const temp_range_array = range.split('-')
+    const min = temp_range_array[0]
+    const max = temp_range_array[1]
+    console.log(`${min} ${max} ${value}`)
+    if (value >= min && value <= max) {
+      value_range = range
+      match = true
+    }
+  }
+  if (!match) {
+    return
+  }
+  const trait_added = {
+    trait_type: `fake${trait_type}:`,
+    value: value_range,
+    display_type: null,
+    max_value: null,
+    trait_count: 26,
+    order: null,
+  }
+  console.log('Adding... ')
+  asset.traits.push(trait_added)
+  const updated_traits = asset.traits
+  _nftassets.updateOne(
+    { slug, token_id },
+    {
+      $set:
+      {
+        traits: updated_traits,
+      },
+    },
+  )
+  console.log(`${slug} ${token_id} trait added: fake${trait_type}: ${value_range} based on: ${trait_type} ${value}`)
+}
+async function update_int_asset_trait_matching(slug, token_id, trait_type, ranges) {
   const asset = await readAssetBySlug(slug, token_id)
   let value
   let value_range
@@ -227,4 +275,6 @@ module.exports = {
   update_opensea_key,
   update_int_asset_trait,
   update_all_int_asset_traits,
+  update_asset_traits,
+  update_int_asset_trait_matching,
 }
