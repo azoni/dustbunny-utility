@@ -23,9 +23,6 @@ let which_queue = 'high'
 if (process.argv[4]) {
   // eslint-disable-next-line prefer-destructuring
   which_queue = 'collection'
-  console.log('Using lower priroity queue')
-} else {
-  console.log(`Using ${which_queue} queue`)
 }
 
 let infinite_timeout;

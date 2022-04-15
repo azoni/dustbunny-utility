@@ -51,39 +51,42 @@ function create_seaport(key) {
   return seaport_temp
 }
 async function test_bid() {
-  let success = 0
-  let fail = 0
+  // let success = 0
+  // let fail = 0
   // for (const key of keys) {
   // const seaport_temp = create_seaport(key)
+  console.log('Starting bid...')
   const asset = {
-    tokenId: '8573', // '1',
-    tokenAddress: '0x24998f0a028d197413ef57c7810f7a5ef8b9fa55', // '0x2079812353e2c9409a788fbf5f383fa62ad85be8',
+    tokenId: '1156', // '1',
+    tokenAddress: '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d', // '0x2079812353e2c9409a788fbf5f383fa62ad85be8',
     // schemaName: WyvernSchemaName.ERC1155,
   }
   try {
     await seaport.createBuyOrder({
       asset,
-      startAmount: 0.0001,
+      startAmount: 0.001,
       accountAddress: '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25',
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * 0.25),
     })
     // console.log(`Success' ${key}`)
-    success += 1
+    // success += 1
+    return 1
   } catch (ex) {
     console.log(ex.message)
+    const key = ''
     if (ex.message.includes('API Error 403')) {
-      // console.log(`Access was denied. ${key}`)
+      console.log(`Access was denied. ${key}`)
     } else if (ex.message.includes('API Error 401')) {
-      // console.log(`Expired API key. ${key}`)
+      console.log(`Expired API key. ${key}`)
     } else {
       console.log(ex.message)
     }
-    fail += 1
+    // fail += 1
   }
   // }
-  console.log(`success ${success}`)
-  console.log(`fail ${fail}`)
-  return 'fail'
+  // console.log(`success ${success}`)
+  // console.log(`fail ${fail}`)
+  return 0
 }
 
 async function get_assets_with_cursor(slug) {

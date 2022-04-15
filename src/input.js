@@ -5,8 +5,49 @@ const opensea_handler = require('./handlers/opensea_handler.js')
 const etherscan_handler = require('./handlers/etherscan_handler.js')
 const utils = require('./utility/utils.js')
 
-let blacklist
-
+// trait floors, erc20 tokens
+async function main() {
+  // let success = 0
+  // console.log('start')
+  // opensea_handler.start()
+  // while (success < 20) {
+  //   console.log('start bid')
+  //   const bid = await opensea_handler.test_bid()
+  //   success += bid
+  //   console.log(success)
+  // }
+  // console.log('done')
+  await mongo_handler.connect()
+  await redis_handler.client.connect()
+  if (process.argv[2] === 'watch') {
+    await get_watch_list()
+  } else if (process.argv[2] === 'wallet') {
+    await display_wallet()
+  } else if (process.argv[2] === 'dash') {
+    await display_dashboard()
+  } else if (process.argv[2] === 'fill-listed') {
+    await fill_listed_focus()
+  } else if (process.argv[2] === 'focus') {
+    add_focus(process.argv[3], process.argv[4])
+  } else if (process.argv[2] === 'focus-listed') {
+    add_focus_listed(process.argv[3])
+  } else if (process.argv[2] === 'update-owners') {
+    update_db_owners()
+  } else if (process.argv[2] === 'add-int-trait') {
+    add_int_traits_to_db()
+  } else if (process.argv[2] === 'dump-focus') {
+    dump_focus_by_name()
+  } else if (process.argv[2] === 'len-focus') {
+    const focus_keys = await redis_handler.client.keys('focus*')
+    for (const key of focus_keys) {
+      console.log(` ${key}: ${await redis_handler.client.LLEN(key)}`)
+    }
+  } else if (process.argv[2] === 'length') {
+    await redis_handler.print_queue_length(process.argv[3])
+  } else {
+    console.log('Invalid command.')
+  }
+}
 async function get_watch_list() {
   const watch_list = await mongo_handler.readWatchList()
   let counter = 0
@@ -33,32 +74,6 @@ async function get_watch_list() {
     }
   }
   console.log(`Count: ${counter}`)
-}
-
-// trait floors, erc20 tokens
-async function main() {
-  await mongo_handler.connect()
-  await redis_handler.client.connect()
-  await setUpBlacklist()
-  if (process.argv[2] === 'watch') {
-    await get_watch_list()
-  } else if (process.argv[2] === 'wallet') {
-    await display_wallet()
-  } else if (process.argv[2] === 'dash') {
-    await display_dashboard()
-  } else if (process.argv[2] === 'focus') {
-    add_focus()
-  } else if (process.argv[2] === 'update-owners') {
-    update_db_owners()
-  } else if (process.argv[2] === 'add-int-trait') {
-    add_int_traits_to_db()
-  } else if (process.argv[2] === 'dump-name') {
-    dump_by_name()
-  } else if (process.argv[2] === 'length') {
-    await redis_handler.print_queue_length(process.argv[3])
-  } else {
-    console.log('Invalid command.')
-  }
 }
 
 async function display_dashboard() {
@@ -131,50 +146,87 @@ async function display_dashboard() {
     loops += 1
   }
 }
-async function setUpBlacklist() {
+// eslint-disable-next-line no-unused-vars
+async function get_blacklist() {
   const our_wallets = await mongo_handler.get_our_wallets()
   const our_addresses = our_wallets.map(({ address }) => address.toLowerCase())
-  blacklist = new Set(our_addresses);
+  return new Set(our_addresses)
 }
-async function add_listed() {
+async function fill_listed_focus() {
+  
+}
+async function add_focus_listed(slug, count) {
+  console.log(`Adding to queue...${slug}`)
+  const assets = await mongo_handler.find({ slug }, {})
+  const token_ids = await create_token_ids_30(assets)
+  const asset_contract_address = assets[0].token_address
+  const asset_listings = {}
+  let listing_count = 0
+  for (const token_array of token_ids) {
+    await utils.sleep(500)
+    const orders = await opensea_handler
+      .get_orders_window(asset_contract_address, false, token_array, 1)
+    for (const o of orders) {
+      const listing_price = o.currentPrice / 1000000000000000000
+      // console.log(`${o.asset.tokenId} ${listing_price}`)
+      if (o.paymentTokenContract.symbol !== 'ETH') {
+        // eslint-disable-next-line no-continue
+        continue
+      }
+      if (!asset_listings[o.asset.tokenId]) {
+        listing_count += 1
+        console.log(`${o.asset.tokenId} ${listing_count}`)
+        asset_listings[o.asset.tokenId] = listing_price
+      } else if (listing_price < asset_listings[o.asset.tokenId]) {
+        asset_listings[o.asset.tokenId] = listing_price
+      }
+    }
+  }
+  const items = Object.keys(asset_listings).map(
+    (key) => [key, asset_listings[key]],
+  );
+  items.sort(
+    (first, second) => first[1] - second[1],
+  );
+  let sliced_items
+  if (count === 'all') {
+    sliced_items = items
+  } else {
+    sliced_items = items.slice(0, 60)
+  }
+  let keys = sliced_items.map(
+    (e) => e[0],
+  );
 
+  console.log(keys);
+  keys = await create_token_ids_30(keys)
+  await push_command(slug, asset_contract_address, keys, 600)
 }
 async function update_db_owners() {
 
 }
-async function dump_by_name() {
-  await redis_handler.dump_by_name(process.argv[3])
+async function dump_focus_by_name() {
+  const which = process.argv[3] || ''
+  await redis_handler.dump_by_name(`focus:commands${which}`)
 }
-async function add_focus() {
-  const slug = process.argv[3]
-  let which = ''
-  if (process.argv[4]) {
-    // eslint-disable-next-line prefer-destructuring
-    which = process.argv[4]
-  }
-  const blacklist_wallets = blacklist
-  const staking_wallets = await mongo_handler.readStakingWallets()
-  const slugs_staking_wallets = staking_wallets
-    .map(({ address }) => address.toLowerCase());
-  for (const w in blacklist_wallets) {
-    blacklist_wallets[w] = blacklist_wallets[w].toLowerCase()
-  }
-  console.log(`Adding to queue...${slug}`)
+async function add_focus(slug, which = '') {
+  console.log(`Adding to focus:commads${which}...${slug}`)
   const assets = await mongo_handler.find({ slug }, {})
-  const token_ids = []
+  const token_ids = await create_token_ids_30(assets)
   const asset_contract_address = assets[0].token_address
-  let temp_30_array = []
+  await push_command(slug, asset_contract_address, token_ids, 600, which)
+}
+async function create_token_ids_30(assets) {
   let asset_count = 0
-  let counter = 0
-  let hash_counter = 0
-  const trait_dict = {}
+  let temp_30_array = []
+  const token_ids = []
+  const staking_wallets = await mongo_handler.readStakingWallets()
+  const slugs_staking_wallets = staking_wallets.map(({ address }) => address.toLowerCase())
   for (const asset of assets) {
-    console.log(asset.name)
     asset_count += 1
     if (!slugs_staking_wallets.includes(asset.owner)) {
       // eslint-disable-next-line no-continue
-      trait_dict[asset.token_id] = asset.traits
-      temp_30_array.push(asset.token_id)
+      temp_30_array.push(asset.token_id || asset)
       if (temp_30_array.length === 30) {
         token_ids.push(temp_30_array)
         temp_30_array = []
@@ -184,21 +236,33 @@ async function add_focus() {
       }
     }
   }
+  return token_ids
+}
+async function push_command(slug, asset_contract_address, token_ids, duration, which = '') {
+  let hash_counter = 0
+  let counter = 0
+  let which_focus
+  if (process.argv[4]) {
+    const index = 4
+    which_focus = process.argv[index]
+  } else {
+    which_focus = which
+  }
   for (const token_array of token_ids) {
+    console.log(`${hash_counter * 30}/${token_ids.length * 30}`)
     const command1 = {
       hash: `${slug}:${hash_counter}`,
       slug,
       collection_address: asset_contract_address,
       token_ids: token_array,
-      time_suggestion: 600 * 60_000,
+      time_suggestion: duration * 60_000,
     }
     hash_counter += 1
     counter += token_array.length
-    await redis_handler.redis_push_command(command1, which)
+    await redis_handler.redis_push_command(command1, which_focus)
   }
-  console.log(`${counter} assets added.`)
+  console.log(`${counter} assets added to ${which_focus}.`)
 }
-
 async function display_wallet() {
   let total_profit = 0
   let listed_total_profit = 0
