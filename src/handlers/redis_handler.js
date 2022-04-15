@@ -113,7 +113,6 @@ async function redis_push(queue_name, asset) {
     console.log(e.message)
     console.log('Asset doesnt exist')
   }
-  console.log(asset.trait)
   if (watchListCollection.db_range && !asset.trait) {
     asset.bid_range = watchListCollection.db_range
   } else if (!asset.trait) {
