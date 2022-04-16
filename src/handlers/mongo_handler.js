@@ -182,6 +182,20 @@ async function update_int_asset_trait_matching(slug, token_id, trait_type, range
   )
   console.log(`${slug} ${token_id} trait added: fake${trait_type}: ${value_range} based on: ${trait_type} ${value}`)
 }
+
+async function update_traits(slug, token_id, value = []) {
+  console.log(`${slug} ${token_id}`)
+  return _nftassets.updateOne(
+    { slug, token_id: `${token_id}` },
+    {
+      $set:
+      {
+        traits: value,
+      },
+    },
+  )
+}
+
 async function read_traits(slug) {
   checkAndThrowIfNotConnected();
   return _database.collection('trait_bids').findOne({ slug });
@@ -277,4 +291,5 @@ module.exports = {
   update_all_int_asset_traits,
   update_asset_traits,
   update_int_asset_trait_matching,
+  update_traits,
 }
