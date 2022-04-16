@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { MongoClient } = require('mongodb');
 // Connection URI
@@ -85,7 +86,7 @@ async function update_all_int_asset_traits(slug, trait_type, ranges) {
   console.log('Starting... ')
   const assets = await readAssetsBySlug(slug)
   for (const asset of assets) {
-    await update_int_asset_trait(slug, asset.token_id, trait_type, ranges)
+    update_int_asset_trait(slug, asset.token_id, trait_type, ranges)
   }
 }
 // trait_type, damage
@@ -136,39 +137,62 @@ async function update_int_asset_trait(slug, token_id, trait_type, ranges) {
   )
   console.log(`${slug} ${token_id} trait added: fake${trait_type}: ${value_range} based on: ${trait_type} ${value}`)
 }
-async function update_int_asset_trait_matching(slug, token_id, trait_type, ranges) {
+async function update_all_int_asset_traits_matching(slug, trait_type1, trait_type2, ranges1, ranges2) {
+  console.log(`Starting... ${slug} ${trait_type1} ${trait_type2} ${ranges1} ${ranges2}`)
+  const assets = await readAssetsBySlug(slug)
+  console.log('db read complete... ')
+  for (const asset of assets) {
+    await update_int_asset_trait_matching(slug, asset.token_id, trait_type1, trait_type2, ranges1, ranges2)
+  }
+  console.log('Done... ')
+}
+async function update_int_asset_trait_matching(slug, token_id, trait_type1, trait_type2, ranges1, ranges2) {
   const asset = await readAssetBySlug(slug, token_id)
-  let value
+  let value1
+  let value2
   let value_range
-  console.log(`${slug} ${token_id}`)
   for (const trait of asset.traits) {
-    if (trait.trait_type.toLowerCase() === trait_type.toLowerCase()) {
-      value = trait.value // 1046
+    if (trait.trait_type.toLowerCase() === trait_type1.toLowerCase()) {
+      value1 = trait.value // 1046
+    }
+    if (trait.trait_type.toLowerCase() === trait_type2.toLowerCase()) {
+      value2 = trait.value // 1046
     }
   }
-  let match
-  for (const range of ranges) {
+  let match1
+  let match2
+  for (const range of ranges1) {
     const temp_range_array = range.split('-')
     const min = temp_range_array[0]
     const max = temp_range_array[1]
-    console.log(`${min} ${max} ${value}`)
-    if (value >= min && value <= max) {
+    if (value1 >= min && value1 <= max) {
       value_range = range
-      match = true
+      match1 = true
     }
   }
-  if (!match) {
+  if (!match1) {
+    return
+  }
+  for (const range of ranges2) {
+    const temp_range_array = range.split('-')
+    const min = temp_range_array[0]
+    const max = temp_range_array[1]
+    if (value2 >= min && value2 <= max) {
+      value_range += `:${range}`
+      match2 = true
+    }
+  }
+  if (!match2) {
     return
   }
   const trait_added = {
-    trait_type: `fake${trait_type}:`,
+    trait_type: `fake${trait_type1}:${trait_type2}:`,
     value: value_range,
     display_type: null,
     max_value: null,
     trait_count: 26,
     order: null,
   }
-  console.log('Adding... ')
   asset.traits.push(trait_added)
   const updated_traits = asset.traits
   _nftassets.updateOne(
@@ -180,7 +204,7 @@ async function update_int_asset_trait_matching(slug, token_id, trait_type, range
       },
     },
   )
-  console.log(`${slug} ${token_id} trait added: fake${trait_type}: ${value_range} based on: ${trait_type} ${value}`)
+  console.log(`${slug} ${token_id} added: fake${trait_type1}:${trait_type2}: ${value_range} - ${trait_type1}:${value1} ${trait_type2}:${value2}`)
 }
 async function read_traits(slug) {
   checkAndThrowIfNotConnected();
@@ -277,4 +301,5 @@ module.exports = {
   update_all_int_asset_traits,
   update_asset_traits,
   update_int_asset_trait_matching,
+  update_all_int_asset_traits_matching,
 }

@@ -43,18 +43,20 @@ async function staking_queue_add(slug, exp) {
 
 async function start() {
   const exp = 15
-  await staking_queue_add('llamaverse-genesis', exp / 60)
-  await staking_queue_add('raidparty', exp / 60)
-  await staking_queue_add('raidpartyfighters', exp / 60)
-  await staking_queue_add('critterznft', exp / 60)
-  await staking_queue_add('sappy-seals', exp / 60)
-  await staking_queue_add('anonymice', exp / 60)
-  await staking_queue_add('genesis-creepz', exp / 60)
-  await staking_queue_add('metahero-generative', exp / 60)
-  await staking_queue_add('metroverse-genesis', exp / 60)
-  await staking_queue_add('metroverse-blackout', exp / 60)
-  await staking_queue_add('ether-orcs', exp / 60)
-  await staking_queue_add('nft-worlds', exp / 60)
+  // await staking_queue_add('thehabibiz', exp / 60)
+  // await staking_queue_add('lootrealms', exp / 60)
+  // await staking_queue_add('llamaverse-genesis', exp / 60)
+  // await staking_queue_add('raidparty', exp / 60)
+  // await staking_queue_add('raidpartyfighters', exp / 60)
+  // await staking_queue_add('critterznft', exp / 60)
+  // await staking_queue_add('sappy-seals', exp / 60)
+  // await staking_queue_add('anonymice', exp / 60)
+  // await staking_queue_add('genesis-creepz', exp / 60)
+  // await staking_queue_add('metahero-generative', exp / 60)
+  // await staking_queue_add('metroverse-genesis', exp / 60)
+  // await staking_queue_add('metroverse-blackout', exp / 60)
+  // await staking_queue_add('ether-orcs', exp / 60)
+  // await staking_queue_add('nft-worlds', exp / 60)
 }
 
 module.exports = { start, staking_queue_add };

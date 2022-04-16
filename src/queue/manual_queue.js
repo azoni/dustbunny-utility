@@ -117,7 +117,7 @@ async function start() {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const start_time = Math.floor(+new Date())
-    manual_queue_add(slug, 'manual', exp / 60, bid, run_traits)
+    await manual_queue_add(slug, 'manual', exp / 60, bid, run_traits)
     // await utils.sleep(exp*60000)
     const end_time = Math.floor(+new Date())
     if (end_time - start_time < exp * 60000) {

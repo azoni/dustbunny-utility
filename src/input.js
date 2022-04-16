@@ -29,14 +29,20 @@ async function main() {
     await fill_listed_focus()
   } else if (process.argv[2] === 'focus') {
     add_focus(process.argv[3], process.argv[4])
+  } else if (process.argv[2] === 'fill-staking') {
+    fill_staking_focus(process.argv[3])
   } else if (process.argv[2] === 'focus-listed') {
     add_focus_listed(process.argv[3])
   } else if (process.argv[2] === 'update-owners') {
     update_db_owners()
   } else if (process.argv[2] === 'add-int-trait') {
     add_int_traits_to_db()
+  } else if (process.argv[2] === 'add-int-trait-match') {
+    add_int_traits_match_to_db()
   } else if (process.argv[2] === 'dump-focus') {
     dump_focus_by_name()
+  } else if (process.argv[2] === 'dump') {
+    redis_handler.dump_queue(process.argv[3])
   } else if (process.argv[2] === 'len-focus') {
     const focus_keys = await redis_handler.client.keys('focus*')
     for (const key of focus_keys) {
@@ -84,10 +90,10 @@ async function display_length() {
   while (true) {
     for (const name of queue_names) {
       await redis_handler.print_queue_length(name)
-      const length = await redis_handler.get_queue_length(name)
-      if (length > 1000) {
-        redis_handler.dump_queue(name)
-      }
+      // const length = await redis_handler.get_queue_length(name)
+      // if (length > 1000) {
+      //   redis_handler.dump_queue(name)
+      // }
     }
     console.log('----------------------')
     await utils.sleep(3000)
@@ -170,7 +176,19 @@ async function get_blacklist() {
   return new Set(our_addresses)
 }
 async function fill_listed_focus() {
-  
+  return 0
+}
+async function fill_staking_focus(which) {
+  // const staking_sets = await mongo_handler.readStakingWallets()
+  // const slugs = staking_sets.map(({ slug }) => slug)
+  // const slugs = ['metroverse-genesis', 'metroverse-blackout', 'anonymice', 'critterznft', 'sappy-seals',
+  //   'llamaverse-genesis', 'nft-worlds', 'raidparty', 'raidpartyfighters', 'metahero-generative',
+  //   'genesis-creepz', 'thehabibiz', 'ether-orcs', 'lootrealms']
+  const slugs = ['metahero-generative', 'genesis-creepz', 'thehabibiz']
+  for (const slug of slugs) {
+    console.log(slug)
+    await add_focus(slug, which)
+  }
 }
 async function add_focus_listed(slug, count) {
   console.log(`Adding to queue...${slug}`)
@@ -276,7 +294,7 @@ async function push_command(slug, asset_contract_address, token_ids, duration, w
     which_focus = which
   }
   for (const token_array of token_ids) {
-    console.log(`${hash_counter * 30}/${token_ids.length * 30}`)
+    // console.log(`${hash_counter * 30}/${token_ids.length * 30}`)
     const command1 = {
       hash: `${slug}:${hash_counter}`,
       slug,
@@ -379,5 +397,10 @@ async function get_wallet_value(address) {
 async function add_int_traits_to_db() {
   const ranges = ['0-999', '1200-1299', '1300-1349', '1350-1380', '1381-1400']
   await mongo_handler.update_all_int_asset_traits(process.argv[3], process.argv[4], ranges)
+}
+async function add_int_traits_match_to_db() {
+  const ranges1 = ['17-17', '18-18']
+  const ranges2 = ['6-6', '7-10']
+  await mongo_handler.update_all_int_asset_traits_matching(process.argv[3], process.argv[4], process.argv[5], ranges1, ranges2)
 }
 main()
