@@ -88,7 +88,25 @@ async function test_bid() {
   // console.log(`fail ${fail}`)
   return 0
 }
-
+async function make_offer(asset, account_address) {
+  const a = {
+    tokenId: asset.token_id, 
+    tokenAddress: asset.token_address,
+  }
+  try {
+    await seaport.createBuyOrder({
+      a,
+      startAmount: asset.bid_amount,
+      accountAddress: asset.account_address,
+      expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * (asset.expiration / 60)),
+    })
+    console.log(`${asset.slug} ${asset.token_id} ${asset.bid_range} ${asset.bid_amount} ${asset.trait} ${asset.expiration}`)
+    return true
+  } catch (ex) {
+    console.log(ex.message)
+  }
+  return false
+}
 async function get_assets_with_cursor(slug) {
   const limit = 50;
   let cursor = '';
