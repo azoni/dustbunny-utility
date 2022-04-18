@@ -186,10 +186,10 @@ async function fill_listed_focus() {
 async function fill_staking_focus() {
   // const staking_sets = await mongo_handler.readStakingWallets()
   // const slugs = staking_sets.map(({ slug }) => slug)
-  const slugs1 = ['nft-worlds', 'metahero-generative','genesis-creepz']
+  const slugs1 = ['nft-worlds', 'metahero-generative', 'genesis-creepz']
   const slugs2 = ['metroverse-genesis', 'metroverse-blackout', 'anonymice']
   const slugs3 = ['critterznft', 'sappy-seals', 'llamaverse-genesis']
-  const slugs4 = ['thehabibiz', 'ether-orcs', 'lootrealms', 'raidpartyfighters']
+  const slugs4 = ['thehabibiz', 'ether-orcs', 'lootrealms', 'raidpartyfighters', 'raidparty']
   for (const slug of slugs1) {
     await add_focus(slug, 'staking1')
   }
