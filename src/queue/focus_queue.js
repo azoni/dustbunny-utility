@@ -20,7 +20,7 @@ let expirable_commands = [];
 let listenSet = [];
 let blacklist;
 let which_queue = 'high'
-if (process.argv[4]) {
+if (process.argv[3]) {
   // eslint-disable-next-line prefer-destructuring
   which_queue = 'collection'
   console.log('Using lower priroity queue')
