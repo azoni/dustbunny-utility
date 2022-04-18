@@ -8,7 +8,7 @@ const mongo_handler = require('../handlers/mongo_handler.js');
 
 const { seaport } = opensea_handler;
 
-const TIME_LIMIT = 3_000; // ms
+const TIME_LIMIT = 4_000; // ms
 const ONE_MINUTE = 60_000;
 const FOURTEEN_MINUTES = 14 * 60_000;
 const CALLS_PER_TIME_LIMIT = 2;
