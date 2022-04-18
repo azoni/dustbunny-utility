@@ -23,6 +23,7 @@ const mongo_handler = require('./handlers/mongo_handler.js')
 const utils = require('./utility/utils.js')
 const opensea_handler = require('./handlers/opensea_handler.js')
 const flashbot_listed = require('./queue/flashbot_list.js');
+const values = require('./values.js')
 
 // eslint-disable-next-line func-names
 const requestListener = function (req, res) {
@@ -424,6 +425,7 @@ async function main() {
   // await redis_handler.client.DEL(`focus:commands`)
   await mongo.connect()
   await mongo_handler.connect()
+  const api_key = values.API_KEY
   // const opensea_keys = await mongo_handler.get_opensea_keys()
   // const opensea__api_keys = opensea_keys.map(({ api_key }) => api_key)
   // console.log('Starting bids...')
@@ -464,7 +466,7 @@ async function main() {
   // await opensea_handler.test_bid(opensea__api_keys)
   // for (const api_key of opensea__api_keys) {
   //   console.log(api_key)
-  //   await mongo_handler.update_opensea_key(api_key)
+  await mongo_handler.update_opensea_key(api_key)
   // }
 
   // let comp_wallets = await mongo_handler.get_comp_wallets()
