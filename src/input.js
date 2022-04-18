@@ -25,14 +25,14 @@ async function main() {
     await display_wallet()
   } else if (process.argv[2] === 'dash') {
     await display_dashboard()
-  } else if (process.argv[2] === 'fill-listed') {
-    await fill_listed_focus()
   } else if (process.argv[2] === 'focus') {
     add_focus(process.argv[3], process.argv[4])
+  } else if (process.argv[2] === 'fill-listed') {
+    await fill_listed_focus()
   } else if (process.argv[2] === 'fill-staking') {
-    fill_staking_focus(process.argv[3])
+    await fill_staking_focus()
   } else if (process.argv[2] === 'focus-listed') {
-    add_focus_listed(process.argv[3])
+    add_focus_listed(process.argv[3], process.argv[4], process.argv[5])
   } else if (process.argv[2] === 'update-owners') {
     update_db_owners()
   } else if (process.argv[2] === 'add-int-trait') {
@@ -176,21 +176,35 @@ async function get_blacklist() {
   return new Set(our_addresses)
 }
 async function fill_listed_focus() {
-  return 0
+  await add_focus_listed('boredapeyachtclub', 'high', 90)
+  await add_focus_listed('mutant-ape-yacht-club', 'high', 90)
+  await add_focus_listed('azuki', 'medium', 'all')
+  await add_focus_listed('clonex', 'medium', 'all')
+  await add_focus_listed('doodles-official', 'medium', 'all')
+
 }
-async function fill_staking_focus(which) {
+async function fill_staking_focus() {
   // const staking_sets = await mongo_handler.readStakingWallets()
   // const slugs = staking_sets.map(({ slug }) => slug)
-  // const slugs = ['metroverse-genesis', 'metroverse-blackout', 'anonymice', 'critterznft', 'sappy-seals',
-  //   'llamaverse-genesis', 'nft-worlds', 'raidparty', 'raidpartyfighters', 'metahero-generative',
-  //   'genesis-creepz', 'thehabibiz', 'ether-orcs', 'lootrealms']
-  const slugs = ['metahero-generative', 'genesis-creepz', 'thehabibiz']
-  for (const slug of slugs) {
-    console.log(slug)
-    await add_focus(slug, which)
+  const slugs1 = ['nft-worlds', 'metahero-generative','genesis-creepz']
+  const slugs2 = ['metroverse-genesis', 'metroverse-blackout', 'anonymice']
+  const slugs3 = ['critterznft', 'sappy-seals', 'llamaverse-genesis']
+  const slugs4 = ['thehabibiz', 'ether-orcs', 'lootrealms', 'raidpartyfighters']
+  for (const slug of slugs1) {
+    await add_focus(slug, 'staking1')
   }
+  for (const slug of slugs2) {
+    await add_focus(slug, 'staking2')
+  }
+  for (const slug of slugs3) {
+    await add_focus(slug, 'staking3')
+  }
+  for (const slug of slugs4) {
+    await add_focus(slug, 'staking4')
+  }
+  console.log('done')
 }
-async function add_focus_listed(slug, count) {
+async function add_focus_listed(slug, which = '', count) {
   console.log(`Adding to queue...${slug}`)
   const assets = await mongo_handler.find({ slug }, {})
   const token_ids = await create_token_ids_30(assets)
@@ -227,15 +241,14 @@ async function add_focus_listed(slug, count) {
   if (count === 'all') {
     sliced_items = items
   } else {
-    sliced_items = items.slice(0, 60)
+    sliced_items = items.slice(0, count)
   }
   let keys = sliced_items.map(
     (e) => e[0],
   );
 
-  console.log(keys);
   keys = await create_token_ids_30(keys)
-  await push_command(slug, asset_contract_address, keys, 600)
+  await push_command(slug, asset_contract_address, keys, 600, which)
 }
 async function update_db_owners() {
 
@@ -290,6 +303,9 @@ async function push_command(slug, asset_contract_address, token_ids, duration, w
   if (process.argv[4]) {
     const index = 4
     which_focus = process.argv[index]
+    if (which_focus === 'high') {
+      which_focus = ''
+    }
   } else {
     which_focus = which
   }
@@ -300,7 +316,7 @@ async function push_command(slug, asset_contract_address, token_ids, duration, w
       slug,
       collection_address: asset_contract_address,
       token_ids: token_array,
-      time_suggestion: duration * 60_000,
+      time_suggestion: parseInt(duration) * 60_000,
     }
     hash_counter += 1
     counter += token_array.length
