@@ -250,11 +250,11 @@ async function update_opensea_key(api_key) {
     {
       $set:
       {
-        in_use: false,
+        in_use: true,
       },
     },
   )
-  console.log('updated')
+  console.log(`updated ${api_key}`)
 }
 async function writeOneStakingWallet(document) {
   checkAndThrowIfNotConnected();
