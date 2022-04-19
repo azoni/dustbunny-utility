@@ -30,6 +30,17 @@ async function get_command_loop() {
       console.error(error.stack);
       console.error('error while fetching commands');
     }
+
+    try {
+      if (my_command && Array.isArray(my_command)) {
+        my_command = my_command.map((j) => JSON.parse(j));
+      }
+    } catch (error) {
+      console.error(error.stack);
+      console.error('error parsing commands');
+      my_command = [];
+    }
+
     if (my_command && Array.isArray(my_command)) {
       for (const some_command of my_command) {
         const watchlist_item = my_watchlist
