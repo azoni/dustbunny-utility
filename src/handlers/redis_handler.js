@@ -176,6 +176,15 @@ async function redis_push_command(command, which = '') {
   return client.rPush(`focus:commands${which}`, JSON.stringify(command));
 }
 
+async function redis_push_get_orders_command(command, which = '') {
+  return client.rPush(`get_orders:commands${which}`, JSON.stringify(command));
+}
+
+async function redis_get_orders_command_pop(which = '') {
+  const data = await client.lPopCount(`get_orders:commands${which}`, 10);
+  return data;
+}
+
 // http method - client pull
 async function redis_queue_pop() {
   const pop_count = 2
@@ -226,6 +235,8 @@ async function redis_queue_pop() {
 }
 
 module.exports = {
+  redis_push_get_orders_command,
+  redis_get_orders_command_pop,
   redis_push_command,
   redis_command_pop,
   client,
