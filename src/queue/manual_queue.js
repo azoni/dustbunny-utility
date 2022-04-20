@@ -41,9 +41,9 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits) {
       // eslint-disable-next-line no-continue
       continue
     }
-    // trimmed_asset['bidding_address'] = '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6'
-    // trimmed_asset['bid_amount'] = 1
-    // trimmed_asset['bypass_max'] = true
+    trimmed_asset.bidding_adress = '0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c'
+    trimmed_asset.bid_amount = 0.85
+    trimmed_asset.bypass_max = true
     await redis_handler.redis_push(event_type, trimmed_asset)
   }
   await redis_handler.print_queue_length(event_type)
@@ -123,6 +123,7 @@ async function start() {
     if (end_time - start_time < exp * 60000) {
       const wait_time = exp * 60000 - (end_time - start_time)
       console.log(`waiting: ${(wait_time / 60000).toFixed(2)}min`)
+      exp = wait_time / 60000
       await utils.sleep(wait_time)
     }
   }

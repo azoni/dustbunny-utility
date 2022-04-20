@@ -7,11 +7,10 @@ const mongo_handler = require('../handlers/mongo_handler.js');
 const { sleep } = require('../utility/utils.js');
 
 const GET_COMMAND_INTERVAL = 2_000; // ms
-const PROCCES_COMMANDS_INTERVAL = 200; // ms
+const PROCCES_COMMANDS_INTERVAL = 1000; // ms
 const THRESHOLD_TO_FETCH_MORE_COMMANDS = 5;
 
 const { seaport } = opensea_handler;
-const which_queue = 'high';
 const fifo_queue = [];
 let get_command_timout;
 let blacklist;
@@ -43,11 +42,18 @@ async function get_command_loop() {
 
     if (my_command && Array.isArray(my_command)) {
       for (const some_command of my_command) {
+        const chunks = sliceIntoChunks(some_command.token_ids, 30)
         const watchlist_item = my_watchlist
           .find(({ slug }) => slug === some_command.slug);
         if (watchlist_item) {
           some_command.tier = watchlist_item.tier || ''; // attach tier
-          enqueue_onto_fifo_queue(some_command);
+          for (const chunk of chunks) {
+            const command_clone = {
+              ...some_command,
+              token_ids: chunk,
+            }
+            enqueue_onto_fifo_queue(command_clone);
+          }
         }
       }
     }
@@ -55,7 +61,14 @@ async function get_command_loop() {
   clearTimeout(get_command_timout);
   get_command_timout = setTimeout(get_command_loop, GET_COMMAND_INTERVAL);
 }
-
+function sliceIntoChunks(arr, chunkSize) {
+  const res = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    res.push(chunk);
+  }
+  return res;
+}
 let process_get_orders_timeout;
 /**
  * This function is almost done.
@@ -69,6 +82,7 @@ let process_get_orders_timeout;
  * the fifo queue is empty.
  */
 async function process_get_orders_loop() {
+  console.log("Still looping... or something like that, I don't know.")
   if (!fifo_queue_is_empty()) {
     const my_command = dequeue_from_fifo_queue();
     try {
@@ -152,8 +166,10 @@ async function process_a_single_get_orders(the_command, retry = 10) {
   try {
     orders = await seaport.api.getOrders(query);
   } catch (error) {
+    console.log(error.stack)
     if (retry > 0) {
       const ms_to_sleep = how_long_to_sleep(retry);
+      console.log(`sleeping... ${ms_to_sleep}`)
       const retries_left = retry - 1;
       return sleep(ms_to_sleep)
         .then(() => process_a_single_get_orders(the_command, retries_left));
@@ -170,6 +186,7 @@ async function process_a_single_get_orders(the_command, retry = 10) {
 }
 
 async function process_orders_to_send_bids(the_orders, the_command) {
+  console.log('Order processing...')
   const tokenIdToTopOrderDict = {};
   const orderArr = the_orders?.orders || [];
   const token_ids_checked = the_command.token_ids || [];
@@ -196,7 +213,7 @@ async function process_orders_to_send_bids(the_orders, the_command) {
       console.log(`We are top bid ${the_command.slug} : id: ${key}, ${tokenIdToTopOrderDict[key].topBid}`);
     } else {
       console.log(`sending => top: ${tokenIdToTopOrderDict[key].topBid}, token_id:${key}, slugs: ${the_command.slug}`);
-      redis_handler.redis_push(which_queue, {
+      redis_handler.redis_push(the_command.queue, {
         token_id: key,
         token_address: contract_address,
         slug: the_command.slug,
@@ -213,7 +230,7 @@ async function process_orders_to_send_bids(the_orders, the_command) {
   for (const token_id of token_ids_checked) {
     const no_top_bid_found = !(token_id in tokenIdToTopOrderDict);
     if (no_top_bid_found) {
-      redis_handler.redis_push(which_queue, {
+      redis_handler.redis_push(the_command.queue, {
         token_id,
         token_address: contract_address,
         slug: the_command.slug,

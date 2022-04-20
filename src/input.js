@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 /* eslint-disable max-len */
 const mongo_handler = require('./handlers/mongo_handler.js')
 const redis_handler = require('./handlers/redis_handler.js')
@@ -39,17 +40,22 @@ async function main() {
     add_int_traits_to_db()
   } else if (process.argv[2] === 'add-int-trait-match') {
     add_int_traits_match_to_db()
-  } else if (process.argv[2] === 'dump-focus') {
+  } else if (process.argv[2] === 'focus-dump') {
     dump_focus_by_name()
   } else if (process.argv[2] === 'dump') {
     redis_handler.dump_queue(process.argv[3])
-  } else if (process.argv[2] === 'len-focus') {
+  } else if (process.argv[2] === 'focus-len') {
     const focus_keys = await redis_handler.client.keys('focus*')
     for (const key of focus_keys) {
       console.log(` ${key}: ${await redis_handler.client.LLEN(key)}`)
     }
   } else if (process.argv[2] === 'length') {
     await redis_handler.print_queue_length(process.argv[3])
+  } else if (process.argv[2] === 'command-length') {
+    const focus_keys = await redis_handler.client.keys('get_orders:*')
+    for (const key of focus_keys) {
+      console.log(` ${key}: ${await redis_handler.client.LLEN(key)}`)
+    }
   } else if (process.argv[2] === 'find-flash') {
     find_flash()
   } else if (process.argv[2] === 'get-length') {
@@ -114,10 +120,10 @@ async function display_dashboard() {
   while (true) {
     for (const name of queue_names) {
       await redis_handler.print_queue_length(name)
-      const length = await redis_handler.get_queue_length(name)
-      if (length > 1000) {
-        redis_handler.dump_queue(name)
-      }
+      // const length = await redis_handler.get_queue_length(name)
+      // if (length > 1000) {
+      //   redis_handler.dump_queue(name)
+      // }
     }
     console.log()
     const orders = await opensea_handler.get_orders_window('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', 5000)
@@ -178,10 +184,9 @@ async function get_blacklist() {
 async function fill_listed_focus() {
   await add_focus_listed('boredapeyachtclub', 'high', 90)
   await add_focus_listed('mutant-ape-yacht-club', 'high', 90)
-  await add_focus_listed('azuki', 'medium', 'all')
-  await add_focus_listed('clonex', 'medium', 'all')
-  await add_focus_listed('doodles-official', 'medium', 'all')
-
+  // await add_focus_listed('azuki', 'medium', 'all')
+  // await add_focus_listed('clonex', 'medium', 'all')
+  // await add_focus_listed('doodles-official', 'medium', 'all')
 }
 async function fill_staking_focus() {
   // const staking_sets = await mongo_handler.readStakingWallets()
@@ -189,7 +194,7 @@ async function fill_staking_focus() {
   const slugs1 = ['nft-worlds', 'metahero-generative', 'genesis-creepz']
   const slugs2 = ['metroverse-genesis', 'metroverse-blackout', 'anonymice']
   const slugs3 = ['critterznft', 'sappy-seals', 'llamaverse-genesis']
-  const slugs4 = ['thehabibiz', 'ether-orcs', 'lootrealms', 'raidpartyfighters', 'raidparty']
+  const slugs4 = ['thehabibiz', 'ether-orcs', 'raidpartyfighters', 'raidparty']
   for (const slug of slugs1) {
     await add_focus(slug, 'staking1')
   }
@@ -200,7 +205,11 @@ async function fill_staking_focus() {
     await add_focus(slug, 'staking3')
   }
   for (const slug of slugs4) {
-    await add_focus(slug, 'staking4')
+    if (slug === 'raidparty') {
+      await add_focus(slug, 'staking4', true)
+    } else {
+      await add_focus(slug, 'staking4')
+    }
   }
   console.log('done')
 }
@@ -257,9 +266,24 @@ async function dump_focus_by_name() {
   const which = process.argv[3] || ''
   await redis_handler.dump_by_name(`focus:commands${which}`)
 }
-async function add_focus(slug, which = '') {
+async function add_focus(slug, which = '', traits_only) {
   console.log(`Adding to focus:commads${which}...${slug}`)
-  const assets = await mongo_handler.find({ slug }, {})
+  let assets = []
+  if (traits_only) {
+    const traits = await mongo_handler.read_traits(slug)
+    const traits_dict = traits.traits
+    for (const trait in traits_dict) {
+      for (const t in traits_dict[trait]) {
+        const query = { slug, traits: { $elemMatch: { value: { $regex: t, $options: 'i' }, trait_type: { $regex: trait, $options: 'i' } } } }
+        const temp_assets = await mongo_handler.find(query, { $caseSensitive: false })
+        for (const a of temp_assets) {
+          assets.push(a)
+        }
+      }
+    }
+  } else {
+    assets = await mongo_handler.find({ slug }, {})
+  }
   const token_ids = await create_token_ids_30(assets)
   const asset_contract_address = assets[0].token_address
   await push_command(slug, asset_contract_address, token_ids, 600, which)
@@ -316,6 +340,7 @@ async function push_command(slug, asset_contract_address, token_ids, duration, w
       slug,
       collection_address: asset_contract_address,
       token_ids: token_array,
+      // eslint-disable-next-line radix
       time_suggestion: parseInt(duration) * 60_000,
     }
     hash_counter += 1
@@ -415,8 +440,8 @@ async function add_int_traits_to_db() {
   await mongo_handler.update_all_int_asset_traits(process.argv[3], process.argv[4], ranges)
 }
 async function add_int_traits_match_to_db() {
-  const ranges1 = ['17-17', '18-18']
-  const ranges2 = ['6-6', '7-10']
+  const ranges1 = ['16-16', '17-17', '18-18']
+  const ranges2 = ['5-5', '6-6', '7-10']
   await mongo_handler.update_all_int_asset_traits_matching(process.argv[3], process.argv[4], process.argv[5], ranges1, ranges2)
 }
 main()

@@ -140,6 +140,7 @@ async function update_int_asset_trait(slug, token_id, trait_type, ranges) {
 async function update_all_int_asset_traits_matching(slug, trait_type1, trait_type2, ranges1, ranges2) {
   console.log(`Starting... ${slug} ${trait_type1} ${trait_type2} ${ranges1} ${ranges2}`)
   const assets = await readAssetsBySlug(slug)
+  console.log(assets.length)
   console.log('db read complete... ')
   for (const asset of assets) {
     await update_int_asset_trait_matching(slug, asset.token_id, trait_type1, trait_type2, ranges1, ranges2)

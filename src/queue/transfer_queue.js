@@ -271,6 +271,7 @@ async function get_nfts_from_wallet(interestAddress, event_type) {
   let ownCount = 0;
   const countMap = {};
   watch_list = watchlistupdater.getWatchList();
+  const asset_dict = {}
   for (const c in miniDb) {
     for (const id in miniDb[c]) {
       const boughtTime = miniDb[c][id].toTime || -Infinity;
@@ -280,18 +281,36 @@ async function get_nfts_from_wallet(interestAddress, event_type) {
         countMap[c] += 1;
         const watchListCollection = watch_list.find(({ address }) => address === c);
         if (watchListCollection !== undefined) {
+          const { slug } = watchListCollection
           // console.log(`${c} : { tokenid: ${id} }`);
+          if (asset_dict[slug]) {
+            asset_dict[slug].token_ids.push(id)
+          } else {
+            asset_dict[slug] = {}
+            asset_dict[slug].slug = slug
+            asset_dict[slug].token_address = c
+            asset_dict[slug].token_ids = [id]
+          }
           ownCount += 1
-          const asset = {}
-          asset.token_id = id
-          asset.token_address = c
-          asset.slug = watchListCollection.slug;
-          asset.event_type = event_type
-          asset.tier = watchListCollection.tier;
-          redis_handler.redis_push('transfer', asset);
+          // const asset = {}
+          // asset.token_id = id
+          // asset.token_address = c
+          // asset.slug = watchListCollection.slug;
+          // asset.event_type = event_type
+          // asset.tier = watchListCollection.tier;
+          // redis_handler.redis_push('transfer', asset);
         }
       }
     }
+  }
+  console.log(asset_dict)
+  for (const asset_command in asset_dict) {
+    const command = {}
+    command.slug = asset_dict[asset_command].slug
+    command.collection_address = asset_dict[asset_command].token_address
+    command.token_ids = asset_dict[asset_command].token_ids
+    command.queue = 'transfer'
+    redis_handler.redis_push_get_orders_command(command)
   }
   console.log(`owned by: ${interestAddress}`)
   running_nft_total += ownCount
