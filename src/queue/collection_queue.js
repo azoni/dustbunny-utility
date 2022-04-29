@@ -8,7 +8,7 @@ const utils = require('../utility/utils.js')
 async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
   const start_time = Math.floor(+new Date())
   await mongo_handler.connect()
-  const blacklist_wallets = ['0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', '0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb', '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF']
+  const blacklist_wallets = ['0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', '0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb', '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', '0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25']
   const staking_wallets = await mongo.readStakingWallets()
   const slugs_staking_wallets = staking_wallets
     .map(({ address }) => address.toLowerCase());
@@ -118,6 +118,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
             asset.event_type = 'no bids'
             asset.bid_amount = 0.01
             asset.expiration = 0.25
+            asset.bidding_adress = '0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25'
             if (exp !== '') {
               asset.expiration = exp / 60
             }
@@ -131,7 +132,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
       console.log(`assets with no bids: ${no_bids}`)
       for (const a in asset_map) {
         bids_added += 1
-        await redis_handler.redis_push('collection', asset_map[a], run_traits);
+        await redis_handler.redis_push('manual', asset_map[a], run_traits);
       }
       console.log(`added to queue: ${bids_added}`)
     } catch (ex) {

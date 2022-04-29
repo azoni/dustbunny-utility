@@ -82,6 +82,71 @@ async function update_owner_asset(slug, token_id, value) {
 async function update_asset_traits() {
   return 0
 }
+async function update_all_match_asset_traits(slug, trait_type1, trait_type2, ranges1, ranges2) {
+  console.log(`Starting... ${slug} ${trait_type1} ${trait_type2} ${ranges1} | ${ranges2}`)
+  const assets = await readAssetsBySlug(slug)
+  let counter = 0
+  for (const asset of assets) {
+    const call = await update_match_asset_trait(slug, asset.token_id, trait_type1, trait_type2, ranges1, ranges2)
+    counter += call
+  }
+  console.log(`${counter} added...`)
+}
+async function update_match_asset_trait(slug, token_id, trait_type1, trait_type2, ranges1, ranges2) {
+  const asset = await readAssetBySlug(slug, token_id)
+  let value1
+  let value2
+  let value_range
+  for (const trait of asset.traits) {
+    if (trait.trait_type.toLowerCase() === trait_type1.toLowerCase()) {
+      value1 = trait.value.toLowerCase() // 1046
+    }
+    if (trait.trait_type.toLowerCase() === trait_type2.toLowerCase()) {
+      value2 = trait.value.toLowerCase() // 1046
+    }
+  }
+  let match1
+  let match2
+  for (const range of ranges1) {
+    if (value1 === range) {
+      value_range = range
+      match1 = true
+    }
+  }
+  if (!match1) {
+    return 0
+  }
+  for (const range of ranges2) {
+    if (value2 === range) {
+      value_range += `:${range}`
+      match2 = true
+    }
+  }
+  if (!match2) {
+    return 0
+  }
+  const trait_added = {
+    trait_type: `fake:${trait_type1}:${trait_type2}`,
+    value: value_range,
+    display_type: null,
+    max_value: null,
+    trait_count: 26,
+    order: null,
+  }
+  asset.traits.push(trait_added)
+  const updated_traits = asset.traits
+  _nftassets.updateOne(
+    { slug, token_id },
+    {
+      $set:
+      {
+        traits: updated_traits,
+      },
+    },
+  )
+  console.log(`${slug} ${token_id} added: fake:${trait_type1}:${trait_type2} ${value_range} - ${trait_type1}:${value1} ${trait_type2}:${value2}`)
+  return 1
+}
 async function update_all_int_asset_traits(slug, trait_type, ranges) {
   console.log('Starting... ')
   const assets = await readAssetsBySlug(slug)
@@ -303,4 +368,6 @@ module.exports = {
   update_asset_traits,
   update_int_asset_trait_matching,
   update_all_int_asset_traits_matching,
+  update_match_asset_trait,
+  update_all_match_asset_traits,
 }

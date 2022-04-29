@@ -40,6 +40,8 @@ async function main() {
     add_int_traits_to_db()
   } else if (process.argv[2] === 'add-int-trait-match') {
     add_int_traits_match_to_db()
+  } else if (process.argv[2] === 'add-match-trait') {
+    add_traits_match_to_db()
   } else if (process.argv[2] === 'focus-dump') {
     dump_focus_by_name()
   } else if (process.argv[2] === 'dump') {
@@ -191,26 +193,26 @@ async function fill_listed_focus() {
 async function fill_staking_focus() {
   // const staking_sets = await mongo_handler.readStakingWallets()
   // const slugs = staking_sets.map(({ slug }) => slug)
-  const slugs1 = ['nft-worlds', 'metahero-generative', 'genesis-creepz']
-  const slugs2 = ['metroverse-genesis', 'metroverse-blackout', 'anonymice']
-  const slugs3 = ['critterznft', 'sappy-seals', 'llamaverse-genesis']
-  const slugs4 = ['thehabibiz', 'ether-orcs', 'raidpartyfighters', 'raidparty']
+  const slugs1 = ['nft-worlds', 'metahero-generative', 'genesis-creepz', 'metroverse-genesis', 'metroverse-blackout', 'anonymice']
+  const slugs2 = ['critterznft', 'llamaverse-genesis', 'thehabibiz', 'sappy-seals']
+  // const slugs3 = ['critterznft', 'llamaverse-genesis', 'raidpartyfighters', 'thehabibiz']
+  // const slugs4 = ['thehabibiz', 'ether-orcs', 'sappy-seals'] // , 'raidparty', 'sappy-seals']
   for (const slug of slugs1) {
     await add_focus(slug, 'staking1')
   }
   for (const slug of slugs2) {
     await add_focus(slug, 'staking2')
   }
-  for (const slug of slugs3) {
-    await add_focus(slug, 'staking3')
-  }
-  for (const slug of slugs4) {
-    if (slug === 'raidparty') {
-      await add_focus(slug, 'staking4', true)
-    } else {
-      await add_focus(slug, 'staking4')
-    }
-  }
+  // for (const slug of slugs3) {
+  //   if (slug === 'raidpartyfighters') {
+  //     await add_focus(slug, 'staking3', true)
+  //   } else {
+  //     await add_focus(slug, 'staking3')
+  //   }
+  // }
+  // for (const slug of slugs4) {
+  //   await add_focus(slug, 'staking4')
+  // }
   console.log('done')
 }
 async function add_focus_listed(slug, which = '', count) {
@@ -283,6 +285,15 @@ async function add_focus(slug, which = '', traits_only) {
     }
   } else {
     assets = await mongo_handler.find({ slug }, {})
+  }
+  if (process.argv[4] === 'bakc1') {
+    assets = assets.slice(0, 2400)
+  } else if (process.argv[4] === 'bakc2') {
+    assets = assets.slice(2400, 4800)
+  } else if (process.argv[4] === 'bakc3') {
+    assets = assets.slice(4800, 7200)
+  } else if (process.argv[4] === 'bakc4') {
+    assets = assets.slice(7200, 9941)
   }
   const token_ids = await create_token_ids_30(assets)
   const asset_contract_address = assets[0].token_address
@@ -443,5 +454,12 @@ async function add_int_traits_match_to_db() {
   const ranges1 = ['16-16', '17-17', '18-18']
   const ranges2 = ['5-5', '6-6', '7-10']
   await mongo_handler.update_all_int_asset_traits_matching(process.argv[3], process.argv[4], process.argv[5], ranges1, ranges2)
+}
+async function add_traits_match_to_db() {
+  // size
+  const ranges1 = ['large', 'x-large', 'mega']
+  // area
+  const ranges2 = ['frozen', 'moon']
+  await mongo_handler.update_all_match_asset_traits(process.argv[3], process.argv[4], process.argv[5], ranges1, ranges2)
 }
 main()

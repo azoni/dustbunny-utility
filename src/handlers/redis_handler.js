@@ -151,8 +151,6 @@ async function redis_push(queue_name, asset) {
       asset.bid_amount = floor_price * (min_range - fee)
     }
   }
-  // asset.bidding_adress = '0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c'
-  console.log(queue_name)
   await client.rPush(`queue:${queue_name}`, JSON.stringify(asset));
   return true
 }

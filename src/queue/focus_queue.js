@@ -10,7 +10,7 @@ const { seaport } = opensea_handler;
 
 const TIME_LIMIT = 3_000; // ms
 const ONE_MINUTE = 60_000;
-const FOURTEEN_MINUTES = 14 * 60_000;
+const FOURTEEN_MINUTES = 29 * 60_000;
 const CALLS_PER_TIME_LIMIT = 2;
 const openSeaThrottle = throttledQueue(CALLS_PER_TIME_LIMIT, TIME_LIMIT);
 const redis_self_throttle = throttledQueue(2, 1_000);
