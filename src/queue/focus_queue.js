@@ -40,15 +40,20 @@ async function infiniteLoop(lastTimeStamp) {
       tier = coll?.tier || '';
       slugToContractDict[slug] = tier;
     }
-    for (const token_id of token_ids) {
-      redis_handler.redis_push(which_queue, {
-        token_id,
-        token_address: collection_address,
-        slug,
-        event_type: 'focus',
-        tier: tier || '',
-      });
-      registerBidAttempted(slug, token_id)
+    const command1 = {
+      slug,
+      collection_address,
+      token_ids: token_ids || [],
+      queue: which_queue,
+    }
+    try {
+      redis_handler.redis_push_get_orders_command(command1);
+      for (const token_id of token_ids) {
+        registerBidAttempted(slug, token_id)
+      }
+    } catch (error) {
+      console.error(error.stack);
+      console.error('could not push expired items to redis');
     }
   }
   const changesMade = removeCollisionsAndExpirations(hashlist);
@@ -92,16 +97,21 @@ async function expiration_check_loop() {
 async function bid_on_expired_items(expiredBidsDictionary) {
   for (const slug in expiredBidsDictionary) {
     const { tokenIds, collection_address, tier } = expiredBidsDictionary[slug];
-    for (const tokenId of tokenIds) {
-      console.log(`sending expired: ${slug}:${tokenId}`);
-      redis_handler.redis_push(which_queue, {
-        token_id: tokenId,
-        token_address: collection_address,
-        slug,
-        event_type: 'focus',
-        tier: tier || '',
-      });
-      registerBidAttempted(slug, tokenId);
+    const command1 = {
+      slug,
+      collection_address,
+      token_ids: tokenIds || [],
+      queue: which_queue,
+    };
+    try {
+      await redis_handler.redis_push_get_orders_command(command1);
+      for (const tokenId of tokenIds) {
+        console.log(`sending expired: ${slug}:${tokenId}`);
+        registerBidAttempted(slug, tokenId);
+      }
+    } catch (error) {
+      console.error(error.stack);
+      console.error('could not push expired items to redis');
     }
   }
 }
