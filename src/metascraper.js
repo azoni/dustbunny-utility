@@ -4,8 +4,8 @@ const { FileLogger } = require('./utility/log2file.js');
 const mongo_handler = require('./handlers/mongo_handler.js');
 const { update_traits } = require('./handlers/mongo_handler.js');
 
-const INCLUSIVE_FROM_TOKEN_ID = 0;
-const INCLUSIVE_TO_TOKEN_ID = 9_999;
+const INCLUSIVE_FROM_TOKEN_ID = 271;
+const INCLUSIVE_TO_TOKEN_ID = 290;// 1949
 const MY_COLLECTION_PATH = 'QmdDBhT2rWB9xJCksf8qmjJ1qqRkjiavM91CBn2XaqvjjQ';
 //const MY_COLLECTION_PATH = 'QmNN69NeVQJ3iCscZvxgrzdUdRuXD3E7gRZWesDcEjpPTt';
 
@@ -36,7 +36,8 @@ function build_token_id_path(token_id) {
 }
 
 function build_public_ipfs_url(collection_path, assetPath) {
-  return `https://ipfs.io/ipfs/${collection_path}/${assetPath}`;
+  // return `https://ipfs.io/ipfs/${collection_path}/${assetPath}`; metrovers
+  return `https://azuki-airdrop.s3.amazonaws.com/podz_metadatas/${assetPath}` // beanz
 }
 
 // function get_collection_path(url_parts) {
@@ -61,9 +62,11 @@ function build_public_ipfs_url(collection_path, assetPath) {
 
 function has_meta_data_stayed_the_same(data) {
   return (data?.attributes?.length === 1
-    && (data.attributes[0]?.value || '')
-      ?.toLowerCase()
-      ?.includes('reveal'));
+    && data.attributes[0]?.value !== undefined
+    && data.attributes[0]?.trait_type !== undefined
+    && data.attributes[0]?.value?.toLowerCase() === 'doing something'
+    && data.attributes[0]?.trait_type?.toLowerCase() === 'devs'
+  );
 }
 
 async function main() {
@@ -88,11 +91,11 @@ async function main() {
             console.log(`no change for ${my_token_id}`);
           } else if (Array.isArray(res_json?.attributes) && res_json.attributes.length > 0) {
             token_ids_to_check.delete(my_token_id);
-            return saveTraitsToDb(my_token_id, res_json.attributes)
-              .catch((e) => {
-                console.error(e.stack);
-                token_ids_to_check.add(my_token_id);
-              })
+            // return saveTraitsToDb(my_token_id, res_json.attributes)
+            //  .catch((e) => {
+            //    console.error(e.stack);
+            //    token_ids_to_check.add(my_token_id);
+            //  })
           }
           return undefined;
         }));
