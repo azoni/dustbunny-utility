@@ -172,6 +172,15 @@ async function redis_command_pop(which = '') {
   return data;
 }
 
+async function redis_pop_listing_to_purchase() {
+  const data = await client.lPop('buy:listing');
+  return data;
+}
+
+async function redis_push_listing_to_buy(asset) {
+  await client.rPush('buy:listing', JSON.stringify(asset));
+}
+
 async function redis_push_command(command, which = '') {
   return client.rPush(`focus:commands${which}`, JSON.stringify(command));
 }
@@ -262,4 +271,6 @@ module.exports = {
   get_queue_length,
   redis_push_asset_flash,
   dump_by_name,
+  redis_pop_listing_to_purchase,
+  redis_push_listing_to_buy,
 };
