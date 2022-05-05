@@ -3,16 +3,16 @@ const throttledQueue = require('throttled-queue');
 const { FileLogger } = require('./utility/log2file.js');
 const mongo_handler = require('./handlers/mongo_handler.js');
 const { update_traits } = require('./handlers/mongo_handler.js');
-
+console.log('hey')
 const INCLUSIVE_FROM_TOKEN_ID = 271;
-const INCLUSIVE_TO_TOKEN_ID = 290;// 1949
+const INCLUSIVE_TO_TOKEN_ID = 1000;// 1949
 const MY_COLLECTION_PATH = 'QmdDBhT2rWB9xJCksf8qmjJ1qqRkjiavM91CBn2XaqvjjQ';
 //const MY_COLLECTION_PATH = 'QmNN69NeVQJ3iCscZvxgrzdUdRuXD3E7gRZWesDcEjpPTt';
 
 const CALLS_PER_TIME_LIMIT = 5;
 const TIME_LIMIT = 1_000;
 //const SLUG = 'alienfrensnft';
-const SLUG = 'shinsekai-portal';
+const SLUG = 'beanzofficial';
 
 const ipfs_throttle = throttledQueue(CALLS_PER_TIME_LIMIT, TIME_LIMIT);
 
@@ -37,7 +37,7 @@ function build_token_id_path(token_id) {
 
 function build_public_ipfs_url(collection_path, assetPath) {
   // return `https://ipfs.io/ipfs/${collection_path}/${assetPath}`; metrovers
-  return `https://azuki-airdrop.s3.amazonaws.com/podz_metadatas/${assetPath}` // beanz
+  return `https://ikzttp.mypinata.cloud/ipfs/QmPZKyuRw4nQTD6S6R5HaNAXwoQVMj8YydDmad3rC985WZ/${assetPath}` // beanz
 }
 
 // function get_collection_path(url_parts) {
@@ -84,18 +84,19 @@ async function main() {
       token_ids_to_check.add(my_token_id);
       const token_id_path = build_token_id_path(my_token_id);
       const public_ipfs_url = build_public_ipfs_url(MY_COLLECTION_PATH, token_id_path);
-      const p = ipfs_throttle(async () => fetch(public_ipfs_url)
+      const p = ipfs_throttle(async () => fetch(public_ipfs_url, { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36' })
         .then((response) => response.json())
         .then((res_json) => {
           if (has_meta_data_stayed_the_same(res_json)) {
             console.log(`no change for ${my_token_id}`);
           } else if (Array.isArray(res_json?.attributes) && res_json.attributes.length > 0) {
+            console.log(res_json.attributes)
             token_ids_to_check.delete(my_token_id);
-            // return saveTraitsToDb(my_token_id, res_json.attributes)
-            //  .catch((e) => {
-            //    console.error(e.stack);
-            //    token_ids_to_check.add(my_token_id);
-            //  })
+            return saveTraitsToDb(my_token_id, res_json.attributes)
+              .catch((e) => {
+                console.error(e.stack);
+                token_ids_to_check.add(my_token_id);
+              })
           }
           return undefined;
         }));
