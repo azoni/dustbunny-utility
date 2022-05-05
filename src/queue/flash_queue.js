@@ -20,18 +20,18 @@ async function get_competitor_bids(type, exp) {
       flash_active_wallets.push(wallet)
     }
   }
-  // const wallet_orders = ['0x41f01d8F02c569be620E13c9b33CE803BeD84e90', '0x26054c824ff0a6225dFA24a1EebD6A18dE6b5f7d', '0xDE7E81F4587456C49f4ceAb92FbD48c96e60C6d2', '0x045e1c6b9a5c486e9Ee36ed510A0ff2577A24a1d', '0xEf66b4871069ed10D64220F9D77443bBBA264BB3'] // flash_wallets.map(({ address }) => address.toLowerCase())
-  const time_window = flash_active_wallets.length * 2000
+  const wallet_orders = ['0x3B884Ee0d074150fD4de460B8a6658C290222aEF', '0xa0C3e48b9F8a37C6450bA79454C314304B7bdbC9', '0xda54AbF21b36827433DdeBA017e680AA5D520269', '0xe6e18d16ADCC787a97486D5F78eA175c931EAeFA'] // flash_wallets.map(({ address }) => address.toLowerCase())
+  const time_window = wallet_orders.length * 45000
   const start_time = Math.floor(+new Date())
   console.log(`${'Adding to queue... event window: '}${time_window}`)
 
   const queue_length = await redis_handler.get_queue_length(type)
 
   bids_added = 0
-  for (const wallet of flash_active_wallets) {
+  for (const wallet of wallet_orders) {
     await utils.sleep(500)
     console.log(wallet.username)
-    const orders = await opensea_handler.get_orders_window(wallet.address, time_window)
+    const orders = await opensea_handler.get_orders_window(wallet, time_window)
     try {
       for (const o of orders) {
         const asset = {}
@@ -43,6 +43,10 @@ async function get_competitor_bids(type, exp) {
         asset.expiration = 0.25
         if (exp !== '') {
           asset.expiration = exp / 60
+        }
+        if (asset.slug !== 'otherdeed') {
+          // eslint-disable-next-line no-continue
+          continue
         }
         let mongo_traits = await mongo.findOne({ slug: asset.slug, token_id: asset.token_id })
         if (mongo_traits === null) {
@@ -68,6 +72,7 @@ async function get_competitor_bids(type, exp) {
           // const allowed_slugs = ['nft-worlds', 'doodles-official', 'cool-cats-nft', 'cyberkongz', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'clonex', 'world-of-women-nft']
           // if (allowed_slugs.includes(asset.slug)) {
           bids_added += 1
+          
           redis_handler.redis_push('flash', asset);
           // }
           // redis_handler.redis_push('flash', asset);

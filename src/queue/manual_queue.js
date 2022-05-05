@@ -13,6 +13,9 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits) {
     query = { slug: 'metroverse-genesis', traits: { $elemMatch: { value: 'Circ-o-verse', trait_type: 'Buildings: Commercial' } } }
   }
   const assets = await mongo.find(query, {})
+  const staking_wallets = await mongo.readStakingWallets()
+  const slugs_staking_wallets = staking_wallets
+    .map(({ address }) => address.toLowerCase());
   // let collection_traits = trait_bids[slug]
   const mongo_traits = await mongo.read_traits(slug)
   let collection_traits = false
@@ -24,6 +27,10 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits) {
   }
   console.log(`assets: ${assets.length}`)
   for (const asset of assets) {
+    if (slugs_staking_wallets.includes(asset.owner)) {
+      // eslint-disable-next-line no-continue
+      continue
+    }
     const trimmed_asset = {}
     trimmed_asset.token_id = asset.token_id
     trimmed_asset.traits = asset.traits
@@ -41,7 +48,7 @@ async function manual_queue_add(slug, event_type, exp, bid, run_traits) {
       // eslint-disable-next-line no-continue
       continue
     }
-    trimmed_asset.bid_amount = 0.22
+    // trimmed_asset.bid_amount = 0.22
     // trimmed_asset.bypass_max = true
     console.log(`${trimmed_asset.slug} ${trimmed_asset.token_id}`)
     await redis_handler.redis_push(event_type, trimmed_asset)

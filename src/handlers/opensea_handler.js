@@ -90,7 +90,7 @@ async function test_bid() {
 }
 async function make_offer(asset, account_address) {
   const a = {
-    tokenId: asset.token_id, 
+    tokenId: asset.token_id,
     tokenAddress: asset.token_address,
   }
   try {
@@ -257,7 +257,22 @@ async function get_collection(slug) {
   }
   return 0
 }
-
+async function get_single_listed(asset) {
+  try {
+    const sell_order = await seaport.api.getOrders({
+      side: 1,
+      asset_contract_address: asset.token_address,
+      token_id: asset.token_id,
+      order_by: 'eth_price',
+      order_direction: 'asc',
+      limit: 50,
+    })
+    return sell_order.orders[0]
+  } catch (e) {
+    console.log('Something went wrong getting listed asset.')
+    return false
+  }
+}
 async function get_listed_lowered(time_window) {
   let offset = 0
   const search_time = get_ISOString(time_window)
@@ -444,6 +459,7 @@ function get_ISOString_now() {
 
 module.exports = {
   start,
+  get_single_listed,
   get_assets_from_wallet,
   get_asset_count_from_wallet,
   seaport,
