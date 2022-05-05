@@ -185,6 +185,16 @@ async function redis_get_orders_command_pop(which = '') {
   return data;
 }
 
+async function redis_opensea_listing_pop() {
+  const data = await client.lPop(`beanz:snipe`);
+  return data;
+}
+
+async function redis_looksrare_listing_pop() {
+  const data = await client.lPop(`beanz:looksrare`);
+  return data;
+}
+
 // http method - client pull
 async function redis_queue_pop() {
   const pop_count = 2
@@ -235,6 +245,8 @@ async function redis_queue_pop() {
 }
 
 module.exports = {
+  redis_looksrare_listing_pop,
+  redis_opensea_listing_pop,
   redis_push_get_orders_command,
   redis_get_orders_command_pop,
   redis_push_command,
