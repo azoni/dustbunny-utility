@@ -28,10 +28,10 @@ async function get_competitor_bids(type, exp) {
   const queue_length = await redis_handler.get_queue_length(type)
 
   bids_added = 0
-  for (const wallet of wallet_orders) {
+  for (const wallet of flash_active_wallets) {
     await utils.sleep(500)
     console.log(wallet.username)
-    const orders = await opensea_handler.get_orders_window(wallet, time_window)
+    const orders = await opensea_handler.get_orders_window(wallet.address, time_window)
     try {
       for (const o of orders) {
         const asset = {}
