@@ -271,6 +271,7 @@ async function dump_focus_by_name() {
 async function add_focus(slug, which = '', traits_only) {
   console.log(`Adding to focus:commads${which}...${slug}`)
   let assets = []
+  // traits_only = true
   if (traits_only) {
     const traits = await mongo_handler.read_traits(slug)
     const traits_dict = traits.traits
@@ -286,15 +287,22 @@ async function add_focus(slug, which = '', traits_only) {
   } else {
     assets = await mongo_handler.find({ slug }, {})
   }
-  if (process.argv[4] === 'bakc1') {
-    assets = assets.slice(0, 2400)
-  } else if (process.argv[4] === 'bakc2') {
-    assets = assets.slice(2400, 4800)
-  } else if (process.argv[4] === 'bakc3') {
-    assets = assets.slice(4800, 7200)
-  } else if (process.argv[4] === 'bakc4') {
-    assets = assets.slice(7200, 9941)
-  }
+  // const partition = Math.floor(assets.length / 4)
+  // for (const a of assets) {
+  //   if (a.token_id === '18529') {
+  //     console.log('Found you!')
+  //   }
+  // }
+  // console.log(partition)
+  // if (process.argv[4] === 'beanz1') {
+  //   assets = assets.slice(0, partition)
+  // } else if (process.argv[4] === 'beanz2') {
+  //   assets = assets.slice(partition, partition * 2)
+  // } else if (process.argv[4] === 'beanz3') {
+  //   assets = assets.slice(partition * 2, partition * 3)
+  // } else if (process.argv[4] === 'beanz4') {
+  //   assets = assets.slice(partition * 3, partition * 4)
+  // }
   const token_ids = await create_token_ids_30(assets)
   const asset_contract_address = assets[0].token_address
   await push_command(slug, asset_contract_address, token_ids, 600, which)
@@ -307,7 +315,7 @@ async function create_token_ids_30(assets) {
   const slugs_staking_wallets = staking_wallets.map(({ address }) => address.toLowerCase())
   for (const asset of assets) {
     asset_count += 1
-    if (!slugs_staking_wallets.includes(asset.owner)) {
+    if (!slugs_staking_wallets.includes(asset.owner) || asset.slug === 'ragnarok-meta') {
       // eslint-disable-next-line no-continue
       temp_30_array.push(asset.token_id || asset)
       if (temp_30_array.length === 30) {
@@ -317,6 +325,8 @@ async function create_token_ids_30(assets) {
       if (asset_count === assets.length) {
         token_ids.push(temp_30_array)
       }
+    } else {
+      console.log('Staking wallet...')
     }
   }
   return token_ids

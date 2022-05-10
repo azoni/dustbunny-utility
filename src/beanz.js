@@ -13,7 +13,7 @@ async function get_trait_bid(asset) {
     asset.traits = mongo_traits.traits
   }
   const traits = await mongo_handler.read_traits(asset.slug)
-  asset.bid_range = [0.4, 0.6]
+  asset.bid_range = [0.4, 0.7]
   try {
     if (traits) {
       const collection_traits = traits.traits
@@ -79,7 +79,7 @@ async function run() {
   // Run check on a loop.
   while (true) {
     // Get listings.
-    const token_id = await redis_handler.redis_pop_listing_to_purchase()
+    const token_id = await redis_handler.redis_opensea_listing_pop()
 
     // If queue is empty wait a bit and check again.
     if (token_id === null) {
@@ -97,6 +97,7 @@ async function run() {
     const max_buy_range = await get_trait_bid(asset)
 
     // OpenSea Handler to get sell order for a single asset.
+    await utils.sleep(500)
     const sell_order = await opensea_handler.get_single_listed(asset)
     if (sell_order) {
       const listed_price = sell_order.basePrice / 1000000000000000000
