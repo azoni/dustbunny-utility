@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-continue */
 const throttledQueue = require('throttled-queue');
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
@@ -26,6 +27,14 @@ if (process.argv[3]) {
   console.log('Using lower priroity queue')
 } else {
   console.log(`Using ${which_queue} queue`)
+}
+let bidding_address = false
+if (process.argv[4]) {
+  // eslint-disable-next-line prefer-destructuring
+  bidding_address = process.argv[4]
+  console.log(`Using ${bidding_address} `)
+} else {
+  console.log(`Using ${bidding_address} `)
 }
 
 let infinite_timeout;
@@ -230,7 +239,7 @@ function removeCollisionsAndExpirations(hashes = []) {
         passesTimeCheck = timestamp > (t - time_suggestion);
       }
       // console.log(`${hash} |  ${((timestamp - (time_suggestion ? t - time_suggestion : X_MINUTES_AGO)) / 60_000).toFixed(2)} minutes to go for expire`);
-      return !hashes.includes(hash) && passesTimeCheck;
+      return !hashes.includes(hash) && true;
     });
   return lenBefore !== expirable_commands.length;
 }
@@ -355,6 +364,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
           event_type: 'focus',
           bid_amount: tokenIdToTopOrderDict[key].topBid,
           tier: collectionDbData?.tier || '',
+          bidding_adress: bidding_address,
         });
         registerBidAttempted(slug, key);
       }
@@ -370,6 +380,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
             event_type: 'focus',
             bid_amount: 0.01,
             tier: collectionDbData?.tier || '',
+            bidding_adress: bidding_address,
           });
           registerBidAttempted(slug, token_id);
         }

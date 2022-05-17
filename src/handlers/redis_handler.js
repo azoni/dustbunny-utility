@@ -1,9 +1,11 @@
+/* eslint-disable max-len */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 const node_redis = require('redis')
 const mongo = require('../AssetsMongoHandler.js')
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
 const etherscan_handler = require('./etherscan_handler.js')
+const mongo_handler = require('./mongo_handler.js');
 
 let balanceTimeout;
 let our_balance;
@@ -72,23 +74,23 @@ async function redis_push(queue_name, asset) {
   }
   let min_range = 0.41
   let max_range = 0.61
+  const db_tiers = await mongo_handler.get_tiers()
   if (asset.tier) {
     if (asset.tier === 'medium') {
-      min_range = 0.51
-      max_range = 0.71
+      min_range = db_tiers.medium[0]
+      max_range = db_tiers.medium[1]
     } else if (asset.tier === 'high') {
-      min_range = 0.61
-      max_range = 0.81
+      min_range = db_tiers.high[0]
+      max_range = db_tiers.high[1]
     } else if (asset.tier === 'low') {
-      min_range = 0.41
-      max_range = 0.61
-    } else if (asset.tier === 'medium-low') {
-      min_range = 0.685
-      max_range = 0.835
+      min_range = db_tiers.low[0]
+      max_range = db_tiers.low[1]
+    } else if (asset.tier === 'aggressive') {
+      min_range = db_tiers.aggressive[0]
+      max_range = db_tiers.aggressive[1]
     }
   }
   // eslint-disable-next-line no-param-reassign
-  asset.bid_range = [min_range, max_range]
   const traits = await mongo.read_traits(asset.slug)
   try {
     if (traits) {
@@ -117,6 +119,8 @@ async function redis_push(queue_name, asset) {
   }
   if (watchListCollection.db_range && !asset.trait) {
     asset.bid_range = watchListCollection.db_range
+  } else if (!asset.trait) {
+    asset.bid_range = [min_range, max_range]
   }
   if (asset.bid_amount) {
     min_range = asset.bid_range[0]
@@ -143,10 +147,10 @@ async function redis_push(queue_name, asset) {
       pushTriggered = true;
     }
 
-    if (our_balance !== undefined && asset.bid_amount > our_balance) {
-      console.log(`TOO POOR ${asset.slug} ${asset.token_id} ${asset.bid_amount} ${our_balance.toFixed(2)}`)
-      return false
-    }
+    // if (our_balance !== undefined && asset.bid_amount > our_balance) {
+    //   console.log(`TOO POOR ${asset.slug} ${asset.token_id} ${asset.bid_amount} ${our_balance.toFixed(2)}`)
+    //   return false
+    // }
     if (asset.bid_amount < floor_price * (min_range - fee)) {
       asset.bid_amount = floor_price * (min_range - fee)
     }
