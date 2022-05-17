@@ -276,7 +276,9 @@ async function read_traits(slug) {
   checkAndThrowIfNotConnected();
   return _database.collection('trait_bids').findOne({ slug });
 }
-
+async function get_tiers() {
+  return _database.collection('bid_tiers').findOne({ })
+}
 async function deleteAllAssetsWithSlug(slug) {
   if (!slug) {
     throw new Error('no slug specified');
@@ -358,6 +360,7 @@ module.exports = {
   writeOneAsset,
   findAndDeleteManyAssets,
   deleteAllAssetsWithSlug,
+  get_tiers,
   get_comp_wallets,
   get_our_wallets,
   get_flash_wallets,

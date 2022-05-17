@@ -1,7 +1,8 @@
+/* eslint-disable max-len */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 const node_redis = require('redis')
-const mongo = require('../AssetsMongoHandler.js')
+const mongo_handler = require('./mongo_handler.js')
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
 const etherscan_handler = require('./etherscan_handler.js')
 
@@ -49,20 +50,24 @@ async function get_queue_length(queue_name) {
 }
 
 async function redis_push(queue_name, asset) {
-  try {
-    if (!asset.traits) {
-      const mongo_traits = await mongo.findOne({ slug: asset.slug, token_id: asset.token_id })
-      // eslint-disable-next-line no-param-reassign
-      asset.traits = mongo_traits.traits
-    }
-  } catch (e) {
-    console.log('No traits on asset.')
-  }
   watch_list = watchlistupdater.getWatchList();
   const watchListCollection = watch_list.find(({ address }) => address === asset.token_address);
   if (watchListCollection === undefined || watchListCollection.tier === 'skip' || (blacklist_wallets.includes(asset.owner_address))) {
     // console.log('already top bid')
+    if (watchListCollection !== undefined) {
+      console.log(`${watchListCollection.slug} skipped`)
+    }
     return false
+  }
+  try {
+    if (!asset.traits) {
+      const mongo_traits = await mongo_handler.findOne({ slug: asset.slug, token_id: asset.token_id })
+      // eslint-disable-next-line no-param-reassign
+      asset.traits = mongo_traits.traits
+    }
+  } catch (e) {
+    console.log(e)
+    console.log('No traits on asset.')
   }
   try {
     // eslint-disable-next-line no-param-reassign
@@ -72,22 +77,23 @@ async function redis_push(queue_name, asset) {
   }
   let min_range = 0.41
   let max_range = 0.61
+  const db_tiers = await mongo_handler.get_tiers()
   if (asset.tier) {
     if (asset.tier === 'medium') {
-      min_range = 0.51
-      max_range = 0.71
+      min_range = db_tiers.medium[0]
+      max_range = db_tiers.medium[1]
     } else if (asset.tier === 'high') {
-      min_range = 0.61
-      max_range = 0.81
+      min_range = db_tiers.high[0]
+      max_range = db_tiers.high[1]
     } else if (asset.tier === 'low') {
-      min_range = 0.41
-      max_range = 0.61
-    } else if (asset.tier === 'medium-low') {
-      min_range = 0.685
-      max_range = 0.835
+      min_range = db_tiers.low[0]
+      max_range = db_tiers.low[1]
+    } else if (asset.tier === 'aggressive') {
+      min_range = db_tiers.aggressive[0]
+      max_range = db_tiers.aggressive[1]
     }
   }
-  const traits = await mongo.read_traits(asset.slug)
+  const traits = await mongo_handler.read_traits(asset.slug)
   try {
     if (traits) {
       const collection_traits = traits.traits
@@ -132,7 +138,11 @@ async function redis_push(queue_name, asset) {
     if (floor_price < 0.3 && asset.slug !== 'raidpartyfighters') {
       return false
     }
-    const our_max_bid = floor_price * (max_range - fee)
+    let our_max_bid = floor_price * (max_range - fee)
+    if (asset.bid_range[2]) {
+      our_max_bid = asset.bid_range[2]
+      console.log(`Max bid = ${asset.bid_range[2]}`)
+    }
     if (asset.bid_amount > our_max_bid && !asset.bypass_max) {
       console.log(`TOO HIGH ${asset.bid_amount.toFixed(2)} max: ${our_max_bid} floor: ${floor_price} ${asset.slug} ${asset.token_id} trait: ${asset.trait}`)
       return false
@@ -151,6 +161,7 @@ async function redis_push(queue_name, asset) {
       asset.bid_amount = floor_price * (min_range - fee)
     }
   }
+  console.log(`${asset.slug} ${asset.token_id} ${asset.bid_amount} ${asset.bid_range} ${asset.trait} `)
   await client.rPush(`queue:${queue_name}`, JSON.stringify(asset));
   return true
 }
@@ -195,12 +206,12 @@ async function redis_get_orders_command_pop(which = '') {
 }
 
 async function redis_opensea_listing_pop() {
-  const data = await client.lPop(`beanz:snipe`);
+  const data = await client.lPop('beanz:snipe');
   return data;
 }
 
 async function redis_looksrare_listing_pop() {
-  const data = await client.lPop(`beanz:looksrare`);
+  const data = await client.lPop('beanz:looksrare');
   return data;
 }
 

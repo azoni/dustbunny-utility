@@ -272,6 +272,10 @@ async function add_focus(slug, which = '', traits_only) {
   console.log(`Adding to focus:commads${which}...${slug}`)
   let assets = []
   // traits_only = true
+  if (process.argv[5] === 'true') {
+    // eslint-disable-next-line no-param-reassign
+    traits_only = true
+  }
   if (traits_only) {
     const traits = await mongo_handler.read_traits(slug)
     const traits_dict = traits.traits

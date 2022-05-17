@@ -11,15 +11,17 @@ const { sleep } = require('../utility/utils.js');
 const { FileLogger } = require('../utility/log2file.js');
 const watchlistupdater = require('../utility/watchlist_retreiver.js');
 const mongo = require('../AssetsMongoHandler.js');
+const secret = require('../secret.js')
 
+const { MNEMONIC } = secret
 const wyvernContractAddress = '0x7f268357A8c2552623316e2562D90e642bB538E5';
 const NULL_ADDRESS_STRING = '0x0000000000000000000000000000000000000000';
 
-const WALLET_MNEUMONIC = process.env.WALL_MNEMONIC;
+const WALLET_MNEUMONIC = MNEMONIC
 
-const { FLASHBOTS_AUTH_KEY } = process.env;
+const { FLASHBOTS_AUTH_KEY } = '3f5180f34e788c8440ae24d28f8254241c8390d4674aceea6719071e618bf48c'
 
-const { INFURA_PROJECT_ID } = process.env;
+const { INFURA_PROJECT_ID } = 'deb8c4096c784171b97a21f7a5b7ba98'
 
 const GWEI = BigNumber.from(10).pow(9)
 const SLIP_ALLOWED = GWEI.mul(40);

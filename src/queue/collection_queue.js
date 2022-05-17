@@ -1,7 +1,6 @@
 // add assets without reasonable bids into queue
 const redis_handler = require('../handlers/redis_handler.js')
 const opensea_handler = require('../handlers/opensea_handler.js')
-const mongo = require('../AssetsMongoHandler.js')
 const mongo_handler = require('../handlers/mongo_handler.js')
 const utils = require('../utility/utils.js')
 
@@ -9,7 +8,7 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
   const start_time = Math.floor(+new Date())
   await mongo_handler.connect()
   const blacklist_wallets = ['0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', '0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb', '0xb56851362dE0f360E91e5F52eC64d0A1D52E98E6', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', '0x52d809BCd3c631760b1e480b8D3bE13D7eEC0E25']
-  const staking_wallets = await mongo.readStakingWallets()
+  const staking_wallets = await mongo_handler.readStakingWallets()
   const slugs_staking_wallets = staking_wallets
     .map(({ address }) => address.toLowerCase());
   for (const w in blacklist_wallets) {
@@ -24,20 +23,20 @@ async function get_collection_bids(slug, exp, run_traits, timestamp, runtime) {
   let query = { slug }
   let assets;
   if (run_traits === 'only') {
-    const traits = await mongo.read_traits(slug)
+    const traits = await mongo_handler.read_traits(slug)
     assets = []
     console.log(traits.traits)
     const traits_dict = traits.traits
     for (const trait in traits_dict) {
       query = { slug, traits: { $elemMatch: { value: { $regex: Object.keys(traits_dict[trait])[0], $options: 'i' }, trait_type: { $regex: trait, $options: 'i' } } } }
-      const temp_assets = await mongo.find(query, { $caseSensitive: false })
+      const temp_assets = await mongo_handler.find(query, { $caseSensitive: false })
       console.log(`${trait} ${traits_dict[trait]}`)
       for (const a of temp_assets) {
         assets.push(a)
       }
     }
   } else {
-    assets = await mongo.find(query, {})
+    assets = await mongo_handler.find(query, {})
   }
 
   // token_ids = assets.map(({ token_id }) => token_id);

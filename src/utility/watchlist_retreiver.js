@@ -1,4 +1,4 @@
-const mongoClient = require('../AssetsMongoHandler.js');
+const mongoClient = require('../handlers/mongo_handler.js');
 
 let data_node;
 const UPDATE_INTERVAL_MS = 15_000;

@@ -292,13 +292,13 @@ async function get_nfts_from_wallet(interestAddress, event_type) {
             asset_dict[slug].token_ids = [id]
           }
           ownCount += 1
-          // const asset = {}
-          // asset.token_id = id
-          // asset.token_address = c
-          // asset.slug = watchListCollection.slug;
-          // asset.event_type = event_type
-          // asset.tier = watchListCollection.tier;
-          // redis_handler.redis_push('transfer', asset);
+          const asset = {}
+          asset.token_id = id
+          asset.token_address = c
+          asset.slug = watchListCollection.slug
+          asset.event_type = event_type
+          asset.bidding_adress = '0xd517e2ACDFBBb19BcC3c7069dDDeE2D67Eab4E6c'
+          redis_handler.redis_push('transfer', asset);
         }
       }
     }
