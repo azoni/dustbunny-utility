@@ -24,7 +24,10 @@ let which_queue = 'high'
 if (process.argv[3]) {
   // eslint-disable-next-line prefer-destructuring
   which_queue = 'collection'
-  console.log('Using lower priroity queue')
+  if (process.argv[3] === 'listed' || process.argv[3] === 'transfer') {
+    which_queue = process.argv[3]
+  }
+  console.log(`Using ${which_queue} priroity queue`)
 } else {
   console.log(`Using ${which_queue} queue`)
 }
@@ -239,7 +242,7 @@ function removeCollisionsAndExpirations(hashes = []) {
         passesTimeCheck = timestamp > (t - time_suggestion);
       }
       // console.log(`${hash} |  ${((timestamp - (time_suggestion ? t - time_suggestion : X_MINUTES_AGO)) / 60_000).toFixed(2)} minutes to go for expire`);
-      return !hashes.includes(hash) && true;
+      return !hashes.includes(hash) && passesTimeCheck;
     });
   return lenBefore !== expirable_commands.length;
 }
@@ -283,7 +286,7 @@ function limitListenSet(toListenTo, slugMap) {
     })
   }
   arr.sort((a, b) => b.token_ids.length - a.token_ids.length);
-  return arr.slice(0, 10);
+  return arr //.slice(0, 10);
 }
 let our_wallets;
 let our_addresses;
