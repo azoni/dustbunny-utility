@@ -21,11 +21,13 @@ let expirable_commands = [];
 let listenSet = [];
 let blacklist;
 let which_queue = 'high'
+let event_type = 'focus'
 if (process.argv[3]) {
   // eslint-disable-next-line prefer-destructuring
   which_queue = 'collection'
   if (process.argv[3] === 'listed' || process.argv[3] === 'transfer') {
     which_queue = process.argv[3]
+    event_type = process.argv[3]
   }
   console.log(`Using ${which_queue} priroity queue`)
 } else {
@@ -364,7 +366,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
           token_id: key,
           token_address: contract_address,
           slug,
-          event_type: 'focus',
+          event_type: event_type,
           bid_amount: tokenIdToTopOrderDict[key].topBid,
           tier: collectionDbData?.tier || '',
           bidding_adress: bidding_address,
@@ -380,7 +382,7 @@ async function getOrdersForFocusGroup(slug, contract_address, token_ids, fromTim
             token_id,
             token_address: contract_address,
             slug,
-            event_type: 'focus',
+            event_type: event_type,
             bid_amount: 0.01,
             tier: collectionDbData?.tier || '',
             bidding_adress: bidding_address,
