@@ -7,6 +7,7 @@ const watchlistupdater = require('../utility/watchlist_retreiver.js');
 const etherscan_handler = require('./etherscan_handler.js')
 
 let balanceTimeout;
+// eslint-disable-next-line no-unused-vars
 let our_balance;
 let pushTriggered = false;
 async function etherscanBalanceLoop() {
@@ -153,10 +154,10 @@ async function redis_push(queue_name, asset) {
       pushTriggered = true;
     }
 
-    if (our_balance !== undefined && asset.bid_amount > our_balance) {
-      console.log(`TOO POOR ${asset.slug} ${asset.token_id} ${asset.bid_amount} ${our_balance.toFixed(2)}`)
-      return false
-    }
+    // if (our_balance !== undefined && asset.bid_amount > our_balance) {
+    //   console.log(`TOO POOR ${asset.slug} ${asset.token_id} ${asset.bid_amount} ${our_balance.toFixed(2)}`)
+    //   return false
+    // }
     if (asset.bid_amount < floor_price * (min_range - fee)) {
       asset.bid_amount = floor_price * (min_range - fee)
     }

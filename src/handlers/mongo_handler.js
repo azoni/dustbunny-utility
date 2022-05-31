@@ -277,7 +277,7 @@ async function read_traits(slug) {
   return _database.collection('trait_bids').findOne({ slug });
 }
 async function get_tiers() {
-  return _database.collection('bid_tiers').findOne({ })
+  return _database.collection('bid_tiers').findOne({})
 }
 async function deleteAllAssetsWithSlug(slug) {
   if (!slug) {

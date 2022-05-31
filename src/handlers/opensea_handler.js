@@ -10,12 +10,13 @@ const Web3ProviderEngine = require('web3-provider-engine');
 const { WyvernSchemaName } = require('opensea-js/lib/types')
 const { MnemonicWalletSubprovider } = require('@0x/subproviders');
 const values = require('../values.js')
-const secret = require('../secret.js')
+
+const secret = '' // require('../secret.js')
 
 const { OpenSeaPort } = opensea;
 
 const providerEngine = new Web3ProviderEngine();
-const { MNEMONIC } = secret
+const MNEMONIC = secret
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
 });
@@ -402,7 +403,6 @@ async function get_assets_from_wallet(address) {
     const wallet = await fetch(url, options)
     const data = await wallet.json()
     const assets = {}
-
     for (const asset of data.assets) {
       try {
         const { slug } = asset.collection
@@ -413,6 +413,7 @@ async function get_assets_from_wallet(address) {
           trim.listed_price = false
         }
         trim.token_id = asset.token_id
+        trim.token_address = asset.asset_contract.address
         trim.slug = asset.collection.slug
         trim.purchased = asset.last_sale.total_price / 1000000000000000000
         if (!assets[slug]) {

@@ -422,7 +422,7 @@ async function transfer_queue_start() {
 async function start() {
   dump_queue('transfer')
   await watchlistupdater.startLoop();
-  staking_collections = await mongo.readStakingWallets()
+  staking_collections = await mongo_handler.readStakingWallets()
   staking_collections = staking_collections.map((el) => el.address)
   setTimeout(cleanupWalletAddressMap, LIMIT_30_MINS);
   transfer_queue_start()

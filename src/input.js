@@ -6,18 +6,7 @@ const opensea_handler = require('./handlers/opensea_handler.js')
 const etherscan_handler = require('./handlers/etherscan_handler.js')
 const utils = require('./utility/utils.js')
 
-// trait floors, erc20 tokens
 async function main() {
-  // let success = 0
-  // console.log('start')
-  // opensea_handler.start()
-  // while (success < 20) {
-  //   console.log('start bid')
-  //   const bid = await opensea_handler.test_bid()
-  //   success += bid
-  //   console.log(success)
-  // }
-  // console.log('done')
   await mongo_handler.connect()
   await redis_handler.client.connect()
   if (process.argv[2] === 'watch') {
@@ -83,8 +72,8 @@ async function get_watch_list() {
           const max_range = collection.db_range[1]
           const max_bid = floor_price * (max_range - dev_seller_fee_basis_points / 10000)
           console.log(`${collection.slug} max bid: ${max_bid.toFixed(5)} range: ${collection.db_range}`)
-        } else {
-          // console.log(`${collection.slug}`)
+        } else if (collection.tier !== 'low') {
+          console.log(`${collection.slug} ${collection.tier}`)
         }
       }
     } catch (e) {
@@ -198,10 +187,10 @@ async function fill_staking_focus() {
   // const slugs3 = ['critterznft', 'llamaverse-genesis', 'raidpartyfighters', 'thehabibiz']
   // const slugs4 = ['thehabibiz', 'ether-orcs', 'sappy-seals'] // , 'raidparty', 'sappy-seals']
   for (const slug of slugs1) {
-    await add_focus(slug, 'staking1')
+    await add_focus(slug, 'staking')
   }
   for (const slug of slugs2) {
-    await add_focus(slug, 'staking2')
+    await add_focus(slug, 'staking')
   }
   // for (const slug of slugs3) {
   //   if (slug === 'raidpartyfighters') {
@@ -329,8 +318,6 @@ async function create_token_ids_30(assets) {
       if (asset_count === assets.length) {
         token_ids.push(temp_30_array)
       }
-    } else {
-      console.log('Staking wallet...')
     }
   }
   return token_ids
@@ -471,9 +458,9 @@ async function add_int_traits_match_to_db() {
 }
 async function add_traits_match_to_db() {
   // size
-  const ranges1 = ['large', 'x-large', 'mega']
+  const ranges1 = ['biogenic swamp']
   // area
-  const ranges2 = ['frozen', 'moon']
+  const ranges2 = ['yes']
   await mongo_handler.update_all_match_asset_traits(process.argv[3], process.argv[4], process.argv[5], ranges1, ranges2)
 }
 main()
