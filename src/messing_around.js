@@ -11,7 +11,7 @@ const opensea_handler = require('./handlers/opensea_handler.js')
 const values = require('./values.js')
 
 let watch_list
-const focus_list = ['boredapeyachtclub', 'bored-ape-kennel-club', 'doodles-official', 'mutant-ape-yacht-club', 'azuki', 'cloneX']
+const focus_list = ['boredapeyachtclub', 'bored-ape-kennel-club', 'doodles-official', 'mutant-ape-yacht-club', 'azuki', 'clonex', 'proof-moonbirds']
 
 const client = new OpenSeaStreamClient({
   token: values.API_KEY,
@@ -112,7 +112,7 @@ client.onItemListed('*', (event) => {
         event_type: 'listed',
         base_price: event.payload.base_price / 1000000000000000000,
       }
-      let time = 360
+      let time = 180
       let which_queue = 'listed'
       if (focus_list.includes(asset.slug)) {
         which_queue = 'high-focus'

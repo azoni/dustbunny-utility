@@ -13,6 +13,8 @@ async function main() {
     await get_watch_list()
   } else if (process.argv[2] === 'wallet') {
     await display_wallet()
+  } else if (process.argv[2] === 'bid-wallet') {
+    await bid_on_wallet()
   } else if (process.argv[2] === 'dash') {
     await display_dashboard()
   } else if (process.argv[2] === 'focus') {
@@ -36,9 +38,13 @@ async function main() {
   } else if (process.argv[2] === 'dump') {
     redis_handler.dump_queue(process.argv[3])
   } else if (process.argv[2] === 'focus-len') {
-    const focus_keys = await redis_handler.client.keys('focus*')
-    for (const key of focus_keys) {
-      console.log(` ${key}: ${await redis_handler.client.LLEN(key)}`)
+    while (true) {
+      const focus_keys = await redis_handler.client.keys('focus*')
+      for (const key of focus_keys) {
+        console.log(` ${key}: ${await redis_handler.client.LLEN(key)}`)
+      }
+      console.log('---------------')
+      await utils.sleep(3000)
     }
   } else if (process.argv[2] === 'length') {
     await redis_handler.print_queue_length(process.argv[3])
@@ -81,6 +87,39 @@ async function get_watch_list() {
     }
   }
   console.log(`Count: ${counter}`)
+}
+async function bid_on_wallet() {
+  let watch_list = await mongo_handler.readWatchList()
+  watch_list = watch_list.map(({ slug }) => slug)
+  const staking_wallets = await mongo_handler.readStakingWallets()
+  const slugs_staking_wallets = staking_wallets.map(({ address }) => address.toLowerCase())
+  const from = process.argv[3]
+  if (!slugs_staking_wallets.includes(from)) {
+    const assets_from = await get_assets_from_wallet(from)
+    console.log(`${from}`)
+    for (const asset in assets_from) {
+      for (const id of assets_from[asset]) {
+        if (watch_list.includes(id.slug)) {
+          const time = 60
+          const which_queue = 'high-focus'
+          const command = {
+            hash: `${id.slug}:${id.token_id}`,
+            slug: id.slug,
+            collection_address: id.token_address,
+            token_ids: [id.token_id],
+            time_suggestion: time * 60_000,
+          }
+          console.log(`${id.slug} ${id.token_id}`)
+          redis_handler.redis_push_command(command, which_queue)
+        }
+      }
+    }
+  }
+}
+
+async function get_assets_from_wallet(wallet) {
+  const assets = await opensea_handler.get_assets_from_wallet(wallet)
+  return assets
 }
 async function display_length() {
   const queue_names = ['high', 'listed', 'transfer', 'collection', 'flash', 'manual']

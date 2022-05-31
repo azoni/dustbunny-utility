@@ -415,14 +415,18 @@ async function get_assets_from_wallet(address) {
         trim.token_id = asset.token_id
         trim.token_address = asset.asset_contract.address
         trim.slug = asset.collection.slug
-        trim.purchased = asset.last_sale.total_price / 1000000000000000000
+        try {
+          trim.purchased = asset.last_sale.total_price / 1000000000000000000
+        } catch (e) {
+          // No last sale.
+        }
         if (!assets[slug]) {
           assets[slug] = [trim]
         } else {
           assets[slug].push(trim)
         }
       } catch (e) {
-        // console.log(asset)
+        console.log(`error - ${asset.token_id} ${asset.collection.slug}`)
       }
     }
     return assets
